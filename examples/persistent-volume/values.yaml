@@ -1,0 +1,43 @@
+replicaCount: 1
+
+image:
+  registry: docker-mirror.ptsecurity.com
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: 1.22
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+podAnnotations: {}
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+
+autoscaling:
+  enabled: false
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+s3:
+  name: ptmc-s3
+  accessModes:
+    - ReadWriteMany
+  storage: 5Gi
+  csi:
+    driver: seaweedfs-csi-driver
+    volumeHandle: ptmc-s3
+  persistentVolumeReclaimPolicy: Delete
+  volumeMode: Filesystem

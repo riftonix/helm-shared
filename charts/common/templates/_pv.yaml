@@ -1,0 +1,19 @@
+{{- define "common.persistentVolume.tpl" -}}
+{{- $top := first . }}
+{{- $persistentVolume := index . 1 }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ $top.Chart.Name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity: {}
+  csi: {}
+  persistentVolumeReclaimPolicy: Delete
+  volumeMode: Filesystem
+{{- end }}
+
+{{- define "common.persistentVolume" -}}
+{{- include "common.utils.merge" (append . "common.persistentVolume.tpl") }}
+{{- end }}

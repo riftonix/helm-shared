@@ -1,0 +1,44 @@
+---
+{{ include "common.service" (list . .Values.service) }}
+
+---
+{{ include "common.persistentVolume" (list . .Values "custom.persistentVolume") }}
+
+{{- define "custom.persistentVolume" -}}
+{{- $top := first . }}
+{{- $values := index . 1 }}
+metadata:
+  name: {{ $values.s3.name }}
+spec:
+  accessModes:
+  {{- range $item := $values.s3.accessModes }}
+  - {{ $item }}
+  {{- end }}
+  capacity:
+    storage: {{ $values.s3.storage }}
+  csi:
+    driver: {{ $values.s3.csi.driver }}
+    volumeHandle: {{ $values.s3.csi.volumeHandle }}
+  persistentVolumeReclaimPolicy: {{ $values.s3.persistentVolumeReclaimPolicy }}
+  volumeMode: {{ $values.s3.volumeMode }}
+{{- end }}
+
+---
+{{ include "common.persistentVolumeClaim" (list . .Values "custom.persistentVolumeClaim") }}
+
+{{- define "custom.persistentVolumeClaim" -}}
+{{- $top := first . }}
+{{- $values := index . 1 }}
+metadata:
+  name: {{ $values.s3.name }}
+spec:
+  storageClassName: ""
+  volumeName: {{ $values.s3.name }}
+  accessModes:
+  {{- range $item := $values.s3.accessModes }}
+  - {{ $item }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $values.s3.storage }}
+{{- end }}

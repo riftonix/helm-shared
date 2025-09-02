@@ -1,2 +1,2 @@
 # helm-charts
-Repo with vlomina helm charts
+Repo with riftonix helm charts

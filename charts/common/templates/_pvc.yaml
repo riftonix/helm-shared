@@ -1,0 +1,18 @@
+{{- define "common.persistentVolumeClaim.tpl" -}}
+{{- $top := first . }}
+{{- $persistentVolumeClaim := index . 1 }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $top.Chart.Name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: "100Mi"
+{{- end }}
+
+{{- define "common.persistentVolumeClaim" -}}
+{{- include "common.utils.merge" (append . "common.persistentVolumeClaim.tpl") }}
+{{- end }}
