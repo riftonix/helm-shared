@@ -1,0 +1,115 @@
+---
+{{ include "common.hpa" (list . .Values.autoscaling) }}
+---
+{{ include "common.ingress" (list . .Values.ingress .Values.service) }}
+---
+{{ include "common.service" (list . .Values.service) }}
+---
+{{ include "common.serviceAccount" (list . .Values.serviceAccount) }}
+---
+{{ include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount "custom.deployment") }}
+
+{{ define "custom.deployment" }}
+spec:
+  template:
+    spec:
+      containers:
+      - {{- include "common.container" (append . "custom.container") | nindent 8 }}
+      initContainers:
+      - {{- include "common.container" (append . "custom.initContainer") | nindent 8 }}
+      volumes:
+      - {{- include "common.volume" (append . "custom.certsVolume") | nindent 8 }}
+      - {{- include "common.volume" (append . "custom.caCertsVolume") | nindent 8 }}
+      - {{- include "common.volume" (append . "custom.rmqCertsVolume") | nindent 8 }}
+      - {{- include "common.volume" (append . "custom.sharedStorageVolume") | nindent 8 }}
+{{ end }}
+
+{{- define "custom.certsVolume" -}}
+{{- $top := first . }}
+{{- $values  := index . 1 }}
+name: {{ $top.Chart.Name }}-certs
+secret:
+  secretName: {{ $values.common.secret }}
+  items:
+    - key: {{ $values.common.cert_name }}
+      path: {{ $values.common.cert_name }}
+    - key: {{ $values.common.key_name }}
+      path: {{ $values.common.key_name }}
+{{- end }}
+
+{{- define "custom.caCertsVolume" -}}
+{{- $top := first . }}
+{{- $values  := index . 1 }}
+name: {{ $top.Chart.Name }}-ca-certs
+secret:
+  secretName: {{ $values.common.secret }}
+  items:
+    - key: {{ $values.common.ca_name }}
+      path: {{ $values.common.ca_name }}
+{{- end }}
+
+{{- define "custom.rmqCertsVolume" -}}
+{{- $top := first . }}
+{{- $values  := index . 1 }}
+name: {{ $top.Chart.Name }}-rmq-certs
+secret:
+  secretName: {{ $values.common.rmq.secret }}
+  items:
+    - key: {{ $values.common.rmq.auth.tls.serverCertificatePath }}
+      path: {{ $values.common.rmq.auth.tls.serverCertificatePath }}
+    - key: {{ $values.common.rmq.auth.tls.serverKeyPath }}
+      path: {{ $values.common.rmq.auth.tls.serverKeyPath }}
+{{- end }}
+
+{{ define "custom.sharedStorageVolume" -}}
+{{ $top := first . }}
+{{ $values := index . 1 }}
+name: {{ $top.Chart.Name }}-shared-storage
+persistentVolumeClaim:
+  claimName: {{ $values.microservice.sharedStorage.claimName }}
+{{ end }}
+
+{{ define "custom.container" -}}
+{{ $top := first . }}
+{{ $values  := index . 1 }}
+name: {{ $top.Chart.Name }}
+ports:
+  - name: http
+    containerPort: {{ $values.service.port }}
+    protocol: TCP
+livenessProbe: { httpGet: { path: /livez, port: http, scheme: HTTPS }, initialDelaySeconds: 60 }
+readinessProbe: { httpGet: { path: /readyz, port: http, scheme: HTTPS }, initialDelaySeconds: 60 }
+env:
+  {{- include "custom.envs" (list $top $values) | nindent 2 }}
+volumeMounts:
+  - mountPath: /usr/local/share/microservice/certs
+    name: {{ $top.Chart.Name }}-certs
+  - mountPath: /usr/local/share/ca-certificates
+    name: {{ $top.Chart.Name }}-ca-certs
+  - mountPath: /usr/local/share/microservice/certs/rabbitmq
+    name: {{ $top.Chart.Name }}-rmq-certs
+  {{- range $item := $values.microservice.extendedPackages.content }}
+  - name: {{ $top.Chart.Name }}-shared-storage
+    mountPath: {{ $item.destinationPath }}
+    subPath: {{ $values.microservice.extendedPackages.basePath }}/{{ $values.microservice.extendedPackages.image.tag }}/{{ $item.packageId }}{{ $item.sourcePath | replace "./" "/"}}
+  {{- end }}
+{{ end }}
+
+{{ define "custom.initContainer" -}}
+{{ $top := first . }}
+{{ $values  := index . 1 }}
+name: {{ $top.Chart.Name }}-init
+env:
+  {{- include "custom.envs" (list $top $values) | nindent 2 }}
+volumeMounts:
+  - mountPath: /usr/local/share/microservice/certs
+    name: {{ $top.Chart.Name }}-certs
+  - mountPath: /usr/local/share/ca-certificates
+    name: {{ $top.Chart.Name }}-ca-certs
+  {{- range $item := $values.microservice.extendedPackages.content }}
+  - name: {{ $top.Chart.Name }}-shared-storage
+    mountPath: {{ $item.destinationPath }}
+    subPath: {{ $values.microservice.extendedPackages.basePath }}/{{ $values.microservice.extendedPackages.image.tag }}/{{ $item.packageId }}{{ $item.sourcePath | replace "./" "/"}}
+  {{- end }}
+command: ['/bin/sh', '-c','entrypoint.sh migrate']
+{{ end }}
