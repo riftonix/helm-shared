@@ -4,3 +4,4 @@
 .dagger
 dagger.json
 test.sh
+*.tgz

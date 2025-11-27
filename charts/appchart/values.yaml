@@ -1,0 +1,50 @@
+image:
+  repository: ""
+  pullPolicy: IfNotPresent
+  tag: ""
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+service:
+  type: ClusterIP
+  port: 80
+
+serviceAccount:
+  create: true
+  name: ""
+
+common:
+  secret: "app-secret"
+  cert_name: "tls.crt"
+  key_name: "tls.key"
+  ca_name: "ca.crt"
+  rmq:
+    secret: "rmq-secret"
+    auth:
+      tls:
+        serverCertificatePath: "server.crt"
+        serverKeyPath: "server.key"
+
+microservice:
+  sharedStorage:
+    claimName: "shared-storage-claim"
+  extendedPackages:
+    basePath: "packages"
+    image:
+      tag: "latest"
+    content: []

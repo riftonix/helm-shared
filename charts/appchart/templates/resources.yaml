@@ -3,7 +3,9 @@
 ---
 {{ include "common.ingress" (list . .Values.ingress .Values.service) }}
 ---
+{{- if (hasKey .Values.service "enabled") | ternary .Values.service.enabled true }}
 {{ include "common.service" (list . .Values.service) }}
+{{- end }}
 ---
 {{ include "common.serviceAccount" (list . .Values.serviceAccount) }}
 ---
@@ -80,7 +82,7 @@ ports:
 livenessProbe: { httpGet: { path: /livez, port: http, scheme: HTTPS }, initialDelaySeconds: 60 }
 readinessProbe: { httpGet: { path: /readyz, port: http, scheme: HTTPS }, initialDelaySeconds: 60 }
 env:
-  {{- include "custom.envs" (list $top $values) | nindent 2 }}
+  {{- include "global.envs" (list $top $values) | nindent 2 }}
 volumeMounts:
   - mountPath: /usr/local/share/microservice/certs
     name: {{ $top.Chart.Name }}-certs
@@ -100,7 +102,7 @@ volumeMounts:
 {{ $values  := index . 1 }}
 name: {{ $top.Chart.Name }}-init
 env:
-  {{- include "custom.envs" (list $top $values) | nindent 2 }}
+  {{- include "global.envs" (list $top $values) | nindent 2 }}
 volumeMounts:
   - mountPath: /usr/local/share/microservice/certs
     name: {{ $top.Chart.Name }}-certs
