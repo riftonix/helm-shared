@@ -1,15 +1,24 @@
 {{- define "helpers.workloads.envs" -}}
 {{- $ctx := .context -}}
+{{- $root := .root -}}
 {{- $general := .general -}}
 {{- $v := .value -}}
-{{- if or (or (or $v.envsFromConfigmap $v.envsFromSecret) $v.env) (or (or $general.envsFromConfigmap $general.envsFromSecret) $general.env)}}
+{{- if or (or (or $v.envsFromConfigmap $v.envsFromSecret) $v.env) (or (or $general.envsFromConfigmap $general.envsFromSecret) $general.env) (or (not (empty $v.containerEnvs)) (not (empty $general.containerEnvs)) (not (empty $root.containerEnvs)) (not ($root.envsFromSecret)))}}
 env:
 {{ with $general.envsFromConfigmap }}{{- include "helpers.configmaps.includeEnv" ( dict "value" . "context" $ctx) }}{{- end }}
 {{ with $v.envsFromConfigmap }}{{- include "helpers.configmaps.includeEnv" ( dict "value" . "context" $ctx) }}{{- end }}
+{{ with $root.envsFromSecret }}{{- include "helpers.secrets.includeEnv" ( dict "value" . "context" $ctx) }}{{- end }}
 {{ with $general.envsFromSecret }}{{- include "helpers.secrets.includeEnv" ( dict "value" . "context" $ctx) }}{{- end }}
 {{ with $v.envsFromSecret }}{{- include "helpers.secrets.includeEnv" ( dict "value" . "context" $ctx) }}{{- end }}
 {{ with $general.env }}{{- include "helpers.tplvalues.render" ( dict "value" . "context" $ctx) }}{{- end }}
 {{ with $v.env }}{{- include "helpers.tplvalues.render" ( dict "value" . "context" $ctx) }}{{- end }}
+{{- if or (not (empty $v.containerEnvs)) (not (empty $general.containerEnvs)) (not (empty $root.containerEnvs)) }}
+{{- $mergedEnvs := merge (default dict $v.containerEnvs) (default dict $general.containerEnvs) (default dict $root.containerEnvs) }}
+{{- range $key, $value := $mergedEnvs }}
+- name: {{ $key }}
+  value: {{ $value | quote }}
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 

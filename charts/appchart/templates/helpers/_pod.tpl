@@ -1,5 +1,6 @@
 {{- define "helpers.pod" -}}
 {{- $ := .context -}}
+{{- $root := $.Values -}}
 {{- $general := .general -}}
 {{- $extraLabels := .extraLabels -}}
 {{- $usePredefinedAffinity := $.Values.generic.usePredefinedAffinity -}}
@@ -90,8 +91,8 @@ initContainers:
   command: {{- include "helpers.tplvalues.render" ( dict "value" .command "context" $) | nindent 2 }}
   {{- end }}
   {{- end }}
-  {{- include "helpers.workloads.envs" (dict "value" . "general" $general "context" $) | indent 2 }}
-  {{- include "helpers.workloads.envsFrom" (dict "value" . "general" $general "context" $) | indent 2 }}
+  {{- include "helpers.workloads.envs" (dict "value" . "general" $general "root" $root "context" $) | indent 2 }}
+  {{- include "helpers.workloads.envsFrom" (dict "value" . "general" $general "root" $root "context" $) | indent 2 }}
   {{- with .ports }}
   ports: {{- include "helpers.tplvalues.render" ( dict "value" . "context" $) | nindent 2 }}
   {{- end }}
@@ -140,8 +141,8 @@ containers:
   command: {{- include "helpers.tplvalues.render" ( dict "value" .command "context" $) | nindent 2 }}
   {{- end }}
   {{- end }}
-  {{- include "helpers.workloads.envs" (dict "value" . "general" $general "context" $) | indent 2 }}
-  {{- include "helpers.workloads.envsFrom" (dict "value" . "general" $general "context" $) | indent 2 }}
+  {{- include "helpers.workloads.envs" (dict "value" . "general" $general "root" $root "context" $) | indent 2 }}
+  {{- include "helpers.workloads.envsFrom" (dict "value" . "general" $general "root" $root "context" $) | indent 2 }}
   {{- with .ports }}
   ports: {{- include "helpers.tplvalues.render" ( dict "value" . "context" $) | nindent 2 }}
   {{- end }}

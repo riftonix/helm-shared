@@ -153,6 +153,8 @@ the parameters that can be configured during installation. To check deployment e
 | `envsString`                | String with map of environment variables which will be deplyed as ConfigMap with name `RELEASE_NAME-envs`     | `""`             |
 | `secretEnvs`                | Map of environment variables which will be deplyed as Secret with name `RELEASE_NAME-secret-envs`             | `{}`             |
 | `secretEnvsString`          | String with map of environment variables which will be deplyed as Secret with name `RELEASE_NAME-secret-envs` | `""`             |
+| `containerEnvs`             | Map of environment variables which will be added to all containers in all workloads                           | `{}`             |
+| `envsFromSecret`             | Global Map of Secrets and envs from it                            | `{}`
 | `imagePullSecrets`          | Map of registry secrets in `.dockerconfigjson` format                                                         | `{}`             |
 | `defaultImage`              | Docker image that will be used by default                                                                     | `[]`             |
 | `defaultImageTag`           | Docker image tag that will be used by default                                                                 | `[]`             |
@@ -240,6 +242,7 @@ the parameters that can be configured during installation. To check deployment e
 | `deploymentsGeneral.labels`                | Labels to add to all deployments                    | `{}`    |
 | `deploymentsGeneral.annotations`           | Annotations to add to all deployments               | `{}`    |
 | `deploymentsGeneral.envsFromConfigmap`     | Map of ConfigMaps and envs from it                  | `{}`    |
+| `deploymentsGeneral.containerEnvs`         | Envs for container in KEY:VALUE format              | `{}`    |
 | `deploymentsGeneral.envsFromSecret`        | Map of Secrets and envs from it                     | `{}`    |
 | `deploymentsGeneral.env`                   | Array of extra environment variables                | `[]`    |
 | `deploymentsGeneral.envConfigmaps`         | Array of Configmaps names with extra envs           | `[]`    |
@@ -287,6 +290,7 @@ the parameters that can be configured during installation. To check deployment e
 | `statefulSetsGeneral.labels`                | Labels to add to all StatefulSets                    | `{}`    |
 | `statefulSetsGeneral.annotations`           | Annotations to add to all StatefulSets               | `{}`    |
 | `statefulSetsGeneral.envsFromConfigmap`     | Map of ConfigMaps and envs from it                   | `{}`    |
+| `statefulSetsGeneral.containerEnvs`         | Envs for container in KEY:VALUE format               | `{}`    |
 | `statefulSetsGeneral.envsFromSecret`        | Map of Secrets and envs from it                      | `{}`    |
 | `statefulSetsGeneral.env`                   | Array of extra environment variables                 | `[]`    |
 | `statefulSetsGeneral.envConfigmaps`         | Array of Configmaps names with extra envs            | `[]`    |
@@ -342,6 +346,7 @@ the parameters that can be configured during installation. To check deployment e
 | `commandDurationAlert` | Create Prometheus Alert on command execution time exceeded (for jobs and cronJobs only)                                    | ``               |
 | `args`                 | Container arguments override                                                                                               | `[]`             |
 | `envsFromConfigmap`    | Map of ConfigMaps and envs from it                                                                                         | `{}`             |
+| `containerEnvs`         | Envs for container in KEY:VALUE format               | `{}`    |
 | `envsFromSecret`       | Map of Secrets and envs from it                                                                                            | `{}`             |
 | `env`                  | Array of extra environment variables                                                                                       | `[]`             |
 | `envConfigmaps`        | Array of Configmaps names with extra envs                                                                                  | `[]`             |
@@ -442,6 +447,7 @@ Secret `data` object is a map where value can be a string, json or base64 encode
 | `hooksGeneral.labels`                  | Extra labels for all Hook Job                                                           | `{}`    |
 | `hooksGeneral.annotations`             | Extra annotations for all Hook Job                                                      | `{}`    |
 | `hooksGeneral.envsFromConfigmap`       | Map of ConfigMaps and envs from it                                                      | `{}`    |
+| `hooksGeneral.containerEnvs`          | Envs for container in KEY:VALUE format                                                          | `{}`    |
 | `hooksGeneral.envsFromSecret`          | Map of Secrets and envs from it                                                         | `{}`    |
 | `hooksGeneral.env`                     | Array of extra environment variables                                                    | `[]`    |
 | `hooksGeneral.envConfigmaps`           | Array of Configmaps names with extra envs                                               | `[]`    |
@@ -503,6 +509,7 @@ Secret `data` object is a map where value can be a string, json or base64 encode
 | `cronJobsGeneral.labels`                     | Extra labels for all CronJobs                                                              | `{}`    |
 | `cronJobsGeneral.annotations`                | Extra annotations for all CronJobs                                                         | `{}`    |
 | `cronJobsGeneral.envsFromConfigmap`          | Map of ConfigMaps and envs from it                                                         | `{}`    |
+| `cronJobsGeneral.containerEnvs`          | Envs for container in KEY:VALUE format                                                          | `{}`    |
 | `cronJobsGeneral.envsFromSecret`             | Map of Secrets and envs from it                                                            | `{}`    |
 | `cronJobsGeneral.env`                        | Array of extra environment variables                                                       | `[]`    |
 | `cronJobsGeneral.envConfigmaps`              | Array of Configmaps names with extra envs                                                  | `[]`    |
@@ -570,6 +577,7 @@ Secret `data` object is a map where value can be a string, json or base64 encode
 | `jobsGeneral.labels`                  | Extra labels for all Job                                                               | `{}`    |
 | `jobsGeneral.annotations`             | Extra annotations for all Job                                                          | `{}`    |
 | `jobsGeneral.envsFromConfigmap`       | Map of ConfigMaps and envs from it                                                     | `{}`    |
+| `jobsGeneral.containerEnvs`          | Envs for container in KEY:VALUE format                                                          | `{}`    |
 | `jobsGeneral.envsFromSecret`          | Map of Secrets and envs from it                                                        | `{}`    |
 | `jobsGeneral.env`                     | Array of extra environment variables                                                   | `[]`    |
 | `jobsGeneral.envConfigmaps`           | Array of Configmaps names with extra envs                                              | `[]`    |

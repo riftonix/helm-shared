@@ -81,6 +81,16 @@ secretEnvsString: ""
 #secretEnvsString: |
 #  FOO: BAR
 
+# --set "containerEnvs.FOO=BAR,containerEnvs.MYVAR=value"
+# containerEnvs:
+#   FOO: BAR
+#   MYVAR: value
+
+# envsFromSecret:
+#   secret-name:
+#   - ENV-NAME: secret-key
+#   - ENV-NAME-secret-key
+
 imagePullSecrets: {}
 #  registry.org: |
 #    {"auths":{"registry.org":{"auth":"cnd1c2VyOnNlY3VyZVBANXM="}}}
@@ -134,7 +144,6 @@ services: {}
 #      port: 8080
 #    extraSelectorLabels:
 #      app: my-nginx
-
 
 
 deploymentsGeneral: {}
