@@ -70,9 +70,10 @@ initContainers:
   {{- else }}
 - name: {{ printf "%s-init-%s" $name (lower (randAlphaNum 5)) }}
   {{- end }}
-  {{- $image := $.Values.defaultImage }}{{ with .image }}{{ $image = include "helpers.tplvalues.render" ( dict "value" . "context" $) }}{{ end }}
+  {{- $imageRegistry := $.Values.defaultImageRegistry }}{{ with .imageRegistry }}{{ $imageRegistry = include "helpers.tplvalues.render" ( dict "value" . "context" $) }}{{ end }}
+  {{- $imageRepository := $.Values.defaultImageRepository }}{{ with .imageRepository }}{{ $imageRepository = include "helpers.tplvalues.render" ( dict "value" . "context" $) }}{{ end }}
   {{- $imageTag := $.Values.defaultImageTag }}{{ with .imageTag }}{{ $imageTag = include "helpers.tplvalues.render" ( dict "value" . "context" $) }}{{ end }}
-  image: {{ $image }}:{{ $imageTag }}
+  image: {{ $imageRegistry }}{{ if $imageRegistry }}/{{ end }}{{ $imageRepository }}:{{ $imageTag }}
   imagePullPolicy: {{ .imagePullPolicy | default $.Values.defaultImagePullPolicy }}
   {{- with .securityContext }}
   securityContext: {{- include "helpers.tplvalues.render" ( dict "value" . "context" $) | nindent 4 }}
@@ -120,9 +121,10 @@ containers:
   {{- else }}
 - name: {{ printf "%s-%s" $name (lower (randAlphaNum 5)) }}
   {{- end }}
-  {{- $image := $.Values.defaultImage }}{{ with .image }}{{ $image = include "helpers.tplvalues.render" ( dict "value" . "context" $) }}{{ end }}
+  {{- $imageRegistry := $.Values.defaultImageRegistry }}{{ with .imageRegistry }}{{ $imageRegistry = include "helpers.tplvalues.render" ( dict "value" . "context" $) }}{{ end }}
+  {{- $imageRepository := $.Values.defaultImageRepository }}{{ with .imageRepository }}{{ $imageRepository = include "helpers.tplvalues.render" ( dict "value" . "context" $) }}{{ end }}
   {{- $imageTag := $.Values.defaultImageTag }}{{ with .imageTag }}{{ $imageTag = include "helpers.tplvalues.render" ( dict "value" . "context" $) }}{{ end }}
-  image: {{ $image }}:{{ $imageTag }}
+  image: {{ $imageRegistry }}{{ if $imageRegistry }}/{{ end }}{{ $imageRepository }}:{{ $imageTag }}
   imagePullPolicy: {{ .imagePullPolicy | default $.Values.defaultImagePullPolicy }}
   {{- with .securityContext }}
   securityContext: {{- include "helpers.tplvalues.render" ( dict "value" . "context" $) | nindent 4 }}

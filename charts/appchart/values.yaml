@@ -101,7 +101,8 @@ diagnosticMode:
   command: ["sleep"]
   args: ["infinity"]
 
-defaultImage: nginx
+defaultImageRegistry: ""
+defaultImageRepository: nginx
 defaultImageTag: latest
 defaultImagePullPolicy: "IfNotPresent"
 
@@ -148,58 +149,60 @@ services: {}
 
 deploymentsGeneral: {}
 deployments: {}
-#  nginx:
-#    labels: {}
-#    podLabels: {}
-#    podAnnotations:
-#      checksum/api-key: '{{ include "helpers.workload.checksum" $.Values.secrets.webadmin }}'
-#    replicas: 2
-#    extraSelectorLabels:
-#      app: my-nginx
-#    serviceAccountName: deployer
-#    #affinity:
-#    #  nodeAffinity:
-#    #    requiredDuringSchedulingIgnoredDuringExecution:
-#    #      nodeSelectorTerms:
-#    #      - matchExpressions:
-#    #        - key: node-role
-#    #          operator: In
-#    #          values:
-#    #          - prod
-#    containers:
-#    - name: nginx
-#      #image: nginx
-#      #imageTag: 1.19
-#      #imagePullPolicy: Always
-#      env:
-#      - name: MY_ENV
-#        value: "1234"
-#      - name: QTE
-#        value: safn8
-#      envsFromSecret:
-#        webadmin:
-#        - JAVA_OPTS: JVM_OPTS
-#        - QWE
-#      envSecrets:
-#      - secret-envs
-#      envsFromConfigmap:
-#        some-cm:
-#        - LEL: LOL
-#      envConfigmaps:
-#      - envs
-#      #ports:
-#      #- name: http
-#      #  containerPort: 8080
-#      volumeMounts:
-#      - name: secret-file
-#        mountPath: /var/lib/secret
-#      - name: app-pvc
-#        mountPath: /var/www/html/files
-#    volumes:
-#    - name: secret-file
-#      type: secret
-#    - name: app-data
-#      type: pvc
+  # nginx:
+  #   labels: {}
+  #   podLabels: {}
+  #   podAnnotations:
+  #     checksum/api-key: '{{ include "helpers.workload.checksum" $.Values.secrets.webadmin }}'
+  #   replicas: 2
+  #   extraSelectorLabels:
+  #     app: my-nginx
+  #   serviceAccountName: deployer
+  #   #affinity:
+  #   #  nodeAffinity:
+  #   #    requiredDuringSchedulingIgnoredDuringExecution:
+  #   #      nodeSelectorTerms:
+  #   #      - matchExpressions:
+  #   #        - key: node-role
+  #   #          operator: In
+  #   #          values:
+  #   #          - prod
+  #   containers:
+  #   - name: nginx
+  #     # imageRepository: nginx
+  #     # imageTag: 1.19
+  #     # imagePullPolicy: Always
+  #     env:
+  #     - name: MY_ENV
+  #       value: "1234"
+  #     - name: QTE
+  #       value: safn8
+  #     envsFromSecret:
+  #       webadmin:
+  #       - JAVA_OPTS: JVM_OPTS
+  #       - QWE
+  #     envSecrets:
+  #     - secret-envs
+  #     containerEnvs:
+  #       ENV: VALUE
+  #     envsFromConfigmap:
+  #       some-cm:
+  #       - LEL: LOL
+  #     envConfigmaps:
+  #     - envs
+  #     #ports:
+  #     #- name: http
+  #     #  containerPort: 8080
+  #     volumeMounts:
+  #     - name: secret-file
+  #       mountPath: /var/lib/secret
+  #     - name: app-pvc
+  #       mountPath: /var/www/html/files
+  #   volumes:
+  #   - name: secret-file
+  #     type: secret
+  #   - name: app-data
+  #     type: pvc
 
 statefulSetsGeneral: {}
 statefulSets: {}
@@ -298,7 +301,7 @@ hooksGeneral: {}
 hooks: {}
 #  migration-up:
 #    containers:
-#    - image: registry.app.ru/app-migration
+#    - imageRepository: registry.app.ru/app-migration
 #      args:
 #      - up
 #      envFrom:
