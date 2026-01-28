@@ -29,7 +29,7 @@ generic:
   extraImagePullSecrets:
   - name: existing-registry-secret
 
-defaultImage: registry.org/my-app
+defaultImageRepository: registry.org/my-app
 defaultImageTag: latest
 
 ingresses:
@@ -119,7 +119,7 @@ configMaps:
       nginx.conf: |
         worker_processes  1;
         load_module modules/ngx_http_js_module.so;
-  
+
         events {
             worker_connections  1024;
         }
@@ -158,7 +158,7 @@ serviceAccount:
 #    foo: foo
 
 hooks:
-  migration-up: 
+  migration-up:
     containers:
     - image: registry.app.ru/app-migration
       nodeSelector:

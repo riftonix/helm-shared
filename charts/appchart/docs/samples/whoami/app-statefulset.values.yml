@@ -19,7 +19,7 @@ statefulSets:
       fsGroup: 2000
     containers:
     - name: app
-      image: containous/whoami
+      imageRepository: containous/whoami
       imageTag: v1.5.0
       resources:
         limits:

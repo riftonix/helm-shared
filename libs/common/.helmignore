@@ -27,8 +27,10 @@ CHANGELOG.md
 # Others
 example/
 examples/
+docs/
 .github/
 gcloud_auth_key.json
 create.sh
 README.md
 .gitlab-ci.yml
+*.tgz
