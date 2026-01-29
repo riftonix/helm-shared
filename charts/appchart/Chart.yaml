@@ -1,21 +1,21 @@
 apiVersion: v2
 description: Universal Helm chart for deploy your apps to Kubernetes
 name: appchart
-version: 2.9.1
-maintainers:
-- name: Roman Andreev
-  email: r.andreev@nixys.io
-- name: Anton Zhideev
-  email: a.zhideev@nixys.io
-- name: Evgenii Tereshkov
-  email: evg.krsk@gmail.com
-- name: Sergey Lavrinenko
-  email: s@lavr.me
-- name: Viktor Sokhan
-  email: v.sokhan@nixys.io
-- name: Ruslan Gainanov
-  email: gromrx1@gmail.com
-- name: Artem Danielyan
-  email: a.danielyan@nixys.io
-- name: Roman Emelyanov
-  email: r.emelyanov@nixys.io
+version: 2.9.2
+# maintainers:
+# - name: Roman Andreev
+#   email: r.andreev@nixys.io
+# - name: Anton Zhideev
+#   email: a.zhideev@nixys.io
+# - name: Evgenii Tereshkov
+#   email: evg.krsk@gmail.com
+# - name: Sergey Lavrinenko
+#   email: s@lavr.me
+# - name: Viktor Sokhan
+#   email: v.sokhan@nixys.io
+# - name: Ruslan Gainanov
+#   email: gromrx1@gmail.com
+# - name: Artem Danielyan
+#   email: a.danielyan@nixys.io
+# - name: Roman Emelyanov
+#   email: r.emelyanov@nixys.io
