@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Universal Helm chart for deploy your apps to Kubernetes
 name: appchart
-version: 2.9.2
+version: 2.9.3
 # maintainers:
 # - name: Roman Andreev
 #   email: r.andreev@nixys.io
