@@ -16,7 +16,7 @@ env:
 {{- $mergedEnvs := merge (default dict $v.containerEnvs) (default dict $general.containerEnvs) (default dict $root.containerEnvs) }}
 {{- range $key, $value := $mergedEnvs }}
 - name: {{ $key }}
-  value: {{ $value | quote }}
+  value: {{ include "helpers.tplvalues.render" (dict "value" $value "context" $ctx) | quote }}
 {{- end }}
 {{- end }}
 {{- end }}
