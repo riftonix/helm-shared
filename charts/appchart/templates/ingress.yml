@@ -3,7 +3,7 @@
 apiVersion: {{ include "helpers.capabilities.ingress.apiVersion" $ }}
 kind: Ingress
 metadata:
-  name: {{ include "helpers.app.fullname" (dict "name" ($ing.name | default $host) "context" $) }}
+  name: {{ include "helpers.app.fullname" (dict "name" (include "helpers.tplvalues.render" (dict "value" ($ing.name | default $host) "context" $)) "context" $) }}
   namespace: {{ $.Release.Namespace | quote }}
   labels:
     {{- include "helpers.app.labels" $ | nindent 4 }}
@@ -54,7 +54,7 @@ spec:
     - {{ $host | quote }}
     {{- end }}
     {{- end }}
-    secretName: {{ .tlsName | default (include "helpers.app.fullname" (dict "name" ($ing.name | default $host) "context" $)) }}-tls
+    secretName: {{ .tlsName | default (printf "%s-tls" (include "helpers.app.fullname" (dict "name" (include "helpers.tplvalues.render" (dict "value" ($ing.name | default $host) "context" $)) "context" $))) }}
   {{- end }}
   {{- if .extraTls }}
   {{- include "helpers.tplvalues.render" ( dict "value" .extraTls "context" $ ) | nindent 2 }}
