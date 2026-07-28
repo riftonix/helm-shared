@@ -2,15 +2,13 @@ name: CI
 
 on:
   pull_request:
-    branches: [master]
+  push:
+    branches:
+      - master
 
 jobs:
-  ci-passed:
-    name: CI Passed
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-      - name: CI Passed
-        run: echo "CI passed successfully"
+  verify:
+    uses: riftonix/pipelines/.github/workflows/helm-ci.yaml@master
+    with:
+      base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
+      head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
