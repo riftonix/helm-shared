@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "victoria-metrics values",
+  "description": "Schema for victoria-metrics Helm chart values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Enable rendering for this subchart."
+    },
+    "global": {
+      "type": "object",
+      "default": {},
+      "description": "Compatibility values inherited from umbrella charts. Accepted but ignored by this chart.",
+      "additionalProperties": true
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the chart name used in generated labels."
+    },
+    "commonLabels": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Labels merged into every rendered resource."
+    },
+    "commonAnnotations": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Annotations merged into every rendered resource."
+    },
+    "apiVersions": {
+      "type": "object",
+      "description": "Default API version overrides per supported VictoriaMetrics Operator kind.",
+      "additionalProperties": false,
+      "properties": {
+        "vmAlert": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vmProbe": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vmRule": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vmScrapeConfig": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vmServiceScrape": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vmStaticScrape": {
+          "$ref": "#/definitions/nonEmptyString"
+        }
+      }
+    },
+    "vmAlerts": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VMAlert resources."
+    },
+    "vmProbes": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VMProbe resources."
+    },
+    "vmRules": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VMRule resources."
+    },
+    "vmScrapeConfigs": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VMScrapeConfig resources."
+    },
+    "vmServiceScrapes": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VMServiceScrape resources."
+    },
+    "vmStaticScrapes": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VMStaticScrape resources."
+    }
+  },
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stringMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "freeFormObject": {
+      "type": "object",
+      "description": "Arbitrary VictoriaMetrics Operator payload passed through by the chart.",
+      "additionalProperties": true
+    },
+    "resourceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/nonEmptyString",
+          "description": "Resource name."
+        },
+        "namespace": {
+          "$ref": "#/definitions/nonEmptyString",
+          "description": "Namespace for namespaced resources. Defaults to the release namespace."
+        },
+        "labels": {
+          "$ref": "#/definitions/stringMap",
+          "description": "Resource-specific labels."
+        },
+        "annotations": {
+          "$ref": "#/definitions/stringMap",
+          "description": "Resource-specific annotations."
+        },
+        "apiVersion": {
+          "$ref": "#/definitions/nonEmptyString",
+          "description": "Per-resource API version override."
+        },
+        "spec": {
+          "$ref": "#/definitions/freeFormObject",
+          "description": "Resource spec rendered as-is."
+        },
+        "status": {
+          "$ref": "#/definitions/freeFormObject",
+          "description": "Optional resource status rendered as-is."
+        }
+      }
+    },
+    "resourceMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/resourceItem"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    }
+  }
+}

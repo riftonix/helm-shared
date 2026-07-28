@@ -1,0 +1,16 @@
+apiVersion: v2
+appVersion: 0.25.6
+description: Helm chart for rendering Altinity ClickHouse Operator custom resources
+keywords:
+- clickhouse
+- clickhouse-operator
+- altinity
+- analytics
+- database
+- keeper
+- operator
+- helm
+- universal-chart
+name: clickhouse
+type: application
+version: 1.0.1

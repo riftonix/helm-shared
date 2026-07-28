@@ -1,0 +1,8 @@
+{{ include "elk.renderResources" (dict
+  "root" $
+  "collection" ($.Values.apmservers | default dict)
+  "resourceKey" "apmservers"
+  "kind" "ApmServer"
+  "defaultApiVersion" (include "elk.resolveApiVersion" (dict "root" $ "key" "apmServer" "legacyKey" "eckApmServer" "default" "apm.k8s.elastic.co/v1"))
+  "namespaced" true
+) }}

@@ -1,0 +1,6 @@
+{{ include "envoy-gateway.renderResources" (dict
+  "root" $
+  "collection" ($.Values.envoyExtensionPolicies | default dict)
+  "kind" "EnvoyExtensionPolicy"
+  "defaultApiVersion" $.Values.apiVersions.envoyExtensionPolicy
+) }}

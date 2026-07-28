@@ -1,0 +1,273 @@
+# -- Enable kserve chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts. Accepted but ignored by this chart.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+apiVersions:
+  # -- Default apiVersion for ClusterServingRuntime resources.
+  clusterServingRuntime: serving.kserve.io/v1alpha1
+  # -- Default apiVersion for ClusterStorageContainer resources.
+  clusterStorageContainer: serving.kserve.io/v1alpha1
+  # -- Default apiVersion for InferenceGraph resources.
+  inferenceGraph: serving.kserve.io/v1alpha1
+  # -- Default apiVersion for InferenceService resources.
+  inferenceService: serving.kserve.io/v1beta1
+  # -- Default apiVersion for LocalModelCache resources.
+  localModelCache: serving.kserve.io/v1alpha1
+  # -- Default apiVersion for LocalModelNodeGroup resources.
+  localModelNodeGroup: serving.kserve.io/v1alpha1
+  # -- Default apiVersion for LocalModelNode resources.
+  localModelNode: serving.kserve.io/v1alpha1
+  # -- Default apiVersion for ServingRuntime resources.
+  servingRuntime: serving.kserve.io/v1alpha1
+  # -- Default apiVersion for TrainedModel resources.
+  trainedModel: serving.kserve.io/v1alpha1
+
+# Each map entry supports:
+# - enabled: optional, defaults to true
+# - namespace: optional for namespaced resources, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+# Resource names come from the map keys.
+#
+# The disabled entries below are documentation stubs for helm-docs. They keep the
+# nested shape visible in the generated README while the default chart render stays empty.
+
+# -- ClusterServingRuntime resources to render, keyed by resource name.
+clusterServingRuntimes:
+  example-clusterservingruntime:
+    # -- Set to `true` to render this resource.
+    enabled: false
+    # -- Additional resource labels.
+    labels: {}
+    # -- Additional resource annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: serving.kserve.io/v1alpha1
+    spec:
+      supportedModelFormats:
+        - # -- Supported model format name.
+          name: sklearn
+          # -- Supported model format version.
+          version: "1"
+          # -- Mark this format for autoselection.
+          autoSelect: true
+          # -- Priority used when multiple runtimes support the same format.
+          priority: 1
+      # -- Supported inference protocol versions.
+      protocolVersions:
+        - v1
+        - v2
+      containers:
+        - # -- Runtime container name.
+          name: kserve-container
+          # -- Runtime container image.
+          image: example/runtime:latest
+          # -- Runtime container arguments.
+          args:
+            - --model_name={{.Name}}
+            - --model_dir=/mnt/models
+    # -- Optional synthetic status payload.
+    status: {}
+
+# -- ClusterStorageContainer resources to render, keyed by resource name.
+clusterStorageContainers:
+  example-clusterstoragecontainer:
+    # -- Set to `true` to render this resource.
+    enabled: false
+    labels: {}
+    annotations: {}
+    apiVersion: serving.kserve.io/v1alpha1
+    spec:
+      container:
+        # -- Storage initializer container name.
+        name: storage-initializer
+        # -- Storage initializer image.
+        image: example/storage-initializer:latest
+        # -- Image pull policy for the storage initializer.
+        imagePullPolicy: IfNotPresent
+      supportedUriFormats:
+        - # -- URI prefix handled by this storage container.
+          prefix: s3://
+        - # -- URI regex handled by this storage container.
+          regex: https?://(.+)/(.+)
+      # -- Workload type used by the storage container.
+      workloadType: initContainer
+    status: {}
+
+# -- InferenceGraph resources to render, keyed by resource name.
+inferenceGraphs:
+  example-inferencegraph:
+    # -- Set to `true` to render this resource.
+    enabled: false
+    # -- Resource namespace. Defaults to the Helm release namespace.
+    namespace: default
+    labels: {}
+    annotations: {}
+    apiVersion: serving.kserve.io/v1alpha1
+    spec:
+      nodes:
+        root:
+          # -- Router strategy used by the root node.
+          routerType: Sequence
+          steps:
+            - # -- Downstream service name for a graph step.
+              serviceName: predictor-a
+            - serviceName: predictor-b
+              # -- Optional payload source for the next step.
+              data: $request
+    status: {}
+
+# -- InferenceService resources to render, keyed by resource name.
+inferenceServices:
+  example-inferenceservice:
+    # -- Set to `true` to render this resource.
+    enabled: false
+    # -- Resource namespace. Defaults to the Helm release namespace.
+    namespace: default
+    labels: {}
+    annotations: {}
+    apiVersion: serving.kserve.io/v1beta1
+    spec:
+      predictor:
+        sklearn:
+          # -- Model storage URI for the built-in sklearn predictor.
+          storageUri: s3://models/sklearn
+    status: {}
+
+# -- LocalModelCache resources to render, keyed by resource name.
+localModelCaches:
+  example-localmodelcache:
+    # -- Set to `true` to render this resource.
+    enabled: false
+    labels: {}
+    annotations: {}
+    apiVersion: serving.kserve.io/v1alpha1
+    spec:
+      # -- Estimated cached model size.
+      modelSize: 10Gi
+      # -- Target LocalModelNodeGroup names.
+      nodeGroups:
+        - example-node-group
+      # -- Source model URI.
+      sourceModelUri: s3://models/example
+    status: {}
+
+# -- LocalModelNodeGroup resources to render, keyed by resource name.
+localModelNodeGroups:
+  example-localmodelnodegroup:
+    # -- Set to `true` to render this resource.
+    enabled: false
+    labels: {}
+    annotations: {}
+    apiVersion: serving.kserve.io/v1alpha1
+    spec:
+      persistentVolumeClaimSpec:
+        # -- PersistentVolumeClaim access modes.
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            # -- Requested PVC storage size.
+            storage: 20Gi
+        # -- PVC storage class name.
+        storageClassName: standard
+      persistentVolumeSpec:
+        # -- Backing PersistentVolume access modes.
+        accessModes:
+          - ReadWriteOnce
+        capacity:
+          # -- Backing PersistentVolume storage size.
+          storage: 20Gi
+        hostPath:
+          # -- Host path used by the backing PersistentVolume.
+          path: /var/lib/kserve/localmodel
+        # -- Reclaim policy for the backing PersistentVolume.
+        persistentVolumeReclaimPolicy: Delete
+      # -- Maximum aggregate storage allowed for the node group.
+      storageLimit: 100Gi
+    status: {}
+
+# -- LocalModelNode resources to render, keyed by resource name.
+localModelNodes:
+  example-localmodelnode:
+    # -- Set to `true` to render this resource.
+    enabled: false
+    labels: {}
+    annotations: {}
+    apiVersion: serving.kserve.io/v1alpha1
+    spec:
+      localModels:
+        - # -- Logical model name stored on the node.
+          modelName: example-model
+          # -- Target node group for this local model.
+          nodeGroup: example-node-group
+          # -- Source model URI for this local model.
+          sourceModelUri: s3://models/example
+    status: {}
+
+# -- ServingRuntime resources to render, keyed by resource name.
+servingRuntimes:
+  example-servingruntime:
+    # -- Set to `true` to render this resource.
+    enabled: false
+    # -- Resource namespace. Defaults to the Helm release namespace.
+    namespace: default
+    labels: {}
+    annotations: {}
+    apiVersion: serving.kserve.io/v1alpha1
+    spec:
+      supportedModelFormats:
+        - # -- Supported model format name.
+          name: sklearn
+          # -- Supported model format version.
+          version: "1"
+          # -- Mark this format for autoselection.
+          autoSelect: true
+          # -- Priority used when multiple runtimes support the same format.
+          priority: 1
+      containers:
+        - # -- Runtime container name.
+          name: kserve-container
+          # -- Runtime container image.
+          image: example/runtime:latest
+          # -- Runtime container arguments.
+          args:
+            - --model_name={{.Name}}
+            - --model_dir=/mnt/models
+    status: {}
+
+# -- TrainedModel resources to render, keyed by resource name.
+trainedModels:
+  example-trainedmodel:
+    # -- Set to `true` to render this resource.
+    enabled: false
+    # -- Resource namespace. Defaults to the Helm release namespace.
+    namespace: default
+    labels: {}
+    annotations: {}
+    apiVersion: serving.kserve.io/v1alpha1
+    spec:
+      # -- Target InferenceService name.
+      inferenceService: example-inferenceservice
+      model:
+        # -- Model framework identifier.
+        framework: sklearn
+        # -- Memory request associated with the trained model.
+        memory: 2Gi
+        # -- Model storage URI.
+        storageUri: s3://models/sklearn
+    status: {}

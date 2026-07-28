@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: v1
+description: Helm chart for Kubernetes Gateway API standard resources
+keywords:
+- monitoring
+- api-gateway
+- security
+- helm
+- universal-chart
+name: native-gateway
+type: application
+version: 1.0.6

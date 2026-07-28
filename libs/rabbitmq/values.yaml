@@ -1,0 +1,305 @@
+# -- Enable rabbitmq chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# -- Shared metadata and templating values compatible with umbrella charts.
+generic:
+  # -- Labels merged into every rendered resource after chart labels.
+  labels: {}
+  # -- Annotations merged into every rendered resource after common annotations.
+  annotations: {}
+
+# -- Override these defaults if your cluster uses different RabbitMQ operator API versions.
+apiVersions:
+  # -- API version used for RabbitmqCluster manifests.
+  rabbitmqCluster: rabbitmq.com/v1beta1
+  # -- API version used for Queue manifests.
+  queue: rabbitmq.com/v1beta1
+  # -- API version used for Policy manifests.
+  policy: rabbitmq.com/v1beta1
+  # -- API version used for Exchange manifests.
+  exchange: rabbitmq.com/v1beta1
+  # -- API version used for Binding manifests.
+  binding: rabbitmq.com/v1beta1
+  # -- API version used for User manifests.
+  user: rabbitmq.com/v1beta1
+  # -- API version used for Permission manifests.
+  permission: rabbitmq.com/v1beta1
+  # -- API version used for Vhost manifests.
+  vhost: rabbitmq.com/v1beta1
+  # -- API version used for Federation manifests.
+  federation: rabbitmq.com/v1beta1
+  # -- API version used for Shovel manifests.
+  shovel: rabbitmq.com/v1beta1
+
+# Each map entry supports:
+# - the top-level map key becomes metadata.name by default
+# - name: optional explicit metadata.name override
+# - namespace: optional, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec rendered as-is
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+
+# -- RabbitmqCluster resources keyed by resource name.
+rabbitmqclusters:
+  # -- Example key ignored by templates and used only for helm-docs output.
+  __helm_docs_example__:
+    # -- Optional namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Optional labels merged on top of common chart labels.
+    labels: {}
+    # -- Optional annotations merged on top of common chart annotations.
+    annotations: {}
+    # -- Optional per-resource apiVersion override.
+    apiVersion: rabbitmq.com/v1beta1
+    # -- Arbitrary RabbitmqCluster spec rendered as-is.
+    spec:
+      # -- Number of RabbitMQ replicas. Odd numbers are recommended.
+      replicas: 1
+      # -- Container image used for the managed RabbitMQ server Pods.
+      image: rabbitmq:4.1.3-management
+      # -- Persistence settings for RabbitMQ data volumes.
+      persistence:
+        # -- Requested persistent volume size. Use `0` to disable persistence in ephemeral environments.
+        storage: 10Gi
+      # -- Service configuration exposed by the Cluster Operator.
+      service:
+        # -- Kubernetes Service type for the generated RabbitMQ service.
+        type: ClusterIP
+      # -- Pod resource requests and limits.
+      resources:
+        requests:
+          # -- Requested CPU for RabbitMQ Pods.
+          cpu: 250m
+          # -- Requested memory for RabbitMQ Pods.
+          memory: 512Mi
+        limits:
+          # -- CPU limit for RabbitMQ Pods.
+          cpu: 500m
+          # -- Memory limit for RabbitMQ Pods.
+          memory: 1Gi
+      # -- RabbitMQ-specific configuration managed by the operator.
+      rabbitmq:
+        # -- Additional RabbitMQ plugins to enable on top of operator defaults.
+        additionalPlugins:
+          - rabbitmq_shovel
+          - rabbitmq_federation
+        # -- Additional lines appended to `rabbitmq.conf`.
+        additionalConfig: |
+          cluster_partition_handling = autoheal
+      # -- Optional TLS configuration for client-facing listeners.
+      tls:
+        # -- Secret containing `tls.crt` and `tls.key`.
+        secretName: rabbitmq-server-tls
+    # -- Optional raw status block, mostly useful for fixtures.
+    status: {}
+
+# -- Queue resources keyed by resource name.
+queues:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: rabbitmq.com/v1beta1
+    spec:
+      # -- RabbitMQ queue name.
+      name: orders
+      # -- RabbitMQ virtual host. Defaults to `/` when omitted by the operator.
+      vhost: app
+      # -- Whether the queue survives broker restarts.
+      durable: true
+      # -- Whether the queue is deleted automatically when no consumers remain.
+      autoDelete: false
+      # -- Optional queue arguments accepted by RabbitMQ.
+      arguments:
+        x-queue-type: quorum
+      # -- Deletion behavior when the Kubernetes resource is removed.
+      deletionPolicy: delete
+      # -- Reference to the target RabbitmqCluster.
+      rabbitmqClusterReference:
+        # -- Name of the RabbitmqCluster or connection secret owner.
+        name: example-rabbit
+    status: {}
+
+# -- Policy resources keyed by resource name.
+policies:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: rabbitmq.com/v1beta1
+    spec:
+      # -- RabbitMQ policy name.
+      name: queue-ttl
+      # -- Target virtual host.
+      vhost: app
+      # -- Regex pattern used to select matching queues or exchanges.
+      pattern: "^orders$"
+      # -- RabbitMQ object type the policy applies to.
+      applyTo: queues
+      # -- Policy definition payload sent to RabbitMQ.
+      definition:
+        message-ttl: 60000
+      rabbitmqClusterReference:
+        name: example-rabbit
+    status: {}
+
+# -- Exchange resources keyed by resource name.
+exchanges:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: rabbitmq.com/v1beta1
+    spec:
+      # -- RabbitMQ exchange name.
+      name: orders
+      # -- Exchange type supported by RabbitMQ.
+      type: direct
+      # -- Target virtual host.
+      vhost: app
+      # -- Whether the exchange survives broker restarts.
+      durable: true
+      # -- Whether the exchange is deleted automatically.
+      autoDelete: false
+      rabbitmqClusterReference:
+        name: example-rabbit
+    status: {}
+
+# -- Binding resources keyed by resource name.
+bindings:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: rabbitmq.com/v1beta1
+    spec:
+      # -- Source exchange name.
+      source: orders
+      # -- Destination queue or exchange name.
+      destination: orders
+      # -- Destination object type.
+      destinationType: queue
+      # -- Target virtual host.
+      vhost: app
+      # -- Optional routing key for the binding.
+      routingKey: orders.created
+      rabbitmqClusterReference:
+        name: example-rabbit
+    status: {}
+
+# -- User resources keyed by resource name.
+users:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: rabbitmq.com/v1beta1
+    spec:
+      # -- RabbitMQ user tags such as `management`, `policymaker`, or `administrator`.
+      tags:
+        - management
+      # -- Optional secret with `username` and `password` or `passwordHash`.
+      importCredentialsSecret:
+        # -- Secret name in the same namespace as the User resource.
+        name: rabbitmq-app-user
+      rabbitmqClusterReference:
+        name: example-rabbit
+    status: {}
+
+# -- Permission resources keyed by resource name.
+permissions:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: rabbitmq.com/v1beta1
+    spec:
+      # -- Target RabbitMQ user name.
+      user: app-user
+      # -- Target virtual host.
+      vhost: app
+      # -- Regex-based RabbitMQ permissions.
+      permissions:
+        configure: ".*"
+        write: ".*"
+        read: ".*"
+      rabbitmqClusterReference:
+        name: example-rabbit
+    status: {}
+
+# -- Vhost resources keyed by resource name.
+vhosts:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: rabbitmq.com/v1beta1
+    spec:
+      # -- RabbitMQ virtual host name.
+      name: app
+      # -- Deletion behavior when the Kubernetes resource is removed.
+      deletionPolicy: delete
+      rabbitmqClusterReference:
+        name: example-rabbit
+    status: {}
+
+# -- Federation resources keyed by resource name.
+federations:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: rabbitmq.com/v1beta1
+    spec:
+      # -- RabbitMQ federation upstream name.
+      name: upstream-a
+      # -- Target virtual host.
+      vhost: app
+      # -- Secret with the `uri` field used for the upstream.
+      uriSecret:
+        # -- Secret name in the same namespace as the Federation resource.
+        name: rabbitmq-federation-uri
+      # -- Upstream acknowledgement mode.
+      ackMode: on-confirm
+      rabbitmqClusterReference:
+        name: example-rabbit
+    status: {}
+
+# -- Shovel resources keyed by resource name.
+shovels:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: rabbitmq.com/v1beta1
+    spec:
+      # -- RabbitMQ shovel name.
+      name: shovel-orders
+      # -- Target virtual host.
+      vhost: app
+      # -- Secret with `srcUri` and `destUri`.
+      uriSecret:
+        # -- Secret name in the same namespace as the Shovel resource.
+        name: rabbitmq-shovel-uri
+      # -- Source queue consumed by the shovel.
+      srcQueue: orders
+      # -- Destination queue published by the shovel.
+      destQueue: orders-copy
+      rabbitmqClusterReference:
+        name: example-rabbit
+    status: {}

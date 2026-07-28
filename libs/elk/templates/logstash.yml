@@ -1,0 +1,8 @@
+{{ include "elk.renderResources" (dict
+  "root" $
+  "collection" ($.Values.logstashes | default dict)
+  "resourceKey" "logstashes"
+  "kind" "Logstash"
+  "defaultApiVersion" (include "elk.resolveApiVersion" (dict "root" $ "key" "logstash" "legacyKey" "eckLogstash" "default" "logstash.k8s.elastic.co/v1alpha1"))
+  "namespaced" true
+) }}

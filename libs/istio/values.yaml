@@ -1,0 +1,192 @@
+# -- Enable istio chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# -- Shared metadata and templating values compatible with appchart.
+generic:
+  labels: {}
+  annotations: {}
+
+# Override these defaults if your cluster uses different Istio API versions.
+apiVersions:
+  authorizationPolicy: security.istio.io/v1
+  destinationRule: networking.istio.io/v1
+  envoyFilter: networking.istio.io/v1alpha3
+  gateway: networking.istio.io/v1
+  peerAuthentication: security.istio.io/v1
+  proxyConfig: networking.istio.io/v1beta1
+  requestAuthentication: security.istio.io/v1
+  serviceEntry: networking.istio.io/v1
+  sidecar: networking.istio.io/v1
+  telemetry: telemetry.istio.io/v1
+  virtualService: networking.istio.io/v1
+  wasmPlugin: extensions.istio.io/v1alpha1
+  workloadEntry: networking.istio.io/v1
+  workloadGroup: networking.istio.io/v1
+
+# Each map entry supports:
+# - the top-level map key becomes metadata.name by default
+# - name: optional explicit metadata.name override
+# - namespace: optional, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec rendered as-is
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+# Legacy compatibility for the previous chart contract is kept for:
+# - gateways
+# - virtualservices
+# - destinationrules
+# - authorizationpolicies
+
+# -- AuthorizationPolicy resources keyed by resource name.
+authorizationpolicies:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: security.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- DestinationRule resources keyed by resource name.
+destinationrules:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: networking.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- EnvoyFilter resources keyed by resource name.
+envoyfilters:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: networking.istio.io/v1alpha3
+    spec: {}
+    status: {}
+
+# -- Gateway resources keyed by resource name.
+gateways:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: networking.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- PeerAuthentication resources keyed by resource name.
+peerauthentications:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: security.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- ProxyConfig resources keyed by resource name.
+proxyconfigs:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: networking.istio.io/v1beta1
+    spec: {}
+    status: {}
+
+# -- RequestAuthentication resources keyed by resource name.
+requestauthentications:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: security.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- ServiceEntry resources keyed by resource name.
+serviceentries:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: networking.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- Sidecar resources keyed by resource name.
+sidecars:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: networking.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- Telemetry resources keyed by resource name.
+telemetries:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: telemetry.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- VirtualService resources keyed by resource name.
+virtualservices:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: networking.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- WasmPlugin resources keyed by resource name.
+wasmplugins:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: extensions.istio.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- WorkloadEntry resources keyed by resource name.
+workloadentries:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: networking.istio.io/v1
+    spec: {}
+    status: {}
+
+# -- WorkloadGroup resources keyed by resource name.
+workloadgroups:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: networking.istio.io/v1
+    spec: {}
+    status: {}

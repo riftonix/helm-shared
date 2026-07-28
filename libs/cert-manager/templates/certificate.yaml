@@ -1,0 +1,1 @@
+{{ include "cert-manager.renderResourceCollection" (dict "root" $ "items" .Values.certificates "resourceKey" "certificates" "defaultApiVersion" $.Values.apiVersions.certificate "kind" "Certificate" "namespaced" true) }}

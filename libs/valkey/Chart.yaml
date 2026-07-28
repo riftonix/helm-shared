@@ -1,0 +1,14 @@
+apiVersion: v2
+appVersion: v1alpha1
+description: Helm chart for rendering Valkey Operator custom resources
+keywords:
+- valkey
+- valkey-operator
+- cache
+- database
+- custom-resources
+- helm
+- universal-chart
+name: valkey
+type: application
+version: 1.0.0

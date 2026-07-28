@@ -1,0 +1,7 @@
+{{ include "cloudnativepg.renderResources" (dict
+  "root" $
+  "collection" ($.Values.databases | default dict)
+  "kind" "Database"
+  "defaultApiVersion" $.Values.apiVersions.database
+  "namespaced" true
+) }}

@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: v1alpha1
+description: Helm chart for Kubernetes KEDA custom resources
+keywords:
+- helm
+- universal-chart
+name: keda
+type: application
+version: 1.0.4

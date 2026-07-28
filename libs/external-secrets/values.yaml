@@ -1,0 +1,386 @@
+# -- Enable external-secrets chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts. Accepted but ignored by this chart.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Optional release prefix used for generated names.
+releasePrefix: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# The defaults below are aligned with the External Secrets Operator CRD bundle.
+# Override any entry if your cluster serves a different group/version combination.
+apiVersions:
+  # -- Default apiVersion for ExternalSecret resources.
+  externalSecret: external-secrets.io/v1
+  # -- Default apiVersion for ClusterExternalSecret resources.
+  clusterExternalSecret: external-secrets.io/v1
+  # -- Default apiVersion for SecretStore resources.
+  secretStore: external-secrets.io/v1
+  # -- Default apiVersion for ClusterSecretStore resources.
+  clusterSecretStore: external-secrets.io/v1
+  # -- Default apiVersion for PushSecret resources.
+  pushSecret: external-secrets.io/v1alpha1
+  # -- Default apiVersion for ClusterPushSecret resources.
+  clusterPushSecret: external-secrets.io/v1alpha1
+  # -- Default apiVersion for ACRAccessToken resources.
+  acrAccessToken: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for CloudsmithAccessToken resources.
+  cloudsmithAccessToken: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for ClusterGenerator resources.
+  clusterGenerator: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for ECRAuthorizationToken resources.
+  ecrAuthorizationToken: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for Fake resources.
+  fake: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for GCRAccessToken resources.
+  gcrAccessToken: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for GeneratorState resources.
+  generatorState: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for GithubAccessToken resources.
+  githubAccessToken: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for Grafana resources.
+  grafana: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for MFA resources.
+  mfa: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for Password resources.
+  password: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for QuayAccessToken resources.
+  quayAccessToken: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for SSHKey resources.
+  sshKey: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for STSSessionToken resources.
+  stsSessionToken: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for UUID resources.
+  uuid: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for VaultDynamicSecret resources.
+  vaultDynamicSecret: generators.external-secrets.io/v1alpha1
+  # -- Default apiVersion for Webhook resources.
+  webhook: generators.external-secrets.io/v1alpha1
+
+# Cross-item spec defaults, merged into spec of every resource of the matching kind.
+# Per-item spec fields always win over generic defaults (mustMergeOverwrite, item on top).
+# Keep in mind that arrays (data, dataFrom, ...) are replaced wholesale by the item, not merged.
+generic:
+  # -- Default spec fragment merged into every ExternalSecret.
+  externalSecret: {}
+  # -- Default spec fragment merged into every ClusterExternalSecret.
+  clusterExternalSecret: {}
+  # -- Default spec fragment merged into every SecretStore.
+  secretStore: {}
+  # -- Default spec fragment merged into every ClusterSecretStore.
+  clusterSecretStore: {}
+  # -- Default spec fragment merged into every PushSecret.
+  pushSecret: {}
+  # -- Default spec fragment merged into every ClusterPushSecret.
+  clusterPushSecret: {}
+  # -- Default spec fragment merged into every ACRAccessToken.
+  acrAccessToken: {}
+  # -- Default spec fragment merged into every CloudsmithAccessToken.
+  cloudsmithAccessToken: {}
+  # -- Default spec fragment merged into every ClusterGenerator.
+  clusterGenerator: {}
+  # -- Default spec fragment merged into every ECRAuthorizationToken.
+  ecrAuthorizationToken: {}
+  # -- Default spec fragment merged into every Fake.
+  fake: {}
+  # -- Default spec fragment merged into every GCRAccessToken.
+  gcrAccessToken: {}
+  # -- Default spec fragment merged into every GeneratorState.
+  generatorState: {}
+  # -- Default spec fragment merged into every GithubAccessToken.
+  githubAccessToken: {}
+  # -- Default spec fragment merged into every Grafana.
+  grafana: {}
+  # -- Default spec fragment merged into every MFA.
+  mfa: {}
+  # -- Default spec fragment merged into every Password.
+  password: {}
+  # -- Default spec fragment merged into every QuayAccessToken.
+  quayAccessToken: {}
+  # -- Default spec fragment merged into every SSHKey.
+  sshKey: {}
+  # -- Default spec fragment merged into every STSSessionToken.
+  stsSessionToken: {}
+  # -- Default spec fragment merged into every UUID.
+  uuid: {}
+  # -- Default spec fragment merged into every VaultDynamicSecret.
+  vaultDynamicSecret: {}
+  # -- Default spec fragment merged into every Webhook.
+  webhook: {}
+
+# Each resource map entry supports:
+# - the map key: required resource name (becomes metadata.name, optionally with releasePrefix)
+# - namespace: optional for namespaced resources, defaults to the release namespace
+# - labels: optional, merged over commonLabels and chart labels
+# - annotations: optional, merged over commonAnnotations
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec; merged on top of generic.<kind>
+# - status: optional raw status block for fixtures and synthetic manifests
+# - enabled: if false, the entry is skipped
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+
+# -- ExternalSecret resources keyed by resource name.
+# @default -- {}
+externalSecrets:
+  __helm_docs_example__:
+    # -- Namespace for the ExternalSecret. Defaults to the Helm release namespace.
+    # @default -- release namespace
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    # @default -- apiVersions.externalSecret
+    apiVersion: external-secrets.io/v1
+    # -- Resource spec rendered as-is, merged on top of generic.externalSecret.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- ClusterExternalSecret resources keyed by resource name.
+# @default -- {}
+clusterExternalSecrets:
+  __helm_docs_example__:
+    # -- Cluster-scoped: namespace is ignored.
+    labels: {}
+    annotations: {}
+    apiVersion: external-secrets.io/v1
+    spec: {}
+    status: {}
+
+# -- SecretStore resources keyed by resource name.
+# @default -- {}
+secretStores:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: external-secrets.io/v1
+    spec: {}
+    status: {}
+
+# -- ClusterSecretStore resources keyed by resource name.
+# @default -- {}
+clusterSecretStores:
+  __helm_docs_example__:
+    labels: {}
+    annotations: {}
+    apiVersion: external-secrets.io/v1
+    spec: {}
+    status: {}
+
+# -- PushSecret resources keyed by resource name.
+# @default -- {}
+pushSecrets:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- ClusterPushSecret resources keyed by resource name.
+# @default -- {}
+clusterPushSecrets:
+  __helm_docs_example__:
+    labels: {}
+    annotations: {}
+    apiVersion: external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- ACRAccessToken resources keyed by resource name.
+# @default -- {}
+acrAccessTokens:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- CloudsmithAccessToken resources keyed by resource name.
+# @default -- {}
+cloudsmithAccessTokens:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- ClusterGenerator resources keyed by resource name.
+# @default -- {}
+clusterGenerators:
+  __helm_docs_example__:
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- ECRAuthorizationToken resources keyed by resource name.
+# @default -- {}
+ecrAuthorizationTokens:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- Fake resources keyed by resource name.
+# @default -- {}
+fakes:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- GCRAccessToken resources keyed by resource name.
+# @default -- {}
+gcrAccessTokens:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- GeneratorState resources keyed by resource name.
+# @default -- {}
+generatorStates:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- GithubAccessToken resources keyed by resource name.
+# @default -- {}
+githubAccessTokens:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- Grafana resources keyed by resource name.
+# @default -- {}
+grafanas:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- MFA resources keyed by resource name.
+# @default -- {}
+mfas:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- Password resources keyed by resource name.
+# @default -- {}
+passwords:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- QuayAccessToken resources keyed by resource name.
+# @default -- {}
+quayAccessTokens:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- SSHKey resources keyed by resource name.
+# @default -- {}
+sshKeys:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- STSSessionToken resources keyed by resource name.
+# @default -- {}
+stsSessionTokens:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- UUID resources keyed by resource name.
+# @default -- {}
+uuids:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- VaultDynamicSecret resources keyed by resource name.
+# @default -- {}
+vaultDynamicSecrets:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}
+
+# -- Webhook resources keyed by resource name.
+# @default -- {}
+webhooks:
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    apiVersion: generators.external-secrets.io/v1alpha1
+    spec: {}
+    status: {}

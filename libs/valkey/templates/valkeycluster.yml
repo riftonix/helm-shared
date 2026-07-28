@@ -1,0 +1,8 @@
+{{ include "valkey.renderResources" (dict
+  "root" $
+  "collection" ($.Values.valkeyclusters | default dict)
+  "resourceKey" "valkeyclusters"
+  "kind" "ValkeyCluster"
+  "defaultApiVersion" (include "valkey.resolveApiVersion" (dict "root" $ "key" "valkeyCluster" "legacyKey" "valkeyCluster" "default" "valkey.io/v1alpha1"))
+  "namespaced" true
+) }}

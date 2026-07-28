@@ -1,0 +1,17 @@
+apiVersion: v2
+appVersion: 3.3.2
+description: Helm chart for rendering Elastic Cloud on Kubernetes custom resources
+keywords:
+- elastic
+- cloud-on-k8s
+- eck
+- elasticsearch
+- kibana
+- apm
+- beats
+- logstash
+- helm
+- universal-chart
+name: elk
+type: application
+version: 1.0.0

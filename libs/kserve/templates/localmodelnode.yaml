@@ -1,0 +1,1 @@
+{{ include "kserve.renderResourceCollection" (dict "root" $ "items" .Values.localModelNodes "resourceKey" "localModelNodes" "defaultApiVersion" $.Values.apiVersions.localModelNode "kind" "LocalModelNode" "namespaced" false) }}

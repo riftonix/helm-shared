@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: 1.16.0
+description: Helm chart for Vault Secret Operator resources
+keywords:
+- vault
+- secrets
+- security
+- helm
+- universal-chart
+name: vault-secret-operator
+type: application
+version: 1.0.5

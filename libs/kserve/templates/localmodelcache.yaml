@@ -1,0 +1,1 @@
+{{ include "kserve.renderResourceCollection" (dict "root" $ "items" .Values.localModelCaches "resourceKey" "localModelCaches" "defaultApiVersion" $.Values.apiVersions.localModelCache "kind" "LocalModelCache" "namespaced" false) }}

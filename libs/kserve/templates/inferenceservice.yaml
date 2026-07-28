@@ -1,0 +1,1 @@
+{{ include "kserve.renderResourceCollection" (dict "root" $ "items" .Values.inferenceServices "resourceKey" "inferenceServices" "defaultApiVersion" $.Values.apiVersions.inferenceService "kind" "InferenceService" "namespaced" true) }}

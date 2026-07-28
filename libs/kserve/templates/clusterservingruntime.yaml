@@ -1,0 +1,1 @@
+{{ include "kserve.renderResourceCollection" (dict "root" $ "items" .Values.clusterServingRuntimes "resourceKey" "clusterServingRuntimes" "defaultApiVersion" $.Values.apiVersions.clusterServingRuntime "kind" "ClusterServingRuntime" "namespaced" false) }}

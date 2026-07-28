@@ -1,0 +1,14 @@
+apiVersion: v2
+appVersion: v1beta1
+description: Helm chart for rendering VictoriaMetrics Operator custom resources
+keywords:
+- monitoring
+- vmscrape
+- vmrules
+- observability
+- security
+- helm
+- universal-chart
+name: victoria-metrics
+type: application
+version: 1.0.4

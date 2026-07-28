@@ -14,23 +14,11 @@
 *.swp
 *.bak
 *.tmp
+*.orig
 *~
 # Various IDEs
 .project
 .idea/
 *.tmproj
 .vscode/
-# img folder
-img/
-# Changelog
-CHANGELOG.md
-# Others
-example/
-examples/
-docs/
-.github/
-gcloud_auth_key.json
-create.sh
-README.md
-.gitlab-ci.yml
-*.tgz
+.codex

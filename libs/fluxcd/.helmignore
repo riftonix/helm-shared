@@ -1,0 +1,17 @@
+__snapshot__/
+.cache/
+.idea/
+docs/
+samples/
+scripts/
+tests/
+.gitignore
+.gitlab-ci.yml
+.helmdocsignore
+.git*
+.pre-commit-config.yaml
+Makefile
+tmp
+values.docs.yaml
+values.yaml.example
+*.tgz

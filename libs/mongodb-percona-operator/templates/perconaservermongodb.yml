@@ -1,0 +1,8 @@
+{{ include "mongodb-percona-operator.renderResources" (dict
+  "root" $
+  "collection" ($.Values.perconaServerMongoDBs | default dict)
+  "resourceKey" "perconaServerMongoDBs"
+  "kind" "PerconaServerMongoDB"
+  "defaultApiVersion" (include "mongodb-percona-operator.resolveApiVersion" (dict "root" $ "key" "perconaServerMongoDB" "default" "psmdb.percona.com/v1"))
+  "namespaced" true
+) }}

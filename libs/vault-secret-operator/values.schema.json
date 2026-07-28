@@ -1,0 +1,397 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "vault-secret-operator values",
+  "description": "Schema for vault-secret-operator Helm chart values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Enable rendering for this subchart."
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the generated base name."
+    },
+    "releasePrefix": {
+      "type": "string",
+      "description": "Optional prefix used for generated names."
+    },
+    "commonLabels": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Labels merged into every rendered resource."
+    },
+    "commonAnnotations": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Annotations merged into every rendered resource."
+    },
+    "global": {
+      "$ref": "#/definitions/freeFormObject",
+      "description": "Global values available to tpl-rendered strings."
+    },
+    "apiVersions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hcpAuth": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "hcpVaultSecretsApp": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "secretTransformation": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vaultAuth": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vaultAuthGlobal": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vaultConnection": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vaultDynamicSecret": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vaultPKISecret": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "vaultStaticSecret": {
+          "$ref": "#/definitions/nonEmptyString"
+        }
+      }
+    },
+    "hcpAuths": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of HCPAuth resources keyed by resource name."
+    },
+    "hcpVaultSecretsApps": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of HCPVaultSecretsApp resources keyed by resource name."
+    },
+    "secretTransformations": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of SecretTransformation resources keyed by resource name."
+    },
+    "vaultAuth": {
+      "$ref": "#/definitions/vaultAuth",
+      "description": "Deprecated single VaultAuth resource configuration kept for backward compatibility."
+    },
+    "vaultAuths": {
+      "$ref": "#/definitions/vaultAuthMap",
+      "description": "Map of VaultAuth resources keyed by resource name."
+    },
+    "vaultAuthGlobals": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VaultAuthGlobal resources keyed by resource name."
+    },
+    "vaultConnections": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VaultConnection resources keyed by resource name."
+    },
+    "vaultDynamicSecrets": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VaultDynamicSecret resources keyed by resource name."
+    },
+    "vaultPKISecrets": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of VaultPKISecret resources keyed by resource name."
+    },
+    "vaultStaticSecrets": {
+      "$ref": "#/definitions/vaultStaticSecretMap",
+      "description": "Map of VaultStaticSecret resources keyed by resource name."
+    }
+  },
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stringMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "stringArray": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      }
+    },
+    "freeFormObject": {
+      "type": "object",
+      "default": {},
+      "additionalProperties": true
+    },
+    "resourceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "labels": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "annotations": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "apiVersion": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "spec": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "status": {
+          "$ref": "#/definitions/freeFormObject"
+        }
+      }
+    },
+    "nullableResourceItem": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/resourceItem"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resourceMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "$ref": "#/definitions/nonEmptyString"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/nullableResourceItem"
+      }
+    },
+    "rolloutRestartTarget": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "$ref": "#/definitions/nonEmptyString"
+            },
+            "name": {
+              "$ref": "#/definitions/nonEmptyString"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        }
+      ]
+    },
+    "vaultAuth": {
+      "type": "object",
+      "default": {},
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "labels": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "annotations": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "vaultConnectionRef": {
+          "type": "string"
+        },
+        "vaultAuthGlobalRef": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "vaultNamespace": {
+          "type": "string"
+        },
+        "allowedNamespaces": {
+          "$ref": "#/definitions/stringArray"
+        },
+        "method": {
+          "type": "string"
+        },
+        "mount": {
+          "type": "string"
+        },
+        "params": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "headers": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "role": {
+          "type": "string"
+        },
+        "serviceAccount": {
+          "type": "string"
+        },
+        "kubernetes": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "appRole": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "jwt": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "aws": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "gcp": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "storageEncryption": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "spec": {
+          "$ref": "#/definitions/freeFormObject"
+        }
+      }
+    },
+    "nullableVaultAuth": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/vaultAuth"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "vaultStaticSecret": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "labels": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "annotations": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "vaultAuthRef": {
+          "type": "string"
+        },
+        "vaultNamespace": {
+          "type": "string"
+        },
+        "vaultType": {
+          "type": "string"
+        },
+        "mount": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "refreshAfter": {
+          "type": "string"
+        },
+        "hmacSecretData": {
+          "type": "boolean"
+        },
+        "destSec": {
+          "type": "string"
+        },
+        "create": {
+          "type": "boolean"
+        },
+        "overwrite": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string"
+        },
+        "destinationType": {
+          "type": "string"
+        },
+        "destinationLabels": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "destinationAnnotations": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "transformation": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "destination": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "syncConfig": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "restartTargets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/rolloutRestartTarget"
+          }
+        },
+        "spec": {
+          "$ref": "#/definitions/freeFormObject"
+        }
+      }
+    },
+    "nullableVaultStaticSecret": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/vaultStaticSecret"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "vaultAuthMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "$ref": "#/definitions/nonEmptyString"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/nullableVaultAuth"
+      }
+    },
+    "vaultStaticSecretMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "$ref": "#/definitions/nonEmptyString"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/nullableVaultStaticSecret"
+      }
+    }
+  }
+}

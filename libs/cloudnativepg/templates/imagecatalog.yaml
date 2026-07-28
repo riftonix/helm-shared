@@ -1,0 +1,7 @@
+{{ include "cloudnativepg.renderResources" (dict
+  "root" $
+  "collection" ($.Values.imageCatalogs | default dict)
+  "kind" "ImageCatalog"
+  "defaultApiVersion" $.Values.apiVersions.imageCatalog
+  "namespaced" true
+) }}

@@ -1,0 +1,8 @@
+{{ include "elk.renderResources" (dict
+  "root" $
+  "collection" ($.Values.agents | default dict)
+  "resourceKey" "agents"
+  "kind" "Agent"
+  "defaultApiVersion" (include "elk.resolveApiVersion" (dict "root" $ "key" "agent" "legacyKey" "eckAgent" "default" "agent.k8s.elastic.co/v1alpha1"))
+  "namespaced" true
+) }}

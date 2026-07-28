@@ -1,0 +1,7 @@
+{{ include "argocd.renderResources" (dict
+  "root" $
+  "collection" ($.Values.appProjects | default dict)
+  "kind" "AppProject"
+  "defaultApiVersion" $.Values.apiVersions.appProject
+  "namespaced" true
+) }}

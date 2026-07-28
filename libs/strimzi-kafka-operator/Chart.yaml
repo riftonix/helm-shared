@@ -1,0 +1,18 @@
+apiVersion: v2
+appVersion: 1.0.0
+description: Helm chart for rendering Strimzi Kafka Operator custom resources
+keywords:
+- strimzi
+- kafka
+- kafka-operator
+- kafka-connect
+- kafka-topic
+- kafka-user
+- kafka-node-pool
+- kafka-bridge
+- kafka-rebalance
+- helm
+- universal-chart
+name: strimzi-kafka-operator
+type: application
+version: 1.0.0

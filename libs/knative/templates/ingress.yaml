@@ -1,0 +1,1 @@
+{{ include "knative.renderResourceCollection" (dict "root" $ "items" .Values.ingresses "resourceKey" "ingresses" "defaultApiVersion" $.Values.apiVersions.ingress "kind" "Ingress" "namespaced" true) }}

@@ -1,0 +1,288 @@
+enabled: true
+
+# -- Override the generated base name if needed.
+nameOverride: ""
+
+# -- Optional release prefix used for generated names.
+releasePrefix: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+# -- Extra annotations applied to every rendered resource in addition to Helm hook annotations.
+commonAnnotations: {}
+
+# -- Arbitrary global values available to tpl-rendered strings.
+global: {}
+
+apiVersions:
+  # -- Default apiVersion for HCPAuth resources.
+  hcpAuth: secrets.hashicorp.com/v1beta1
+  # -- Default apiVersion for HCPVaultSecretsApp resources.
+  hcpVaultSecretsApp: secrets.hashicorp.com/v1beta1
+  # -- Default apiVersion for SecretTransformation resources.
+  secretTransformation: secrets.hashicorp.com/v1beta1
+  # -- Default apiVersion for VaultAuth resources.
+  vaultAuth: secrets.hashicorp.com/v1beta1
+  # -- Default apiVersion for VaultAuthGlobal resources.
+  vaultAuthGlobal: secrets.hashicorp.com/v1beta1
+  # -- Default apiVersion for VaultConnection resources.
+  vaultConnection: secrets.hashicorp.com/v1beta1
+  # -- Default apiVersion for VaultDynamicSecret resources.
+  vaultDynamicSecret: secrets.hashicorp.com/v1beta1
+  # -- Default apiVersion for VaultPKISecret resources.
+  vaultPKISecret: secrets.hashicorp.com/v1beta1
+  # -- Default apiVersion for VaultStaticSecret resources.
+  vaultStaticSecret: secrets.hashicorp.com/v1beta1
+
+# Each resource map entry supports:
+# - the top-level map key becomes metadata.name
+# - namespace: optional, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec rendered as-is
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+
+# -- Generic HCPAuth resources keyed by resource name.
+# @default -- {}
+hcpAuths:
+  __helm_docs_example__:
+    # -- Namespace for the HCPAuth resource. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: secrets.hashicorp.com/v1beta1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- Generic HCPVaultSecretsApp resources keyed by resource name.
+# @default -- {}
+hcpVaultSecretsApps:
+  __helm_docs_example__:
+    # -- Namespace for the HCPVaultSecretsApp resource. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: secrets.hashicorp.com/v1beta1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- Generic SecretTransformation resources keyed by resource name.
+# @default -- {}
+secretTransformations:
+  __helm_docs_example__:
+    # -- Namespace for the SecretTransformation resource. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: secrets.hashicorp.com/v1beta1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- Deprecated single VaultAuth resource configuration kept for backward compatibility.
+# @default -- {}
+vaultAuth: {}
+  # name: app-auth
+  # namespace: app
+  # labels: {}
+  # annotations: {}
+  # apiVersion: secrets.hashicorp.com/v1beta1
+  # vaultConnectionRef: default
+  # vaultAuthGlobalRef: {}
+  # vaultNamespace: team-a
+  # allowedNamespaces: []
+  # method: kubernetes
+  # mount: kubernetes
+  # params: {}
+  # headers: {}
+  # role: app-role
+  # serviceAccount: default
+  # kubernetes: {}
+  # appRole: {}
+  # jwt: {}
+  # aws: {}
+  # gcp: {}
+  # storageEncryption: {}
+  # spec: {}
+
+# -- VaultAuth resources keyed by resource name.
+vaultAuths:
+  __helm_docs_example__:
+    # -- Namespace for the VaultAuth resource. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: secrets.hashicorp.com/v1beta1
+    # -- VaultConnection reference.
+    vaultConnectionRef: default
+    # -- Optional VaultAuthGlobal reference block rendered as `spec.vaultAuthGlobalRef`.
+    vaultAuthGlobalRef: {}
+    # -- Vault Enterprise namespace used for authentication. Rendered as `spec.namespace`.
+    vaultNamespace: ""
+    # -- Namespaces allowed to reference this VaultAuth.
+    allowedNamespaces: []
+    # -- Vault auth method.
+    method: kubernetes
+    # -- Vault auth mount.
+    mount: kubernetes
+    # -- Optional auth request params rendered as `spec.params`.
+    params: {}
+    # -- Optional auth request headers rendered as `spec.headers`.
+    headers: {}
+    # -- Vault role.
+    role: app-role
+    # -- Kubernetes ServiceAccount used by VSO.
+    serviceAccount: default
+    # -- Optional Kubernetes auth config rendered as `spec.kubernetes`.
+    kubernetes: {}
+    # -- Optional AppRole auth config rendered as `spec.appRole`.
+    appRole: {}
+    # -- Optional JWT auth config rendered as `spec.jwt`.
+    jwt: {}
+    # -- Optional AWS auth config rendered as `spec.aws`.
+    aws: {}
+    # -- Optional GCP auth config rendered as `spec.gcp`.
+    gcp: {}
+    # -- Optional storage encryption config rendered as `spec.storageEncryption`.
+    storageEncryption: {}
+    # -- Optional raw spec rendered as-is. When set, shorthand fields above are ignored.
+    spec: {}
+
+# -- Generic VaultAuthGlobal resources keyed by resource name.
+# @default -- {}
+vaultAuthGlobals:
+  __helm_docs_example__:
+    # -- Namespace for the VaultAuthGlobal resource. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: secrets.hashicorp.com/v1beta1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- Generic VaultConnection resources keyed by resource name.
+# @default -- {}
+vaultConnections:
+  __helm_docs_example__:
+    # -- Namespace for the VaultConnection resource. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: secrets.hashicorp.com/v1beta1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- Generic VaultDynamicSecret resources keyed by resource name.
+# @default -- {}
+vaultDynamicSecrets:
+  __helm_docs_example__:
+    # -- Namespace for the VaultDynamicSecret resource. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: secrets.hashicorp.com/v1beta1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- Generic VaultPKISecret resources keyed by resource name.
+# @default -- {}
+vaultPKISecrets:
+  __helm_docs_example__:
+    # -- Namespace for the VaultPKISecret resource. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: secrets.hashicorp.com/v1beta1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- VaultStaticSecret resources keyed by resource name.
+vaultStaticSecrets:
+  __helm_docs_example__:
+    # -- Namespace for the VaultStaticSecret resource. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    apiVersion: secrets.hashicorp.com/v1beta1
+    # -- VaultAuth reference. Defaults to `global.project`, the sole `vaultAuths` key, legacy `vaultAuth.name`, or the generated chart fullname for legacy `vaultAuth`.
+    vaultAuthRef: documentation-placeholder
+    # -- Vault Enterprise namespace used for the secret engine mount. Rendered as `spec.namespace`.
+    vaultNamespace: ""
+    # -- Secret engine type for VSO.
+    vaultType: kv-v2
+    # -- Vault mount.
+    mount: develop
+    # -- Vault path.
+    path: application/dev/envs
+    # -- Optional secret version. Rendered as `spec.version`.
+    version: 1
+    # -- Secret refresh interval.
+    refreshAfter: 1m
+    # -- Whether VSO should compute HMAC for drift detection. Rendered as `spec.hmacSecretData`.
+    hmacSecretData: true
+    # -- Destination Kubernetes Secret name. Defaults to the map key.
+    destSec: app-secret
+    # -- Whether VSO should create the destination Secret.
+    create: true
+    # -- Whether VSO should overwrite the destination Secret when it already exists.
+    overwrite: false
+    # -- Destination Kubernetes Secret type. Kept compatible with the previous chart format.
+    type: Opaque
+    # -- Optional explicit destination Secret type.
+    destinationType: ""
+    # -- Optional labels merged into `spec.destination.labels`.
+    destinationLabels: {}
+    # -- Optional annotations merged into `spec.destination.annotations`.
+    destinationAnnotations: {}
+    # -- Optional transformation rendered as `spec.destination.transformation`.
+    transformation: {}
+    # -- Optional full destination block rendered as `spec.destination`.
+    destination: {}
+    # -- Optional sync configuration rendered as `spec.syncConfig`.
+    syncConfig: {}
+    # -- Optional rollout restart targets.
+    restartTargets: []
+    # -- Optional raw spec rendered as-is. When set, shorthand fields above are ignored.
+    spec: {}

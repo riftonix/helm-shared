@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "keycloak-operator values",
+  "description": "Schema for keycloak-operator Helm chart values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Enable rendering for this subchart."
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the generated base name."
+    },
+    "releasePrefix": {
+      "type": "string",
+      "description": "Optional prefix used for generated names."
+    },
+    "commonLabels": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Labels merged into every rendered resource."
+    },
+    "commonAnnotations": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Annotations merged into every rendered resource."
+    },
+    "global": {
+      "$ref": "#/definitions/freeFormObject",
+      "description": "Global values available to tpl-rendered strings."
+    },
+    "apiVersions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "keycloak": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "keycloakRealmImport": {
+          "$ref": "#/definitions/nonEmptyString"
+        }
+      }
+    },
+    "keycloaks": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of Keycloak resources keyed by resource name."
+    },
+    "keycloakRealmImports": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of KeycloakRealmImport resources keyed by resource name."
+    }
+  },
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stringMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "freeFormObject": {
+      "type": "object",
+      "default": {},
+      "additionalProperties": true
+    },
+    "resourceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "labels": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "annotations": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "apiVersion": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "spec": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "status": {
+          "$ref": "#/definitions/freeFormObject"
+        }
+      }
+    },
+    "nullableResourceItem": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/resourceItem"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resourceMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "$ref": "#/definitions/nonEmptyString"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/nullableResourceItem"
+      }
+    }
+  }
+}

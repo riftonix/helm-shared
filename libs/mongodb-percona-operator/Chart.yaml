@@ -1,0 +1,15 @@
+apiVersion: v2
+appVersion: 1.23.0
+description: Helm chart for rendering Percona Server for MongoDB operator custom resources
+keywords:
+- mongodb
+- percona
+- operator
+- psmdb
+- backup
+- restore
+- helm
+- universal-chart
+name: mongodb-percona-operator
+type: application
+version: 1.0.0

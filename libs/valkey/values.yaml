@@ -1,0 +1,345 @@
+# -- Enable valkey chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# -- Shared metadata and templating values compatible with appchart.
+generic:
+  # -- Labels merged into every rendered resource after `commonLabels`.
+  labels: {}
+  # -- Annotations merged into every rendered resource after `commonAnnotations`.
+  annotations: {}
+
+# -- Override these defaults if your cluster uses different Valkey Operator API versions.
+apiVersions:
+  # -- Default API version for `ValkeyCluster` resources.
+  valkeyCluster: valkey.io/v1alpha1
+  # -- Default API version for `ValkeyNode` resources.
+  valkeyNode: valkey.io/v1alpha1
+
+# Each resource map entry supports:
+# - the top-level map key becomes metadata.name by default
+# - name: optional explicit metadata.name override
+# - namespace: optional, defaults to the release namespace
+# - labels: optional resource labels merged after chart, common, and generic labels
+# - annotations: optional resource annotations merged after common and generic annotations
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary Valkey Operator spec rendered as-is
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+#
+# The __helm_docs_example__ entries are ignored by templates and exist only so helm-docs can
+# document nested fields without making the default chart render any manifests.
+
+# -- ValkeyCluster resources keyed by resource name.
+valkeyclusters:
+  # -- Documentation-only placeholder ignored by templates.
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional resource namespace. Defaults to the release namespace.
+    namespace: documentation-placeholder
+    # -- Additional labels for this resource.
+    labels: {}
+    # -- Additional annotations for this resource.
+    annotations: {}
+    # -- API version override for this resource.
+    apiVersion: valkey.io/v1alpha1
+    # -- Desired state for a ValkeyCluster custom resource.
+    spec:
+      # -- Valkey container image override.
+      image: valkey/valkey:8.1
+      # -- Number of shard groups. Each shard contains one primary and the configured replicas.
+      shards: 3
+      # -- Number of replicas for each shard group.
+      replicas: 1
+      # -- Pod workload type created by the operator. Supported values are `StatefulSet` and `Deployment`.
+      workloadType: StatefulSet
+      # -- Resource requirements for the Valkey container.
+      resources:
+        # -- Container resource requests.
+        requests:
+          # -- Requested CPU for the Valkey container.
+          cpu: 100m
+          # -- Requested memory for the Valkey container.
+          memory: 256Mi
+        # -- Container resource limits.
+        limits:
+          # -- CPU limit for the Valkey container.
+          cpu: 500m
+          # -- Memory limit for the Valkey container.
+          memory: 512Mi
+      # -- Node selector applied to operator-created pods.
+      nodeSelector:
+        kubernetes.io/os: linux
+      # -- Pod affinity or anti-affinity rules. Overrides `nodeSelector` where Kubernetes scheduling rules conflict.
+      affinity:
+        # -- Pod anti-affinity rules.
+        podAntiAffinity:
+          # -- Preferred anti-affinity scheduling terms.
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - # -- Weight for the preferred scheduling term.
+              weight: 100
+              # -- Pod affinity term to prefer during scheduling.
+              podAffinityTerm:
+                # -- Label selector for matching pods.
+                labelSelector:
+                  # -- Match labels used by the affinity selector.
+                  matchLabels:
+                    app.kubernetes.io/name: valkey
+                # -- Topology key used to spread matching pods.
+                topologyKey: kubernetes.io/hostname
+      # -- Tolerations applied to operator-created pods.
+      tolerations:
+        - # -- Taint key tolerated by the pod.
+          key: dedicated
+          # -- Taint operator.
+          operator: Equal
+          # -- Taint value tolerated by the pod.
+          value: valkey
+          # -- Taint effect tolerated by the pod.
+          effect: NoSchedule
+      # -- Metrics exporter sidecar options.
+      exporter:
+        # -- Enable the metrics exporter sidecar.
+        enabled: true
+        # -- Metrics exporter image override.
+        image: oliver006/redis_exporter:v1.67.0
+        # -- Resource requirements for the metrics exporter sidecar.
+        resources:
+          # -- Metrics exporter resource requests.
+          requests:
+            # -- Requested CPU for the metrics exporter.
+            cpu: 25m
+            # -- Requested memory for the metrics exporter.
+            memory: 64Mi
+          # -- Metrics exporter resource limits.
+          limits:
+            # -- CPU limit for the metrics exporter.
+            cpu: 100m
+            # -- Memory limit for the metrics exporter.
+            memory: 128Mi
+      # -- Valkey ACL user definitions.
+      users:
+        - # -- Valkey ACL username. Usernames cannot start with `_`.
+          name: app
+          # -- Enable this ACL user.
+          enabled: true
+          # -- Reference to a Secret containing one or more passwords.
+          passwordSecret:
+            # -- Secret name containing password keys. Defaults to the cluster users Secret when omitted.
+            name: app-valkey-users
+            # -- Secret keys containing passwords for this user.
+            keys:
+              - password
+          # -- Do not assign a password to this user.
+          nopass: false
+          # -- Command ACL restrictions.
+          commands:
+            # -- Allowed command categories, commands, or subcommands.
+            allow:
+              - "@read"
+              - get
+            # -- Denied command categories, commands, or subcommands.
+            deny:
+              - flushall
+          # -- Key ACL restrictions.
+          keys:
+            # -- Read-write key patterns.
+            readWrite:
+              - app:*
+            # -- Read-only key patterns.
+            readOnly:
+              - shared:*
+            # -- Write-only key patterns.
+            writeOnly:
+              - ingest:*
+          # -- Pub/Sub channel ACL restrictions.
+          channels:
+            # -- Allowed Pub/Sub channel patterns.
+            patterns:
+              - app:*
+          # -- Raw ACL permissions appended to generated ACL rules.
+          permissions: "+@connection"
+      # -- Additional Valkey configuration parameters rendered into the resource spec.
+      config:
+        maxmemory-policy: allkeys-lru
+      # -- Additional containers or strategic-merge overrides for default containers.
+      containers:
+        - # -- Container name to add or patch.
+          name: server
+          # -- Container image override for the named container.
+          image: valkey/valkey:8.1
+          # -- Additional container environment variables.
+          env:
+            - # -- Environment variable name.
+              name: VALKEY_EXTRA_FLAGS
+              # -- Environment variable value.
+              value: "--loglevel notice"
+          # -- Additional container resource overrides.
+          resources:
+            # -- Container resource requests.
+            requests:
+              # -- Requested CPU for the patched container.
+              cpu: 100m
+              # -- Requested memory for the patched container.
+              memory: 256Mi
+      # -- TLS configuration for the cluster.
+      tls:
+        # -- Certificate Secret reference.
+        certificate:
+          # -- Secret containing `ca.crt`, `tls.crt`, and `tls.key`.
+          secretName: valkey-tls
+    # -- Optional status block for tests or synthetic manifests.
+    status:
+      # -- High-level cluster state.
+      state: Initializing
+      # -- Machine-readable reason for the current state.
+      reason: DocumentationOnly
+      # -- Human-readable status message.
+      message: Documentation placeholder
+      # -- Observed shard count.
+      shards: 0
+      # -- Ready shard count.
+      readyShards: 0
+      # -- Kubernetes-style status conditions.
+      conditions:
+        - # -- Condition type.
+          type: Ready
+          # -- Condition status.
+          status: "False"
+          # -- Last transition timestamp.
+          lastTransitionTime: "2026-01-01T00:00:00Z"
+          # -- Condition reason.
+          reason: Initializing
+          # -- Condition message.
+          message: Documentation placeholder
+
+# -- ValkeyNode resources keyed by resource name. ValkeyNode is an operator-internal kind; prefer ValkeyCluster for normal workloads.
+valkeynodes:
+  # -- Documentation-only placeholder ignored by templates.
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional resource namespace. Defaults to the release namespace.
+    namespace: documentation-placeholder
+    # -- Additional labels for this resource.
+    labels: {}
+    # -- Additional annotations for this resource.
+    annotations: {}
+    # -- API version override for this resource.
+    apiVersion: valkey.io/v1alpha1
+    # -- Desired state for a ValkeyNode custom resource.
+    spec:
+      # -- Valkey container image override.
+      image: valkey/valkey:8.1
+      # -- Pod workload type created by the operator. Supported values are `StatefulSet` and `Deployment`.
+      workloadType: StatefulSet
+      # -- Resource requirements for the Valkey container.
+      resources:
+        # -- Container resource requests.
+        requests:
+          # -- Requested CPU for the Valkey container.
+          cpu: 100m
+          # -- Requested memory for the Valkey container.
+          memory: 256Mi
+        # -- Container resource limits.
+        limits:
+          # -- CPU limit for the Valkey container.
+          cpu: 500m
+          # -- Memory limit for the Valkey container.
+          memory: 512Mi
+      # -- Node selector applied to this node's pod.
+      nodeSelector:
+        kubernetes.io/os: linux
+      # -- Pod affinity or anti-affinity rules for this node.
+      affinity:
+        # -- Node affinity rules.
+        nodeAffinity:
+          # -- Required node affinity rules.
+          requiredDuringSchedulingIgnoredDuringExecution:
+            # -- Node selector terms.
+            nodeSelectorTerms:
+              - # -- Match expressions for the node selector term.
+                matchExpressions:
+                  - # -- Node label key.
+                    key: kubernetes.io/os
+                    # -- Node selector operator.
+                    operator: In
+                    # -- Node selector values.
+                    values:
+                      - linux
+      # -- Tolerations applied to this node's pod.
+      tolerations:
+        - # -- Taint key tolerated by the pod.
+          key: dedicated
+          # -- Taint operator.
+          operator: Equal
+          # -- Taint value tolerated by the pod.
+          value: valkey
+          # -- Taint effect tolerated by the pod.
+          effect: NoSchedule
+      # -- Metrics exporter sidecar options.
+      exporter:
+        # -- Enable the metrics exporter sidecar.
+        enabled: true
+        # -- Metrics exporter image override.
+        image: oliver006/redis_exporter:v1.67.0
+        # -- Resource requirements for the metrics exporter sidecar.
+        resources:
+          # -- Metrics exporter resource requests.
+          requests:
+            # -- Requested CPU for the metrics exporter.
+            cpu: 25m
+            # -- Requested memory for the metrics exporter.
+            memory: 64Mi
+      # -- ConfigMap name containing Valkey server scripts and configuration.
+      serverConfigMapName: valkey-node-config
+      # -- Secret name containing the ACL user file.
+      usersACLSecretName: valkey-users-acl
+      # -- Additional containers or strategic-merge overrides for default containers.
+      containers:
+        - # -- Container name to add or patch.
+          name: metrics-exporter
+          # -- Container image override for the named container.
+          image: oliver006/redis_exporter:v1.67.0
+      # -- TLS configuration for the node.
+      tls:
+        # -- Certificate Secret reference.
+        certificate:
+          # -- Secret containing `ca.crt`, `tls.crt`, and `tls.key`.
+          secretName: valkey-tls
+    # -- Optional status block for tests or synthetic manifests.
+    status:
+      # -- Most recent generation observed by the controller.
+      observedGeneration: 1
+      # -- Whether the ValkeyNode is ready to serve traffic.
+      ready: false
+      # -- Pod name created by the operator workload.
+      podName: documentation-placeholder-0
+      # -- Pod IP address.
+      podIP: 10.0.0.10
+      # -- Valkey replication role such as `primary` or `replica`.
+      role: primary
+      # -- Kubernetes-style status conditions.
+      conditions:
+        - # -- Condition type.
+          type: Ready
+          # -- Condition status.
+          status: "False"
+          # -- Last transition timestamp.
+          lastTransitionTime: "2026-01-01T00:00:00Z"
+          # -- Condition reason.
+          reason: PodNotReady
+          # -- Condition message.
+          message: Documentation placeholder

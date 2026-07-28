@@ -1,0 +1,6 @@
+{{ include "envoy-gateway.renderResources" (dict
+  "root" $
+  "collection" ($.Values.httpRouteFilters | default dict)
+  "kind" "HTTPRouteFilter"
+  "defaultApiVersion" $.Values.apiVersions.httpRouteFilter
+) }}

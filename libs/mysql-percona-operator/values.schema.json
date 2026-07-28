@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "mysql-percona-operator values",
+  "description": "Schema for mysql-percona-operator Helm chart values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Enable rendering for this subchart."
+    },
+    "global": {
+      "type": "object",
+      "default": {},
+      "description": "Compatibility values inherited from umbrella charts. Accepted but ignored by this chart.",
+      "additionalProperties": true
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the chart name used in generated labels."
+    },
+    "commonLabels": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Labels merged into every rendered resource."
+    },
+    "commonAnnotations": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Annotations merged into every rendered resource."
+    },
+    "apiVersions": {
+      "type": "object",
+      "description": "Default API version overrides per supported Percona kind.",
+      "additionalProperties": false,
+      "properties": {
+        "perconaXtraDBCluster": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "perconaXtraDBClusterBackup": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "perconaXtraDBClusterRestore": {
+          "$ref": "#/definitions/nonEmptyString"
+        }
+      }
+    },
+    "perconaXtraDBClusters": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of PerconaXtraDBCluster resources keyed by resource name."
+    },
+    "perconaXtraDBClusterBackups": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of PerconaXtraDBClusterBackup resources keyed by resource name."
+    },
+    "perconaXtraDBClusterRestores": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of PerconaXtraDBClusterRestore resources keyed by resource name."
+    }
+  },
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stringMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "freeFormObject": {
+      "type": "object",
+      "description": "Arbitrary Percona custom resource payload passed through by the chart.",
+      "additionalProperties": true
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      }
+    },
+    "resourceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "$ref": "#/definitions/nonEmptyString",
+          "description": "Namespace for namespaced resources."
+        },
+        "finalizers": {
+          "$ref": "#/definitions/stringList",
+          "description": "Optional metadata.finalizers entries."
+        },
+        "labels": {
+          "$ref": "#/definitions/stringMap",
+          "description": "Resource-specific labels."
+        },
+        "annotations": {
+          "$ref": "#/definitions/stringMap",
+          "description": "Resource-specific annotations."
+        },
+        "apiVersion": {
+          "$ref": "#/definitions/nonEmptyString",
+          "description": "Per-resource API version override."
+        },
+        "spec": {
+          "$ref": "#/definitions/freeFormObject",
+          "description": "Resource spec rendered as-is."
+        },
+        "status": {
+          "$ref": "#/definitions/freeFormObject",
+          "description": "Optional resource status rendered as-is."
+        }
+      }
+    },
+    "resourceMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "$ref": "#/definitions/nonEmptyString"
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/resourceItem"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    }
+  }
+}

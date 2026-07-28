@@ -1,0 +1,188 @@
+# Documentation values source for helm-docs.
+# This file expands the generic map-value contract so README.md can include
+# nested values. Runtime defaults remain in values.yaml.
+
+# -- Enable victoria-metrics chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts. Accepted but ignored by this chart.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# -- Default apiVersion overrides per supported VictoriaMetrics Operator kind.
+apiVersions:
+  # -- Default apiVersion for VMAlert resources.
+  vmAlert: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMProbe resources.
+  vmProbe: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMRule resources.
+  vmRule: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMScrapeConfig resources.
+  vmScrapeConfig: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMServiceScrape resources.
+  vmServiceScrape: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMStaticScrape resources.
+  vmStaticScrape: operator.victoriametrics.com/v1beta1
+
+# -- VMAlert resources to render.
+# @default -- {}
+vmAlerts:
+  example:
+    # vmAlerts.example.name -- Resource name.
+    # @default -- required
+    name: example-vmalert
+    # vmAlerts.example.namespace -- Namespace for the resource. Defaults to the release namespace.
+    # @default -- .Release.Namespace
+    namespace: observability
+    # vmAlerts.example.labels -- Resource-specific labels merged with chart labels.
+    # @default -- {}
+    labels: {}
+    # vmAlerts.example.annotations -- Resource-specific annotations merged with chart annotations.
+    # @default -- {}
+    annotations: {}
+    # vmAlerts.example.apiVersion -- Optional apiVersion override for this resource.
+    # @default -- .Values.apiVersions.vmAlert
+    apiVersion: operator.victoriametrics.com/v1beta1
+    # vmAlerts.example.spec -- Raw VMAlert spec rendered as-is.
+    # @default -- {}
+    spec: {}
+    # vmAlerts.example.status -- Optional raw resource status rendered as-is.
+    # @default -- not set
+    status: {}
+
+# -- VMProbe resources to render.
+# @default -- {}
+vmProbes:
+  example:
+    # vmProbes.example.name -- Resource name.
+    # @default -- required
+    name: example-vmprobe
+    # vmProbes.example.namespace -- Namespace for the resource. Defaults to the release namespace.
+    # @default -- .Release.Namespace
+    namespace: observability
+    # vmProbes.example.labels -- Resource-specific labels merged with chart labels.
+    # @default -- {}
+    labels: {}
+    # vmProbes.example.annotations -- Resource-specific annotations merged with chart annotations.
+    # @default -- {}
+    annotations: {}
+    # vmProbes.example.apiVersion -- Optional apiVersion override for this resource.
+    # @default -- .Values.apiVersions.vmProbe
+    apiVersion: operator.victoriametrics.com/v1beta1
+    # vmProbes.example.spec -- Raw VMProbe spec rendered as-is.
+    # @default -- {}
+    spec: {}
+    # vmProbes.example.status -- Optional raw resource status rendered as-is.
+    # @default -- not set
+    status: {}
+
+# -- VMRule resources to render.
+# @default -- {}
+vmRules:
+  example:
+    # vmRules.example.name -- Resource name.
+    # @default -- required
+    name: example-vmrule
+    # vmRules.example.namespace -- Namespace for the resource. Defaults to the release namespace.
+    # @default -- .Release.Namespace
+    namespace: observability
+    # vmRules.example.labels -- Resource-specific labels merged with chart labels.
+    # @default -- {}
+    labels: {}
+    # vmRules.example.annotations -- Resource-specific annotations merged with chart annotations.
+    # @default -- {}
+    annotations: {}
+    # vmRules.example.apiVersion -- Optional apiVersion override for this resource.
+    # @default -- .Values.apiVersions.vmRule
+    apiVersion: operator.victoriametrics.com/v1beta1
+    # vmRules.example.spec -- Raw VMRule spec rendered as-is.
+    # @default -- {}
+    spec: {}
+    # vmRules.example.status -- Optional raw resource status rendered as-is.
+    # @default -- not set
+    status: {}
+
+# -- VMScrapeConfig resources to render.
+# @default -- {}
+vmScrapeConfigs:
+  example:
+    # vmScrapeConfigs.example.name -- Resource name.
+    # @default -- required
+    name: example-vmscrapeconfig
+    # vmScrapeConfigs.example.namespace -- Namespace for the resource. Defaults to the release namespace.
+    # @default -- .Release.Namespace
+    namespace: observability
+    # vmScrapeConfigs.example.labels -- Resource-specific labels merged with chart labels.
+    # @default -- {}
+    labels: {}
+    # vmScrapeConfigs.example.annotations -- Resource-specific annotations merged with chart annotations.
+    # @default -- {}
+    annotations: {}
+    # vmScrapeConfigs.example.apiVersion -- Optional apiVersion override for this resource.
+    # @default -- .Values.apiVersions.vmScrapeConfig
+    apiVersion: operator.victoriametrics.com/v1beta1
+    # vmScrapeConfigs.example.spec -- Raw VMScrapeConfig spec rendered as-is.
+    # @default -- {}
+    spec: {}
+    # vmScrapeConfigs.example.status -- Optional raw resource status rendered as-is.
+    # @default -- not set
+    status: {}
+
+# -- VMServiceScrape resources to render.
+# @default -- {}
+vmServiceScrapes:
+  example:
+    # vmServiceScrapes.example.name -- Resource name.
+    # @default -- required
+    name: example-vmservicescrape
+    # vmServiceScrapes.example.namespace -- Namespace for the resource. Defaults to the release namespace.
+    # @default -- .Release.Namespace
+    namespace: observability
+    # vmServiceScrapes.example.labels -- Resource-specific labels merged with chart labels.
+    # @default -- {}
+    labels: {}
+    # vmServiceScrapes.example.annotations -- Resource-specific annotations merged with chart annotations.
+    # @default -- {}
+    annotations: {}
+    # vmServiceScrapes.example.apiVersion -- Optional apiVersion override for this resource.
+    # @default -- .Values.apiVersions.vmServiceScrape
+    apiVersion: operator.victoriametrics.com/v1beta1
+    # vmServiceScrapes.example.spec -- Raw VMServiceScrape spec rendered as-is.
+    # @default -- {}
+    spec: {}
+    # vmServiceScrapes.example.status -- Optional raw resource status rendered as-is.
+    # @default -- not set
+    status: {}
+
+# -- VMStaticScrape resources to render.
+# @default -- {}
+vmStaticScrapes:
+  example:
+    # vmStaticScrapes.example.name -- Resource name.
+    # @default -- required
+    name: example-vmstaticscrape
+    # vmStaticScrapes.example.namespace -- Namespace for the resource. Defaults to the release namespace.
+    # @default -- .Release.Namespace
+    namespace: observability
+    # vmStaticScrapes.example.labels -- Resource-specific labels merged with chart labels.
+    # @default -- {}
+    labels: {}
+    # vmStaticScrapes.example.annotations -- Resource-specific annotations merged with chart annotations.
+    # @default -- {}
+    annotations: {}
+    # vmStaticScrapes.example.apiVersion -- Optional apiVersion override for this resource.
+    # @default -- .Values.apiVersions.vmStaticScrape
+    apiVersion: operator.victoriametrics.com/v1beta1
+    # vmStaticScrapes.example.spec -- Raw VMStaticScrape spec rendered as-is.
+    # @default -- {}
+    spec: {}
+    # vmStaticScrapes.example.status -- Optional raw resource status rendered as-is.
+    # @default -- not set
+    status: {}

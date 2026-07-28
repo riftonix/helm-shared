@@ -1,0 +1,8 @@
+{{ include "elk.renderResources" (dict
+  "root" $
+  "collection" ($.Values.elasticmapsservers | default dict)
+  "resourceKey" "elasticmapsservers"
+  "kind" "ElasticMapsServer"
+  "defaultApiVersion" (include "elk.resolveApiVersion" (dict "root" $ "key" "elasticMapsServer" "legacyKey" "eckElasticMapsServer" "default" "maps.k8s.elastic.co/v1alpha1"))
+  "namespaced" true
+) }}

@@ -1,0 +1,1 @@
+{{ include "knative.renderResourceCollection" (dict "root" $ "items" .Values.serverlessServices "resourceKey" "serverlessServices" "defaultApiVersion" $.Values.apiVersions.serverlessService "kind" "ServerlessService" "namespaced" true) }}

@@ -1,0 +1,285 @@
+# -- Enable mongodb-percona-operator chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# -- Shared metadata and templating values compatible with appchart.
+generic:
+  labels: {}
+  annotations: {}
+
+# -- Override these defaults if your cluster uses different Percona CRD API versions.
+apiVersions:
+  perconaServerMongoDB: psmdb.percona.com/v1
+  perconaServerMongoDBBackup: psmdb.percona.com/v1
+  perconaServerMongoDBRestore: psmdb.percona.com/v1
+
+# Each map entry supports:
+# - the top-level map key becomes metadata.name by default
+# - name: optional explicit metadata.name override
+# - namespace: optional, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec rendered as-is
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+
+# -- PerconaServerMongoDB resources keyed by resource name.
+perconaServerMongoDBs:
+  # -- Documentation-only example object that exposes nested fields to helm-docs.
+  __helm_docs_example__:
+    # -- Optional namespace for the rendered PerconaServerMongoDB resource.
+    namespace: documentation-placeholder
+    # -- Optional extra labels for this PerconaServerMongoDB resource.
+    labels: {}
+    # -- Optional extra annotations for this PerconaServerMongoDB resource.
+    annotations:
+      helm-docs.nuc.internal/ignore: "true"
+    # -- Optional apiVersion override for this PerconaServerMongoDB resource.
+    apiVersion: psmdb.percona.com/v1
+    spec:
+      # -- Operator CR version from the official `deploy/cr.yaml`.
+      crVersion: 1.23.0
+      # -- Main Percona Server for MongoDB image.
+      image: perconalab/percona-server-mongodb-operator:main-mongod8.0
+      # -- Image pull policy for the database image.
+      imagePullPolicy: Always
+      # -- Upgrade strategy used by the operator.
+      updateStrategy: SmartUpdate
+      # -- Upgrade controller options.
+      upgradeOptions:
+        # -- Version service endpoint used for upgrade checks.
+        versionServiceEndpoint: https://check.percona.com
+        # -- Upgrade policy such as `disabled`.
+        apply: disabled
+        # -- Cron schedule used by automatic upgrade checks.
+        schedule: "0 2 * * *"
+        # -- Whether to set FCV automatically during upgrades.
+        setFCV: false
+      # -- Secret references used by the cluster.
+      secrets:
+        # -- Secret name that stores database users.
+        users: my-cluster-name-secrets
+        # -- Secret name that stores the encryption key.
+        encryptionKey: my-cluster-name-mongodb-encryption-key
+      # -- PMM integration settings.
+      pmm:
+        # -- Enable PMM sidecar integration.
+        enabled: false
+        # -- PMM client image.
+        image: perconalab/pmm-client:3-dev-latest
+        # -- PMM server host.
+        serverHost: monitoring-service
+      # -- Replica set definitions for the database cluster.
+      replsets:
+        - # -- Replica set name.
+          name: rs0
+          # -- Replica set size.
+          size: 3
+          affinity:
+            # -- Default anti-affinity topology key for replica set pods.
+            antiAffinityTopologyKey: kubernetes.io/hostname
+          podDisruptionBudget:
+            # -- Maximum unavailable pods for the replica set.
+            maxUnavailable: 1
+          expose:
+            # -- Enable a service for the replica set.
+            enabled: false
+            # -- Service type for the replica set.
+            type: ClusterIP
+          resources:
+            limits:
+              # -- CPU limit for mongod containers.
+              cpu: 600m
+              # -- Memory limit for mongod containers.
+              memory: 1Gi
+            requests:
+              # -- CPU request for mongod containers.
+              cpu: 300m
+              # -- Memory request for mongod containers.
+              memory: 1Gi
+          volumeSpec:
+            persistentVolumeClaim:
+              resources:
+                requests:
+                  # -- Persistent volume size for the replica set.
+                  storage: 3Gi
+      # -- Sharding-related settings. Keep `enabled: false` for replica-set-only clusters.
+      sharding:
+        # -- Enable sharded deployment mode.
+        enabled: false
+        configsvrReplSet:
+          # -- Config server replica set size.
+          size: 3
+          affinity:
+            # -- Anti-affinity topology key for config server pods.
+            antiAffinityTopologyKey: kubernetes.io/hostname
+          podDisruptionBudget:
+            # -- Maximum unavailable config server pods.
+            maxUnavailable: 1
+          expose:
+            # -- Enable a service for config server pods.
+            enabled: false
+            # -- Service type for config server pods.
+            type: ClusterIP
+          resources:
+            limits:
+              # -- CPU limit for config server mongod containers.
+              cpu: 600m
+              # -- Memory limit for config server mongod containers.
+              memory: 1Gi
+            requests:
+              # -- CPU request for config server mongod containers.
+              cpu: 300m
+              # -- Memory request for config server mongod containers.
+              memory: 1Gi
+          volumeSpec:
+            persistentVolumeClaim:
+              resources:
+                requests:
+                  # -- Persistent volume size for config server pods.
+                  storage: 3Gi
+        mongos:
+          # -- Number of mongos routers.
+          size: 3
+          affinity:
+            # -- Anti-affinity topology key for mongos pods.
+            antiAffinityTopologyKey: kubernetes.io/hostname
+          podDisruptionBudget:
+            # -- Maximum unavailable mongos pods.
+            maxUnavailable: 1
+          expose:
+            # -- Service type for mongos.
+            type: ClusterIP
+          resources:
+            limits:
+              # -- CPU limit for mongos containers.
+              cpu: 600m
+              # -- Memory limit for mongos containers.
+              memory: 1Gi
+            requests:
+              # -- CPU request for mongos containers.
+              cpu: 300m
+              # -- Memory request for mongos containers.
+              memory: 1Gi
+      # -- Backup controller settings configured directly on the cluster CR.
+      backup:
+        # -- Enable integrated backups in the cluster CR.
+        enabled: true
+        # -- Backup image used by the operator.
+        image: perconalab/percona-server-mongodb-operator:main-backup
+        storages:
+          # -- Example S3 backup storage entry.
+          s3-us-west:
+            # -- Storage type. Supported examples include `s3`, `azure`, `gcs`, `filesystem`, and `minio`.
+            type: s3
+            s3:
+              # -- S3 bucket name for backups.
+              bucket: S3-BACKUP-BUCKET-NAME-HERE
+              # -- Secret name with S3 credentials.
+              credentialsSecret: my-cluster-name-backup-s3
+              # -- AWS region for the bucket.
+              region: us-west-2
+              # -- Optional path prefix inside the bucket.
+              prefix: ""
+        pitr:
+          # -- Enable point-in-time recovery oplog slicing.
+          enabled: false
+          # -- Store only oplog chunks without full backups.
+          oplogOnly: false
+          # -- Compression type for PITR chunks.
+          compressionType: gzip
+          # -- Compression level for PITR chunks.
+          compressionLevel: 6
+      # -- Log collector settings.
+      logcollector:
+        # -- Enable the log collector sidecar.
+        enabled: true
+        # -- Fluent Bit image used for log collection.
+        image: perconalab/fluentbit:main-logcollector
+        resources:
+          requests:
+            # -- Memory request for the log collector sidecar.
+            memory: 100M
+            # -- CPU request for the log collector sidecar.
+            cpu: 200m
+    # -- Optional status stub used only for synthetic manifests and tests.
+    status: {}
+
+# -- PerconaServerMongoDBBackup resources keyed by resource name.
+perconaServerMongoDBBackups:
+  # -- Documentation-only example object that exposes nested backup fields to helm-docs.
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations:
+      helm-docs.nuc.internal/ignore: "true"
+    apiVersion: psmdb.percona.com/v1
+    spec:
+      # -- Target PerconaServerMongoDB cluster name.
+      clusterName: my-cluster-name
+      # -- Backup storage name configured in the target cluster CR.
+      storageName: s3-us-west
+      # -- Optional backup type such as `physical`.
+      type: physical
+      # -- Optional compression type such as `gzip`.
+      compressionType: gzip
+      # -- Optional compression level.
+      compressionLevel: 6
+      # -- Optional deadline in seconds for starting the backup.
+      startingDeadlineSeconds: 300
+    status: {}
+
+# -- PerconaServerMongoDBRestore resources keyed by resource name.
+perconaServerMongoDBRestores:
+  # -- Documentation-only example object that exposes nested restore fields to helm-docs.
+  __helm_docs_example__:
+    namespace: documentation-placeholder
+    labels: {}
+    annotations:
+      helm-docs.nuc.internal/ignore: "true"
+    apiVersion: psmdb.percona.com/v1
+    spec:
+      # -- Target PerconaServerMongoDB cluster name for the restore.
+      clusterName: my-cluster-name
+      # -- Existing backup object name to restore from.
+      backupName: backup1
+      selective:
+        # -- Restore MongoDB users and roles together with selected namespaces.
+        withUsersAndRoles: true
+        # -- Namespace list for selective restore.
+        namespaces:
+          - db.collection
+      pitr:
+        # -- Point-in-time recovery mode such as `date`.
+        type: date
+        # -- Restore target timestamp in `YYYY-MM-DD HH:MM:SS` format.
+        date: "2026-01-14 10:00:00"
+      backupSource:
+        # -- Backup source type when restoring without an in-cluster Backup object.
+        type: physical
+        # -- Backup destination URI.
+        destination: s3://S3-BACKUP-BUCKET-NAME-HERE/BACKUP-DESTINATION
+        s3:
+          # -- Secret name with S3 credentials for external restore source.
+          credentialsSecret: my-cluster-name-backup-s3
+          # -- Region for the S3 restore source.
+          region: us-west-2
+          # -- Bucket name for the S3 restore source.
+          bucket: S3-BACKUP-BUCKET-NAME-HERE
+          # -- Optional endpoint URL for S3-compatible storage.
+          endpointUrl: https://s3.us-west-2.amazonaws.com/
+          # -- Optional path prefix inside the bucket.
+          prefix: ""
+    status: {}

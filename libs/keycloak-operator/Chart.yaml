@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: 26.6.1
+description: Helm chart for Keycloak Operator custom resources
+keywords:
+- keycloak
+- iam
+- sso
+- oidc
+- helm
+- universal-chart
+name: keycloak-operator
+type: application
+version: 1.0.1

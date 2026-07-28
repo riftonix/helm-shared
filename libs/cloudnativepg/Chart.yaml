@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: v1
+description: Helm chart for rendering CloudNativePG custom resources
+keywords:
+- postgresql
+- database
+- cloudnativepg
+- helm
+- universal-chart
+name: cloudnativepg
+type: application
+version: 1.0.0

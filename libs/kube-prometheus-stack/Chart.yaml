@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: v1
+description: Helm chart for Prometheus Operator monitoring resources
+keywords:
+- monitoring
+- ServiceMonitor
+- observability
+- security
+- helm
+- universal-chart
+name: kube-prometheus-stack
+type: application
+version: 1.0.5

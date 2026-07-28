@@ -1,0 +1,8 @@
+{{ include "elk.renderResources" (dict
+  "root" $
+  "collection" ($.Values.enterprisesearches | default dict)
+  "resourceKey" "enterprisesearches"
+  "kind" "EnterpriseSearch"
+  "defaultApiVersion" (include "elk.resolveApiVersion" (dict "root" $ "key" "enterpriseSearch" "legacyKey" "eckEnterpriseSearch" "default" "enterprisesearch.k8s.elastic.co/v1"))
+  "namespaced" true
+) }}

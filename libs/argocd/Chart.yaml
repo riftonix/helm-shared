@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: v1
+description: Helm chart for rendering Argo CD custom resources from declarative values
+keywords:
+- argocd
+- deploy
+- gitops
+- helm
+- universal-chart
+name: argocd
+type: application
+version: 1.0.4
