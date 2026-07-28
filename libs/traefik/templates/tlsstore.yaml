@@ -1,0 +1,15 @@
+{{- range $key, $item := .Values.tlsStores }}
+{{- if kindIs "map" $item }}
+{{- if (or (not (hasKey $item "enabled")) $item.enabled) }}
+---
+{{ include "traefik.renderResource" (dict
+  "root" $
+  "item" $item
+  "kind" "TLSStore"
+  "defaultApiVersion" $.Values.apiVersions.tlsStore
+  "resourceKey" (printf "tlsStores.%v" $key)
+  "namespaced" true
+) }}
+{{- end }}
+{{- end }}
+{{- end }}

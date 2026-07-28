@@ -1,0 +1,301 @@
+# -- Enable strimzi-kafka-operator chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# -- Shared metadata and templating values compatible with appchart.
+generic:
+  # -- Generic labels merged into every rendered resource.
+  labels: {}
+  # -- Generic annotations merged into every rendered resource.
+  annotations: {}
+
+# -- Override these defaults if your cluster uses different Strimzi API versions.
+apiVersions:
+  # -- Default apiVersion for Kafka resources.
+  kafka: kafka.strimzi.io/v1
+  # -- Default apiVersion for KafkaNodePool resources.
+  kafkaNodePool: kafka.strimzi.io/v1
+  # -- Default apiVersion for KafkaConnect resources.
+  kafkaConnect: kafka.strimzi.io/v1
+  # -- Default apiVersion for KafkaConnector resources.
+  kafkaConnector: kafka.strimzi.io/v1
+  # -- Default apiVersion for KafkaMirrorMaker2 resources.
+  kafkaMirrorMaker2: kafka.strimzi.io/v1
+  # -- Default apiVersion for KafkaTopic resources.
+  kafkaTopic: kafka.strimzi.io/v1
+  # -- Default apiVersion for KafkaUser resources.
+  kafkaUser: kafka.strimzi.io/v1
+  # -- Default apiVersion for KafkaBridge resources.
+  kafkaBridge: kafka.strimzi.io/v1
+  # -- Default apiVersion for KafkaRebalance resources.
+  kafkaRebalance: kafka.strimzi.io/v1
+
+# Each resource map entry supports:
+# - the top-level map key becomes metadata.name by default
+# - name: optional explicit metadata.name override
+# - namespace: optional, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary Strimzi custom resource spec rendered as-is
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+
+# -- Kafka resources keyed by resource name.
+kafkas:
+  # -- Example Kafka resource entry used only for generated documentation.
+  __helm_docs_example__:
+    # -- Optional resource namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Labels merged into this resource.
+    labels: {}
+    # -- Annotations merged into this resource.
+    annotations: {}
+    # -- Optional apiVersion override for this resource.
+    apiVersion: kafka.strimzi.io/v1
+    # -- Raw Kafka spec rendered as-is.
+    spec:
+      # -- Kafka cluster configuration.
+      kafka:
+        # -- Kafka broker version.
+        version: 4.2.0
+        # -- Kafka metadata version.
+        metadataVersion: 4.2-IV1
+        # -- Kafka listeners exposed by the cluster.
+        listeners: []
+      # -- Strimzi entity operator configuration.
+      entityOperator: {}
+    # -- Optional raw status block for fixtures and synthetic manifests.
+    status: {}
+
+# -- KafkaNodePool resources keyed by resource name.
+kafkanodepools:
+  # -- Example KafkaNodePool resource entry used only for generated documentation.
+  __helm_docs_example__:
+    # -- Optional resource namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Labels merged into this resource.
+    labels:
+      strimzi.io/cluster: documentation-placeholder
+    # -- Annotations merged into this resource.
+    annotations: {}
+    # -- Optional apiVersion override for this resource.
+    apiVersion: kafka.strimzi.io/v1
+    # -- Raw KafkaNodePool spec rendered as-is.
+    spec:
+      # -- Number of Strimzi nodes in this pool.
+      replicas: 3
+      # -- Kafka process roles assigned to nodes in this pool.
+      roles: []
+      # -- Storage configuration for nodes in this pool.
+      storage:
+        # -- Node pool storage type.
+        type: jbod
+        # -- JBOD volume definitions.
+        volumes: []
+    # -- Optional raw status block for fixtures and synthetic manifests.
+    status: {}
+
+# -- KafkaConnect resources keyed by resource name.
+kafkaconnects:
+  # -- Example KafkaConnect resource entry used only for generated documentation.
+  __helm_docs_example__:
+    # -- Optional resource namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Labels merged into this resource.
+    labels: {}
+    # -- Annotations merged into this resource.
+    annotations: {}
+    # -- Optional apiVersion override for this resource.
+    apiVersion: kafka.strimzi.io/v1
+    # -- Raw KafkaConnect spec rendered as-is.
+    spec:
+      # -- Kafka Connect version.
+      version: 4.2.0
+      # -- Number of Kafka Connect replicas.
+      replicas: 1
+      # -- Kafka bootstrap servers used by Kafka Connect.
+      bootstrapServers: documentation-placeholder-kafka-bootstrap:9092
+      # -- Kafka Connect worker group id.
+      groupId: documentation-placeholder-connect
+      # -- Kafka topic storing connector offsets.
+      offsetStorageTopic: documentation-placeholder-connect-offsets
+      # -- Kafka topic storing connector configs.
+      configStorageTopic: documentation-placeholder-connect-configs
+      # -- Kafka topic storing connector statuses.
+      statusStorageTopic: documentation-placeholder-connect-status
+      # -- Kafka Connect worker config.
+      config: {}
+    # -- Optional raw status block for fixtures and synthetic manifests.
+    status: {}
+
+# -- KafkaConnector resources keyed by resource name.
+kafkaconnectors:
+  # -- Example KafkaConnector resource entry used only for generated documentation.
+  __helm_docs_example__:
+    # -- Optional resource namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Labels merged into this resource.
+    labels:
+      strimzi.io/cluster: documentation-placeholder-connect
+    # -- Annotations merged into this resource.
+    annotations: {}
+    # -- Optional apiVersion override for this resource.
+    apiVersion: kafka.strimzi.io/v1
+    # -- Raw KafkaConnector spec rendered as-is.
+    spec:
+      # -- Fully qualified Kafka Connect connector class.
+      class: org.apache.kafka.connect.file.FileStreamSourceConnector
+      # -- Maximum number of connector tasks.
+      tasksMax: 1
+      # -- Connector-specific configuration.
+      config: {}
+    # -- Optional raw status block for fixtures and synthetic manifests.
+    status: {}
+
+# -- KafkaMirrorMaker2 resources keyed by resource name.
+kafkamirrormaker2s:
+  # -- Example KafkaMirrorMaker2 resource entry used only for generated documentation.
+  __helm_docs_example__:
+    # -- Optional resource namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Labels merged into this resource.
+    labels: {}
+    # -- Annotations merged into this resource.
+    annotations: {}
+    # -- Optional apiVersion override for this resource.
+    apiVersion: kafka.strimzi.io/v1
+    # -- Raw KafkaMirrorMaker2 spec rendered as-is.
+    spec:
+      # -- Kafka MirrorMaker 2 version.
+      version: 4.2.0
+      # -- Number of Kafka MirrorMaker 2 replicas.
+      replicas: 1
+      # -- Target cluster and internal Kafka Connect storage configuration.
+      target:
+        # -- Alias of the target Kafka cluster.
+        alias: target
+        # -- Bootstrap servers of the target Kafka cluster.
+        bootstrapServers: documentation-placeholder-kafka-bootstrap:9092
+        # -- Kafka Connect group id used by MirrorMaker 2.
+        groupId: documentation-placeholder-mirror
+        # -- Kafka topic storing MirrorMaker 2 offsets.
+        offsetStorageTopic: documentation-placeholder-mirror-offsets
+        # -- Kafka topic storing MirrorMaker 2 configs.
+        configStorageTopic: documentation-placeholder-mirror-configs
+        # -- Kafka topic storing MirrorMaker 2 statuses.
+        statusStorageTopic: documentation-placeholder-mirror-status
+      # -- Mirror definitions rendered as-is.
+      mirrors: []
+    # -- Optional raw status block for fixtures and synthetic manifests.
+    status: {}
+
+# -- KafkaTopic resources keyed by resource name.
+kafkatopics:
+  # -- Example KafkaTopic resource entry used only for generated documentation.
+  __helm_docs_example__:
+    # -- Optional resource namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Labels merged into this resource.
+    labels:
+      strimzi.io/cluster: documentation-placeholder
+    # -- Annotations merged into this resource.
+    annotations: {}
+    # -- Optional apiVersion override for this resource.
+    apiVersion: kafka.strimzi.io/v1
+    # -- Raw KafkaTopic spec rendered as-is.
+    spec:
+      # -- Number of topic partitions.
+      partitions: 3
+      # -- Topic replication factor.
+      replicas: 3
+      # -- Topic configuration.
+      config: {}
+    # -- Optional raw status block for fixtures and synthetic manifests.
+    status: {}
+
+# -- KafkaUser resources keyed by resource name.
+kafkausers:
+  # -- Example KafkaUser resource entry used only for generated documentation.
+  __helm_docs_example__:
+    # -- Optional resource namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Labels merged into this resource.
+    labels:
+      strimzi.io/cluster: documentation-placeholder
+    # -- Annotations merged into this resource.
+    annotations: {}
+    # -- Optional apiVersion override for this resource.
+    apiVersion: kafka.strimzi.io/v1
+    # -- Raw KafkaUser spec rendered as-is.
+    spec:
+      # -- User authentication configuration.
+      authentication:
+        # -- Authentication mechanism type.
+        type: scram-sha-512
+      # -- User authorization configuration.
+      authorization:
+        # -- Authorization type.
+        type: simple
+        # -- ACL rules assigned to the user.
+        acls: []
+    # -- Optional raw status block for fixtures and synthetic manifests.
+    status: {}
+
+# -- KafkaBridge resources keyed by resource name.
+kafkabridges:
+  # -- Example KafkaBridge resource entry used only for generated documentation.
+  __helm_docs_example__:
+    # -- Optional resource namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Labels merged into this resource.
+    labels: {}
+    # -- Annotations merged into this resource.
+    annotations: {}
+    # -- Optional apiVersion override for this resource.
+    apiVersion: kafka.strimzi.io/v1
+    # -- Raw KafkaBridge spec rendered as-is.
+    spec:
+      # -- Number of Kafka Bridge replicas.
+      replicas: 1
+      # -- Kafka bootstrap servers used by Kafka Bridge.
+      bootstrapServers: documentation-placeholder-kafka-bootstrap:9092
+      # -- HTTP listener configuration.
+      http:
+        # -- HTTP listener port.
+        port: 8080
+    # -- Optional raw status block for fixtures and synthetic manifests.
+    status: {}
+
+# -- KafkaRebalance resources keyed by resource name.
+kafkarebalances:
+  # -- Example KafkaRebalance resource entry used only for generated documentation.
+  __helm_docs_example__:
+    # -- Optional resource namespace. Defaults to the Helm release namespace.
+    namespace: documentation-placeholder
+    # -- Labels merged into this resource.
+    labels:
+      strimzi.io/cluster: documentation-placeholder
+    # -- Annotations merged into this resource.
+    annotations: {}
+    # -- Optional apiVersion override for this resource.
+    apiVersion: kafka.strimzi.io/v1
+    # -- Raw KafkaRebalance spec rendered as-is.
+    spec:
+      # -- Rebalance mode.
+      mode: full
+      # -- Cruise Control goals requested for the rebalance.
+      goals: []
+    # -- Optional raw status block for fixtures and synthetic manifests.
+    status: {}

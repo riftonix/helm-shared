@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: v0.17.0
+description: Helm chart for rendering KServe custom resources from declarative values
+keywords:
+- ml
+- ai
+- inference
+- helm
+- universal-chart
+name: kserve
+type: application
+version: 1.0.4

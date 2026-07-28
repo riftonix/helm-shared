@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: v3.6
+description: Helm chart for Traefik Kubernetes CRD resources
+keywords:
+- traefic
+- networking
+- traffic-management
+- security
+- helm
+- universal-chart
+name: traefik
+type: application
+version: 1.0.5

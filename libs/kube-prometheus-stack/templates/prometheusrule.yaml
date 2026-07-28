@@ -1,0 +1,1 @@
+{{ include "kube-prometheus-stack.renderResourceCollection" (dict "root" $ "items" .Values.prometheusRules "resourceKey" "prometheusRules" "defaultApiVersion" $.Values.apiVersions.prometheusRule "kind" "PrometheusRule" "namespaced" true) }}

@@ -1,0 +1,8 @@
+{{ include "elk.renderResources" (dict
+  "root" $
+  "collection" ($.Values.beats | default dict)
+  "resourceKey" "beats"
+  "kind" "Beat"
+  "defaultApiVersion" (include "elk.resolveApiVersion" (dict "root" $ "key" "beat" "legacyKey" "eckBeat" "default" "beat.k8s.elastic.co/v1beta1"))
+  "namespaced" true
+) }}

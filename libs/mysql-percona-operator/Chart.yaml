@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: v1.20.0
+description: Helm chart for Percona XtraDB Cluster Operator custom resources
+keywords:
+- mysql
+- database
+- percona
+- operator
+- helm
+- universal-chart
+name: mysql-percona-operator
+type: application
+version: 1.0.0

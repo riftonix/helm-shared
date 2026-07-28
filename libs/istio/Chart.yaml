@@ -1,0 +1,18 @@
+apiVersion: v2
+appVersion: 1.16.0
+description: Helm chart for rendering Istio CRD resources
+keywords:
+- istio
+- service-mesh
+- networking
+- gateway
+- virtualservice
+- destinationrule
+- authorizationpolicy
+- traffic-management
+- security
+- helm
+- universal-chart
+name: istio
+type: application
+version: 1.0.5

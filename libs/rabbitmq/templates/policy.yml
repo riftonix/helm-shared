@@ -1,0 +1,8 @@
+{{ include "rabbitmq.renderResources" (dict
+  "root" $
+  "collection" ($.Values.policies | default dict)
+  "resourceKey" "policies"
+  "kind" "Policy"
+  "defaultApiVersion" (include "rabbitmq.resolveApiVersion" (dict "root" $ "key" "policy" "legacyKey" "policy" "default" "rabbitmq.com/v1beta1"))
+  "namespaced" true
+) }}

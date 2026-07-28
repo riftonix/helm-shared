@@ -1,0 +1,8 @@
+{{ include "rabbitmq.renderResources" (dict
+  "root" $
+  "collection" ($.Values.vhosts | default dict)
+  "resourceKey" "vhosts"
+  "kind" "Vhost"
+  "defaultApiVersion" (include "rabbitmq.resolveApiVersion" (dict "root" $ "key" "vhost" "legacyKey" "vhost" "default" "rabbitmq.com/v1beta1"))
+  "namespaced" true
+) }}

@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "clickhouse values",
+  "description": "Schema for clickhouse Helm chart values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Enable rendering for this subchart."
+    },
+    "global": {
+      "type": "object",
+      "default": {},
+      "description": "Compatibility values inherited from umbrella charts.",
+      "additionalProperties": true
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the chart name used in generated labels."
+    },
+    "commonLabels": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Labels merged into every rendered resource."
+    },
+    "commonAnnotations": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Annotations merged into every rendered resource."
+    },
+    "generic": {
+      "type": "object",
+      "description": "Shared generic values compatible with appchart.",
+      "additionalProperties": true,
+      "properties": {
+        "labels": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "annotations": {
+          "$ref": "#/definitions/stringMap"
+        }
+      }
+    },
+    "apiVersions": {
+      "type": "object",
+      "description": "Default API version overrides per supported ClickHouse Operator kind.",
+      "additionalProperties": false,
+      "properties": {
+        "clickhouseInstallation": { "$ref": "#/definitions/nonEmptyString" },
+        "clickhouseInstallationTemplate": { "$ref": "#/definitions/nonEmptyString" },
+        "clickhouseKeeperInstallation": { "$ref": "#/definitions/nonEmptyString" },
+        "clickhouseOperatorConfiguration": { "$ref": "#/definitions/nonEmptyString" }
+      }
+    },
+    "clickhouseinstallations": { "$ref": "#/definitions/resourceMap" },
+    "clickhouseinstallationtemplates": { "$ref": "#/definitions/resourceMap" },
+    "clickhousekeeperinstallations": { "$ref": "#/definitions/resourceMap" },
+    "clickhouseoperatorconfigurations": { "$ref": "#/definitions/resourceMap" }
+  },
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stringMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "freeFormObject": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "resourceItem": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "namespace": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "labels": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "annotations": {
+          "$ref": "#/definitions/stringMap"
+        },
+        "apiVersion": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "spec": {
+          "$ref": "#/definitions/freeFormObject"
+        },
+        "status": {
+          "$ref": "#/definitions/freeFormObject"
+        }
+      }
+    },
+    "resourceMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "$ref": "#/definitions/nonEmptyString"
+      },
+      "additionalProperties": {
+        "anyOf": [
+          { "$ref": "#/definitions/resourceItem" },
+          { "type": "null" }
+        ]
+      }
+    }
+  }
+}

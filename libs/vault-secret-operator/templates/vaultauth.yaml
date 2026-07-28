@@ -1,0 +1,10 @@
+{{- $legacyVaultAuth := $.Values.vaultAuth | default dict -}}
+{{- if $legacyVaultAuth }}
+{{ include "vault-secret-operator.renderVaultAuth" (dict "root" $ "name" (($legacyVaultAuth.name | default (include "vault-secret-operator.defaultVaultAuthName" $))) "item" $legacyVaultAuth) }}
+{{- end }}
+{{- range $name := keys ($.Values.vaultAuths | default dict) | sortAlpha }}
+{{- $vaultAuth := get $.Values.vaultAuths $name -}}
+{{- if and (ne $name "__helm_docs_example__") $vaultAuth }}
+{{ include "vault-secret-operator.renderVaultAuth" (dict "root" $ "name" $name "item" $vaultAuth) }}
+{{- end }}
+{{- end }}

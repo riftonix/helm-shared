@@ -1,0 +1,8 @@
+{{ include "rabbitmq.renderResources" (dict
+  "root" $
+  "collection" ($.Values.shovels | default dict)
+  "resourceKey" "shovels"
+  "kind" "Shovel"
+  "defaultApiVersion" (include "rabbitmq.resolveApiVersion" (dict "root" $ "key" "shovel" "legacyKey" "shovel" "default" "rabbitmq.com/v1beta1"))
+  "namespaced" true
+) }}

@@ -1,0 +1,8 @@
+{{ include "elk.renderResources" (dict
+  "root" $
+  "collection" ($.Values.kibanas | default dict)
+  "resourceKey" "kibanas"
+  "kind" "Kibana"
+  "defaultApiVersion" (include "elk.resolveApiVersion" (dict "root" $ "key" "kibana" "legacyKey" "eckKibana" "default" "kibana.k8s.elastic.co/v1"))
+  "namespaced" true
+) }}

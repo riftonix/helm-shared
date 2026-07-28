@@ -1,0 +1,1 @@
+{{ include "kube-prometheus-stack.renderResourceCollection" (dict "root" $ "items" .Values.podMonitors "resourceKey" "podMonitors" "defaultApiVersion" $.Values.apiVersions.podMonitor "kind" "PodMonitor" "namespaced" true) }}

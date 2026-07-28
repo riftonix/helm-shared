@@ -1,0 +1,6 @@
+{{ include "keycloak-operator.renderGenericResources" (dict
+  "root" $
+  "collection" ($.Values.keycloaks | default dict)
+  "kind" "Keycloak"
+  "defaultApiVersion" $.Values.apiVersions.keycloak
+) }}

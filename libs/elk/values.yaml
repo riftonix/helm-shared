@@ -1,0 +1,187 @@
+# -- Enable elk chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# -- Shared metadata and templating values compatible with appchart.
+generic:
+  # -- Labels merged into every rendered resource.
+  labels: {}
+  # -- Annotations merged into every rendered resource.
+  annotations: {}
+
+# Override these defaults if your cluster uses different ECK API versions.
+apiVersions:
+  agent: agent.k8s.elastic.co/v1alpha1
+  apmServer: apm.k8s.elastic.co/v1
+  beat: beat.k8s.elastic.co/v1beta1
+  elasticsearch: elasticsearch.k8s.elastic.co/v1
+  elasticMapsServer: maps.k8s.elastic.co/v1alpha1
+  enterpriseSearch: enterprisesearch.k8s.elastic.co/v1
+  kibana: kibana.k8s.elastic.co/v1
+  logstash: logstash.k8s.elastic.co/v1alpha1
+
+# Each map entry supports:
+# - the top-level map key becomes metadata.name by default
+# - name: optional explicit metadata.name override
+# - namespace: optional, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec rendered as-is
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+
+# -- Agent resources keyed by resource name.
+agents:
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional namespace override. Defaults to `.Release.Namespace`.
+    namespace: documentation-placeholder
+    # -- Additional labels merged with chart and common labels.
+    labels: {}
+    # -- Additional annotations merged with common annotations.
+    annotations: {}
+    # -- Optional apiVersion override for this single resource.
+    apiVersion: agent.k8s.elastic.co/v1alpha1
+    # -- Raw ECK `spec` block rendered as-is.
+    spec: {}
+    # -- Optional raw `status` block for fixtures/tests.
+    status: {}
+
+# -- ApmServer resources keyed by resource name.
+apmservers:
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional namespace override. Defaults to `.Release.Namespace`.
+    namespace: documentation-placeholder
+    # -- Additional labels merged with chart and common labels.
+    labels: {}
+    # -- Additional annotations merged with common annotations.
+    annotations: {}
+    # -- Optional apiVersion override for this single resource.
+    apiVersion: apm.k8s.elastic.co/v1
+    # -- Raw ECK `spec` block rendered as-is.
+    spec: {}
+    # -- Optional raw `status` block for fixtures/tests.
+    status: {}
+
+# -- Beat resources keyed by resource name.
+beats:
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional namespace override. Defaults to `.Release.Namespace`.
+    namespace: documentation-placeholder
+    # -- Additional labels merged with chart and common labels.
+    labels: {}
+    # -- Additional annotations merged with common annotations.
+    annotations: {}
+    # -- Optional apiVersion override for this single resource.
+    apiVersion: beat.k8s.elastic.co/v1beta1
+    # -- Raw ECK `spec` block rendered as-is.
+    spec: {}
+    # -- Optional raw `status` block for fixtures/tests.
+    status: {}
+
+# -- Elasticsearch resources keyed by resource name.
+elasticsearches:
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional namespace override. Defaults to `.Release.Namespace`.
+    namespace: documentation-placeholder
+    # -- Additional labels merged with chart and common labels.
+    labels: {}
+    # -- Additional annotations merged with common annotations.
+    annotations: {}
+    # -- Optional apiVersion override for this single resource.
+    apiVersion: elasticsearch.k8s.elastic.co/v1
+    # -- Raw ECK `spec` block rendered as-is.
+    spec: {}
+    # -- Optional raw `status` block for fixtures/tests.
+    status: {}
+
+# -- ElasticMapsServer resources keyed by resource name.
+elasticmapsservers:
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional namespace override. Defaults to `.Release.Namespace`.
+    namespace: documentation-placeholder
+    # -- Additional labels merged with chart and common labels.
+    labels: {}
+    # -- Additional annotations merged with common annotations.
+    annotations: {}
+    # -- Optional apiVersion override for this single resource.
+    apiVersion: maps.k8s.elastic.co/v1alpha1
+    # -- Raw ECK `spec` block rendered as-is.
+    spec: {}
+    # -- Optional raw `status` block for fixtures/tests.
+    status: {}
+
+# -- EnterpriseSearch resources keyed by resource name.
+enterprisesearches:
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional namespace override. Defaults to `.Release.Namespace`.
+    namespace: documentation-placeholder
+    # -- Additional labels merged with chart and common labels.
+    labels: {}
+    # -- Additional annotations merged with common annotations.
+    annotations: {}
+    # -- Optional apiVersion override for this single resource.
+    apiVersion: enterprisesearch.k8s.elastic.co/v1
+    # -- Raw ECK `spec` block rendered as-is.
+    spec: {}
+    # -- Optional raw `status` block for fixtures/tests.
+    status: {}
+
+# -- Kibana resources keyed by resource name.
+kibanas:
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional namespace override. Defaults to `.Release.Namespace`.
+    namespace: documentation-placeholder
+    # -- Additional labels merged with chart and common labels.
+    labels: {}
+    # -- Additional annotations merged with common annotations.
+    annotations: {}
+    # -- Optional apiVersion override for this single resource.
+    apiVersion: kibana.k8s.elastic.co/v1
+    # -- Raw ECK `spec` block rendered as-is.
+    spec: {}
+    # -- Optional raw `status` block for fixtures/tests.
+    status: {}
+
+# -- Logstash resources keyed by resource name.
+logstashes:
+  __helm_docs_example__:
+    # -- Optional explicit metadata.name override.
+    name: documentation-placeholder
+    # -- Optional namespace override. Defaults to `.Release.Namespace`.
+    namespace: documentation-placeholder
+    # -- Additional labels merged with chart and common labels.
+    labels: {}
+    # -- Additional annotations merged with common annotations.
+    annotations: {}
+    # -- Optional apiVersion override for this single resource.
+    apiVersion: logstash.k8s.elastic.co/v1alpha1
+    # -- Raw ECK `spec` block rendered as-is.
+    spec: {}
+    # -- Optional raw `status` block for fixtures/tests.
+    status: {}

@@ -1,0 +1,93 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - charts/**
+      - libs/**
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  # renovate: datasource=repology depName=manjaro_stable/dagger
+  DAGGER_VERSION: 0.21.7
+  # renovate: datasource=git-tags depName=riftonix/daggerverse
+  GIT_MODULE: github.com/riftonix/daggerverse/modules/git@modules/git/v1.0.1
+  # renovate: datasource=git-tags depName=riftonix/daggerverse
+  HELM_CI_SCENARIO: github.com/riftonix/daggerverse/scenarios/helm-ci@scenarios/helm-ci/v1.2.0
+
+jobs:
+  prepare-targets:
+    name: Prepare chart targets
+    runs-on: ubuntu-latest
+
+    outputs:
+      charts: ${{ steps.charts.outputs.charts }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Dagger
+        uses: dagger/dagger-for-github@v8.4.1
+        with:
+          version: ${{ env.DAGGER_VERSION }}
+
+      - name: Find changed charts
+        id: charts
+        run: |
+          {
+            echo 'charts<<EOF'
+            dagger -m "${GIT_MODULE}" \
+              call --silent --json \
+              --source=. \
+              get-changed-components \
+              --base-ref='${{ github.event.before }}' \
+              --head-ref='${{ github.sha }}' \
+              --component-roots='charts/*' \
+              --component-roots='libs/*' \
+              --single-component=false
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Publish ${{ matrix.chart }}
+    runs-on: ubuntu-latest
+    needs: prepare-targets
+    if: ${{ needs.prepare-targets.outputs.charts != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        chart: ${{ fromJson(needs.prepare-targets.outputs.charts) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Dagger
+        uses: dagger/dagger-for-github@v8.4.1
+        with:
+          version: ${{ env.DAGGER_VERSION }}
+
+      - name: Publish Helm chart
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dagger -m "${HELM_CI_SCENARIO}" \
+            call \
+            --source=. \
+            publish-chart \
+            --chart-source='${{ matrix.chart }}' \
+            --git-tag-prefix='${{ matrix.chart }}' \
+            --oci-base-url='ghcr.io/${{ github.repository_owner }}' \
+            --username='${{ github.actor }}' \
+            --password=env://GITHUB_TOKEN \
+            --git-token=env://GITHUB_TOKEN

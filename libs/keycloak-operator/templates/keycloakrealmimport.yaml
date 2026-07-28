@@ -1,0 +1,6 @@
+{{ include "keycloak-operator.renderGenericResources" (dict
+  "root" $
+  "collection" ($.Values.keycloakRealmImports | default dict)
+  "kind" "KeycloakRealmImport"
+  "defaultApiVersion" $.Values.apiVersions.keycloakRealmImport
+) }}

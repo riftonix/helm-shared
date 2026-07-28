@@ -1,0 +1,6 @@
+{{ include "vault-secret-operator.renderGenericResources" (dict
+  "root" $
+  "collection" ($.Values.hcpAuths | default dict)
+  "kind" "HCPAuth"
+  "defaultApiVersion" $.Values.apiVersions.hcpAuth
+) }}

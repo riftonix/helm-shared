@@ -1,0 +1,89 @@
+# -- Enable argocd chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts. Accepted but ignored by this chart.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# Default API versions aligned with Argo CD CRDs.
+apiVersions:
+  # -- Default apiVersion for Application resources.
+  application: argoproj.io/v1alpha1
+  # -- Default apiVersion for ApplicationSet resources.
+  applicationSet: argoproj.io/v1alpha1
+  # -- Default apiVersion for AppProject resources.
+  appProject: argoproj.io/v1alpha1
+
+# Each map entry supports:
+# - the top-level map key becomes metadata.name
+# - namespace: optional, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+
+# -- Application resources keyed by resource name.
+# @default -- {}
+applications:
+  __helm_docs_example__:
+    # -- Namespace for namespaced resources. Defaults to the Helm release namespace.
+    # @default -- release namespace
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    # @default -- chart default for this kind
+    apiVersion: argoproj.io/v1alpha1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- ApplicationSet resources keyed by resource name.
+# @default -- {}
+applicationSets:
+  __helm_docs_example__:
+    # -- Namespace for namespaced resources. Defaults to the Helm release namespace.
+    # @default -- release namespace
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    # @default -- chart default for this kind
+    apiVersion: argoproj.io/v1alpha1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- AppProject resources keyed by resource name.
+# @default -- {}
+appProjects:
+  __helm_docs_example__:
+    # -- Namespace for namespaced resources. Defaults to the Helm release namespace.
+    # @default -- release namespace
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    # @default -- chart default for this kind
+    apiVersion: argoproj.io/v1alpha1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}

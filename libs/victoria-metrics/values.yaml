@@ -1,0 +1,61 @@
+# -- Enable victoria-metrics chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts. Accepted but ignored by this chart.
+global: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# The defaults below are aligned with the VictoriaMetrics Operator CRDs
+# referenced by this repository.
+# Override them if your cluster serves another CRD version.
+# Nested `helm-docs` source data lives in values.docs.yaml so these defaults can
+# stay empty and render no resources.
+apiVersions:
+  # -- Default apiVersion for VMAlert resources.
+  vmAlert: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMProbe resources.
+  vmProbe: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMRule resources.
+  vmRule: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMScrapeConfig resources.
+  vmScrapeConfig: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMServiceScrape resources.
+  vmServiceScrape: operator.victoriametrics.com/v1beta1
+  # -- Default apiVersion for VMStaticScrape resources.
+  vmStaticScrape: operator.victoriametrics.com/v1beta1
+
+# Each map value supports:
+# - the top-level map key is a stable entry identifier
+# - name: required
+# - namespace: optional, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+# - status: optional raw status block for fixtures and synthetic manifests
+
+# -- VMAlert resources to render.
+vmAlerts: {}
+
+# -- VMProbe resources to render.
+vmProbes: {}
+
+# -- VMRule resources to render.
+vmRules: {}
+
+# -- VMScrapeConfig resources to render.
+vmScrapeConfigs: {}
+
+# -- VMServiceScrape resources to render.
+vmServiceScrapes: {}
+
+# -- VMStaticScrape resources to render.
+vmStaticScrapes: {}

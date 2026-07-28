@@ -1,0 +1,1 @@
+{{ include "knative.renderResourceCollection" (dict "root" $ "items" .Values.podAutoscalers "resourceKey" "podAutoscalers" "defaultApiVersion" $.Values.apiVersions.podAutoscaler "kind" "PodAutoscaler" "namespaced" true) }}

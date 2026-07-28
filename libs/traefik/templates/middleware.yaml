@@ -1,0 +1,15 @@
+{{- range $key, $item := .Values.middlewares }}
+{{- if kindIs "map" $item }}
+{{- if (or (not (hasKey $item "enabled")) $item.enabled) }}
+---
+{{ include "traefik.renderResource" (dict
+  "root" $
+  "item" $item
+  "kind" "Middleware"
+  "defaultApiVersion" $.Values.apiVersions.middleware
+  "resourceKey" (printf "middlewares.%v" $key)
+  "namespaced" true
+) }}
+{{- end }}
+{{- end }}
+{{- end }}

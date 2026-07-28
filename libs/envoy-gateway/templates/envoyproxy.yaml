@@ -1,0 +1,6 @@
+{{ include "envoy-gateway.renderResources" (dict
+  "root" $
+  "collection" ($.Values.envoyProxies | default dict)
+  "kind" "EnvoyProxy"
+  "defaultApiVersion" $.Values.apiVersions.envoyProxy
+) }}

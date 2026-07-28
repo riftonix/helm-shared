@@ -1,0 +1,169 @@
+# -- Enable clickhouse chart rendering.
+enabled: true
+
+# -- Compatibility values inherited from umbrella charts.
+global:
+  apiVersions: {}
+
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# -- Shared metadata and templating values compatible with appchart.
+generic:
+  labels: {}
+  annotations: {}
+
+# -- Override these defaults if your cluster uses different ClickHouse Operator API versions.
+apiVersions:
+  clickhouseInstallation: clickhouse.altinity.com/v1
+  clickhouseInstallationTemplate: clickhouse.altinity.com/v1
+  clickhouseKeeperInstallation: clickhouse-keeper.altinity.com/v1
+  clickhouseOperatorConfiguration: clickhouse.altinity.com/v1
+
+# Each map entry supports:
+# - the top-level map key becomes metadata.name by default
+# - name: optional explicit metadata.name override
+# - namespace: optional, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec rendered as-is
+# - status: optional raw status block for fixtures and synthetic manifests
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
+
+# -- ClickHouseInstallation resources keyed by resource name.
+clickhouseinstallations:
+  __helm_docs_example__:
+    name: documentation-clickhouse-installation
+    namespace: documentation-placeholder
+    labels:
+      app.kubernetes.io/component: clickhouse
+    annotations:
+      docs.altinity.example/type: chi
+    apiVersion: clickhouse.altinity.com/v1
+    spec:
+      defaults:
+        templates:
+          podTemplate: clickhouse-v24
+          dataVolumeClaimTemplate: data-volume
+      configuration:
+        users:
+          example/password_sha256_hex: ""
+          example/networks/ip:
+            - 0.0.0.0/0
+        clusters:
+          - name: example
+            layout:
+              shardsCount: 1
+              replicasCount: 1
+      templates:
+        podTemplates:
+          - name: clickhouse-v24
+            spec:
+              containers:
+                - name: clickhouse
+                  image: clickhouse/clickhouse-server:24.8
+        volumeClaimTemplates:
+          - name: data-volume
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 10Gi
+    status: {}
+
+# -- ClickHouseInstallationTemplate resources keyed by resource name.
+clickhouseinstallationtemplates:
+  __helm_docs_example__:
+    name: documentation-clickhouse-template
+    namespace: documentation-placeholder
+    labels:
+      app.kubernetes.io/component: template
+    annotations:
+      docs.altinity.example/type: chit
+    apiVersion: clickhouse.altinity.com/v1
+    spec:
+      templates:
+        podTemplates:
+          - name: shared-clickhouse-pod
+            spec:
+              containers:
+                - name: clickhouse
+                  image: clickhouse/clickhouse-server:24.8
+        volumeClaimTemplates:
+          - name: shared-data-volume
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 20Gi
+    status: {}
+
+# -- ClickHouseKeeperInstallation resources keyed by resource name.
+clickhousekeeperinstallations:
+  __helm_docs_example__:
+    name: documentation-clickhouse-keeper
+    namespace: documentation-placeholder
+    labels:
+      app.kubernetes.io/component: keeper
+    annotations:
+      docs.altinity.example/type: chk
+    apiVersion: clickhouse-keeper.altinity.com/v1
+    spec:
+      configuration:
+        clusters:
+          - name: keeper
+            layout:
+              replicasCount: 3
+            templates:
+              podTemplate: keeper-default
+              volumeClaimTemplate: keeper-data
+      templates:
+        podTemplates:
+          - name: keeper-default
+            spec:
+              containers:
+                - name: clickhouse-keeper
+                  image: clickhouse/clickhouse-keeper:24.8
+        volumeClaimTemplates:
+          - name: keeper-data
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 5Gi
+    status: {}
+
+# -- ClickHouseOperatorConfiguration resources keyed by resource name.
+clickhouseoperatorconfigurations:
+  __helm_docs_example__:
+    name: documentation-clickhouse-operator
+    namespace: documentation-placeholder
+    labels:
+      app.kubernetes.io/component: operator-config
+    annotations:
+      docs.altinity.example/type: chopconf
+    apiVersion: clickhouse.altinity.com/v1
+    spec:
+      watch:
+        namespaces:
+          include:
+            - documentation-placeholder
+      clickhouse:
+        access:
+          username: clickhouse_operator
+          password: clickhouse_operator_password
+          port: 8123
+      reconcile:
+        runtime:
+          reconcileCHIsThreadsNumber: 5
+    status: {}

@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: v1
+description: Helm chart for rendering cert-manager custom resources
+keywords:
+- helm
+- universal-chart
+name: cert-manager
+type: application
+version: 1.0.4

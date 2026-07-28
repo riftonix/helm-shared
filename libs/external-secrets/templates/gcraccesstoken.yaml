@@ -1,0 +1,7 @@
+{{- range $name := keys ($.Values.gcrAccessTokens | default dict) | sortAlpha }}
+{{- $item := get $.Values.gcrAccessTokens $name -}}
+{{- if and (ne $name "__helm_docs_example__") (include "external-secrets.isActiveItem" $item) }}
+---
+{{ include "external-secrets.renderNamespacedResource" (dict "root" $ "name" $name "item" $item "kind" "GCRAccessToken" "apiVersionKey" "gcrAccessToken") }}
+{{- end }}
+{{- end }}

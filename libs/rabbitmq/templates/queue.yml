@@ -1,0 +1,8 @@
+{{ include "rabbitmq.renderResources" (dict
+  "root" $
+  "collection" ($.Values.queues | default dict)
+  "resourceKey" "queues"
+  "kind" "Queue"
+  "defaultApiVersion" (include "rabbitmq.resolveApiVersion" (dict "root" $ "key" "queue" "legacyKey" "queue" "default" "rabbitmq.com/v1beta1"))
+  "namespaced" true
+) }}

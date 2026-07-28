@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: v1alpha1
+description: Helm chart for rendering Envoy Gateway extension resources
+keywords:
+- envoy
+- gateway
+- network
+- helm
+- kubernetes
+name: envoy-gateway
+type: application
+version: 1.0.1

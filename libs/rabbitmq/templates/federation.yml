@@ -1,0 +1,8 @@
+{{ include "rabbitmq.renderResources" (dict
+  "root" $
+  "collection" ($.Values.federations | default dict)
+  "resourceKey" "federations"
+  "kind" "Federation"
+  "defaultApiVersion" (include "rabbitmq.resolveApiVersion" (dict "root" $ "key" "federation" "legacyKey" "federation" "default" "rabbitmq.com/v1beta1"))
+  "namespaced" true
+) }}

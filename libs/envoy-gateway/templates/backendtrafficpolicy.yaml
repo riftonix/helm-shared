@@ -1,0 +1,6 @@
+{{ include "envoy-gateway.renderResources" (dict
+  "root" $
+  "collection" ($.Values.backendTrafficPolicies | default dict)
+  "kind" "BackendTrafficPolicy"
+  "defaultApiVersion" $.Values.apiVersions.backendTrafficPolicy
+) }}

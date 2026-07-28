@@ -1,0 +1,15 @@
+{{- $items := .Values.vmStaticScrapes | default dict }}
+{{- range $entryKey := keys $items | sortAlpha }}
+{{- $item := index $items $entryKey }}
+{{- if kindIs "map" $item }}
+---
+{{ include "victoria-metrics.renderResource" (dict
+  "root" $
+  "item" $item
+  "kind" "VMStaticScrape"
+  "defaultApiVersion" $.Values.apiVersions.vmStaticScrape
+  "resourceKey" (printf "vmStaticScrapes[%q]" $entryKey)
+  "namespaced" true
+) }}
+{{- end }}
+{{- end }}

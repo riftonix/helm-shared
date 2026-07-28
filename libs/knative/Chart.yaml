@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: v1
+description: Helm chart for rendering Knative-adjacent CRD resources
+keywords:
+- ml
+- ai
+- inference
+- helm
+- universal-chart
+name: knative
+type: application
+version: 1.0.5

@@ -1,0 +1,1 @@
+{{ include "knative.renderResourceCollection" (dict "root" $ "items" .Values.routes "resourceKey" "routes" "defaultApiVersion" $.Values.apiVersions.route "kind" "Route" "namespaced" true) }}
