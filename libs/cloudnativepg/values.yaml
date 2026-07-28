@@ -281,7 +281,7 @@ clusterImageCatalogs:
               # -- The name of the extension, required.
               name: "documentation-placeholder"
           # -- The image reference.
-          image: "ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie"
+          image: "ghcr.io/cloudnative-pg/postgresql:17.10-system-trixie"
           # -- The PostgreSQL major version of the image. Must be unique within the catalog.
           major: 10
 
@@ -2316,7 +2316,7 @@ clusters:
       healthyPVC:
         - "documentation-placeholder"
       # -- Image contains the image name used by the pods.
-      image: "ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie"
+      image: "ghcr.io/cloudnative-pg/postgresql:17.10-system-trixie"
       # -- List of all the PVCs that are being initialized by this cluster.
       initializingPVC:
         - "documentation-placeholder"
@@ -2409,7 +2409,7 @@ clusters:
             # -- The name of the extension, required.
             name: "documentation-placeholder"
         # -- Image is the image name.
-        image: "ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie"
+        image: "ghcr.io/cloudnative-pg/postgresql:17.10-system-trixie"
         # -- MajorVersion is the major version of the image.
         majorVersion: 1
       # -- Current phase of the cluster.
@@ -2786,7 +2786,7 @@ imageCatalogs:
               # -- The name of the extension, required.
               name: "documentation-placeholder"
           # -- The image reference.
-          image: "ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie"
+          image: "ghcr.io/cloudnative-pg/postgresql:17.10-system-trixie"
           # -- The PostgreSQL major version of the image. Must be unique within the catalog.
           major: 10
 
@@ -3326,7 +3326,7 @@ poolers:
                     # -- Specify whether the Secret must be defined.
                     optional: false
               # -- Container image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.
-              image: "ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie"
+              image: "ghcr.io/cloudnative-pg/postgresql:17.10-system-trixie"
               # -- Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images.
               imagePullPolicy: "documentation-placeholder"
               # -- Actions that the management system should take in response to container lifecycle events. Cannot be updated.
@@ -3785,7 +3785,7 @@ poolers:
                     # -- Specify whether the Secret must be defined.
                     optional: false
               # -- Container image name. More info: https://kubernetes.io/docs/concepts/containers/images.
-              image: "ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie"
+              image: "ghcr.io/cloudnative-pg/postgresql:17.10-system-trixie"
               # -- Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images.
               imagePullPolicy: "documentation-placeholder"
               # -- Lifecycle is not allowed for ephemeral containers.
@@ -4252,7 +4252,7 @@ poolers:
                     # -- Specify whether the Secret must be defined.
                     optional: false
               # -- Container image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.
-              image: "ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie"
+              image: "ghcr.io/cloudnative-pg/postgresql:17.10-system-trixie"
               # -- Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images.
               imagePullPolicy: "documentation-placeholder"
               # -- Actions that the management system should take in response to container lifecycle events. Cannot be updated.
@@ -5248,7 +5248,7 @@ poolers:
                 # -- fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd.
                 fsType: "documentation-placeholder"
                 # -- image is the rados image name. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it.
-                image: "ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie"
+                image: "ghcr.io/cloudnative-pg/postgresql:17.10-system-trixie"
                 # -- keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it.
                 keyring: "/etc/ceph/keyring"
                 # -- monitors is a collection of Ceph monitors. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it.
