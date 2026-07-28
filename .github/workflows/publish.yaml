@@ -18,7 +18,7 @@ env:
   # renovate: datasource=git-tags depName=riftonix/daggerverse
   GIT_MODULE: github.com/riftonix/daggerverse/modules/git@modules/git/v1.0.1
   # renovate: datasource=git-tags depName=riftonix/daggerverse
-  HELM_CI_SCENARIO: github.com/riftonix/daggerverse/scenarios/helm-ci@scenarios/helm-ci/v1.2.0
+  HELM_CI_SCENARIO: github.com/riftonix/daggerverse/scenarios/helm-ci@scenarios/helm-ci/v1.2.1
 
 jobs:
   prepare-targets:
