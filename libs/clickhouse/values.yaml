@@ -132,7 +132,7 @@ clickhousekeeperinstallations:
             spec:
               containers:
                 - name: clickhouse-keeper
-                  image: clickhouse/clickhouse-keeper:24.12
+                  image: clickhouse/clickhouse-keeper:26.7
         volumeClaimTemplates:
           - name: keeper-data
             spec:
