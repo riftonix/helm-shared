@@ -58,7 +58,7 @@ valkeyclusters:
     # -- Desired state for a ValkeyCluster custom resource.
     spec:
       # -- Valkey container image override.
-      image: valkey/valkey:8.1
+      image: valkey/valkey:9.1
       # -- Number of shard groups. Each shard contains one primary and the configured replicas.
       shards: 3
       # -- Number of replicas for each shard group.
@@ -179,7 +179,7 @@ valkeyclusters:
         - # -- Container name to add or patch.
           name: server
           # -- Container image override for the named container.
-          image: valkey/valkey:8.1
+          image: valkey/valkey:9.1
           # -- Additional container environment variables.
           env:
             - # -- Environment variable name.
@@ -242,7 +242,7 @@ valkeynodes:
     # -- Desired state for a ValkeyNode custom resource.
     spec:
       # -- Valkey container image override.
-      image: valkey/valkey:8.1
+      image: valkey/valkey:9.1
       # -- Pod workload type created by the operator. Supported values are `StatefulSet` and `Deployment`.
       workloadType: StatefulSet
       # -- Resource requirements for the Valkey container.
