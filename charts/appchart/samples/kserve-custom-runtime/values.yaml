@@ -11,7 +11,7 @@ kserve:
             autoSelect: true
         containers:
           - name: kserve-container
-            image: nvcr.io/nvidia/tritonserver:24.01-py3
+            image: nvcr.io/nvidia/tritonserver:24.12-py3
   inferenceServices:
     recommender:
       spec:
