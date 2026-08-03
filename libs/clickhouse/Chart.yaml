@@ -1,4 +1,6 @@
 apiVersion: v2
+annotations:
+  org.opencontainers.image.source: https://github.com/riftonix/helm-shared
 appVersion: 0.25.6
 description: Helm chart for rendering Altinity ClickHouse Operator custom resources
 keywords:

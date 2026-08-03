@@ -1,4 +1,6 @@
 apiVersion: v2
+annotations:
+  org.opencontainers.image.source: https://github.com/riftonix/helm-shared
 appVersion: v1alpha1
 description: Helm chart for rendering Valkey Operator custom resources
 keywords:

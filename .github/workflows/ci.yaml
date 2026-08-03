@@ -12,9 +12,9 @@ env:
   # renovate: datasource=repology depName=manjaro_stable/dagger
   DAGGER_VERSION: 0.21.7
   # renovate: datasource=git-tags depName=riftonix/daggerverse
-  GIT_MODULE: github.com/riftonix/daggerverse/modules/git@modules/git/v1.0.1
+  GIT_MODULE: github.com/riftonix/daggerverse/modules/git@modules/git/v1.0.2
   # renovate: datasource=git-tags depName=riftonix/daggerverse
-  HELM_CI_SCENARIO: github.com/riftonix/daggerverse/scenarios/helm-ci@scenarios/helm-ci/v1.2.1
+  HELM_CI_SCENARIO: github.com/riftonix/daggerverse/scenarios/helm-ci@scenarios/helm-ci/v1.3.0
 
 jobs:
   prepare-targets:
