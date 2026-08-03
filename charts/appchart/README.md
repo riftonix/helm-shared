@@ -1,4 +1,4 @@
-# AppChart
+# Appchart
 
 This is the fork of [nxs-universal-chart](https://github.com/nixys/nxs-universal-chart/)
 
@@ -6,953 +6,745 @@ This is the fork of [nxs-universal-chart](https://github.com/nixys/nxs-universal
 
 Appchart is a Helm chart you can use to install any of your applications into Kubernetes/OpenShift and other orchestrators compatible with native Kubernetes API.
 
+The chart renders through the shared `common` library chart. `Chart.yaml` points at the published dependency, and local workflows resolve it with `make deps` or `bash scripts/helm-deps.sh .`.
+
 ### Features
 
 * Flexible way to deploy your applications.
-* Supported any Ingress controllers (Ingress Nginx, Traefik).
-* Supported basic Istio resources (Gateway, VirtualService, DestinationRule).
+* Supported any Ingress controllers (Ingress Nginx, Traefik, Istio).
 * Easy way to template any custom resource with extraDeploy feature.
-* Supported Kubernetes versions (<1.23/1.24/1.25/1.26/1.27/1.28/1.29/1.30) and OpenShift versions (3.11/<4.8/4.9/4.11/4.12/4.13).
-* Supported Helm versions (2/3)
+* Supported Kubernetes versions (1.23 or newer) and OpenShift versions (3.11/<4.8/4.9/4.11/4.12/4.13).
+* Supported Helm versions (2/3/4)
 
 ### Who can use this tool
 
 * Development
 * DevOps engineers
 
-Who deploy into Kubernetes/OpenShift on regular basis.
+## Table of Contents
 
-- [Quickstart](#quickstart)
-  - [Install](#install)
-    - [Kubernetes/OpenShift](#kubernetesopenshift)
-  - [Settings](#settings)
-    - [Global parameters](#global-parameters)
-    - [Generic parameters](#generic-parameters)
-    - [Common parameters](#common-parameters)
-    - Native resources
-      - [Service accounts parameters](#service-accounts-parameters)
-      - [Secrets parameters](#secrets-parameters)
-      - [ConfigMaps parameters](#configmaps-parameters)
-      - [PersistentVolumeClaims parameters](#persistentvolumeclaims-parameters)
-      - [Deployments parameters](#deployments-parameters)
-      - [StatefulSets parameters](#statefulsets-parameters)
-        - [Container object parameters](#container-object-parameters)
-      - [typed Volumes parameters](#typed-volumes-parameters)
-      - [PodDisruptionBudget parameters](#poddisruptionbudget-parameters)
-      - [HorizontalPodAutoscaler parameters](#horizontalpodautoscaler-parameters)
-      - [HPA `scaleTargetRef` object parameters](#hpa-scaletargetref-object-parameters)
-      - [Services parameters](#services-parameters)
-        - [Service `ports` object parameters:](#service-ports-object-parameters)
-      - [Ingresses parameters](#ingresses-parameters)
-        - [Ingress `hosts` object parameters](#ingress-hosts-object-parameters)
-        - [Ingress `paths` object parameters](#ingress-paths-object-parameters)
-      - [Jobs parameters](#jobs-parameters)
-      - [CronJobs parameters](#cronjobs-parameters)
-    - Helm hooks
-      - [Hooks parameters](#hooks-parameters)
-    - Prometheus-operator resources
-      - [ServiceMonitors parameters](#servicemonitors-parameters)
-    - VictoriaMetrics-operator resources
-      - [VMServiceScrapes parameters](#vmservicescrapes-parameters)
-    - Cert-manager resources
-      - [Issuers parameters](#issuers-parameters)
-      - [Certificates parameters](#certificates-parameters)
-      - [Certificates `secretTemplate` object parameters](#certificates-secrettemplate-object-parameters)
-      - [Certificates `issuerRef` object parameters](#certificates-issuerref-object-parameters)
-    - Traefik resources
-      - [IngressRoutes, IngressRoutesTCP, IngressRoutesUDP parameters](#ingressroutes-ingressroutestcp-ingressroutesudp-parameters)
-      - [IngressRoutes `routes` object parameters](#ingressroutes-routes-object-parameters)
-      - [IngressRoutes `tls` object parameters](#ingressroutes-tls-object-parameters)
-      - [Middlewares, MiddlewaresTCP parameters](#middlewares-middlewarestcp-parameters)
-      - [ServersTransport, ServersTransportTCP parameters](#serverstransport-serverstransporttcp-parameters)
-      - [TraefikServices parameters](#traefikservices-parameters)
-      - [TLSOptions parameters](#tlsoptions-parameters)
-      - [TLSStores parameters](#tlsstores-parameters)
-    - Istio resources
-      - [Gateways parameters](#gateways-parameters)
-      - [Gateways `servers` object parameters](#gateways-servers-object-parameters)
-      - [VirtualServices parameters](#virtualservices-parameters)
-      - [VirtualServices `http` object parameters](#virtualservices-http-object-parameters)
-      - [VirtualServices `tls` object parameters](#virtualservices-tls-object-parameters)
-      - [DestinationRules parameters](#destinationrules-parameters)
-      - [DestinationRules `subsets` object parameters](#destinationrules-subsets-object-parameters)
-      - [DestinationRules `workloadSelector` object parameters](#destinationrules-workloadselector-object-parameters)
-  - [Roadmap](#roadmap)
-  - [Feedback](#feedback)
-  - [License](#license)
+- [Introduction](#introduction)
+- [Quick Start](#quick-start)
+- [Supported Resources](#supported-resources)
+- [Dependency Subcharts](#dependency-subcharts)
+- [Values Model](#values-model)
+- [Helm Values](#helm-values)
+- [Included Values Files](#included-values-files)
+- [Testing](#testing)
+- [Repository Layout](#repository-layout)
+- [Notes](#notes)
+- [Roadmap](#roadmap)
+- [Feedback](#feedback)
+- [License](#license)
 
-# Quickstart
+## Quick Start
 
-## Install
-
-### Kubernetes/OpenShift
-
-To install the chart with the release name `my-release`:
+Install the chart:
 
 ```bash
-$ helm repo add riftonix-helm oci://ghcr.io/riftonix/helm-shared/charts
-$ helm install my-release riftonix-helm/appchart -f values.yaml
+helm install oci://ghcr.io/riftonix/helm-shared/charts/appchart \
+  --namespace app-system \
+  --create-namespace
 ```
 
-The command deploys your application with custom values on the Kubernetes/OpenShift cluster. The [Parameters](#parameters) section lists
-the parameters that can be configured during installation. To check deployment examples, please see [samples](/docs/samples/). For additional ways to customize your experience with appchart please check [Additional features](docs/ADDITIONAL_FEATURES.md).
-
-> **Tip**: Get yaml manifests with `helm template`
-
-## Settings
-
-### Global parameters
-
-| Name                                      | Description                                              | Value |
-|-------------------------------------------|----------------------------------------------------------|-------|
-| `global.kubeVersion`                      | Global Override Kubernetes version                       | `""`  |
-| `global.helmVersion`                      | Global Override Helm version                             | `""`  |
-| `global.apiVersions.cronJob`              | Global Override CronJob API version                      | `""`  |
-| `global.apiVersions.deployment`           | Global Override Deployment API version                   | `""`  |
-| `global.apiVersions.statefulSet`          | Global Override StatefulSet API version                  | `""`  |
-| `global.apiVersions.ingress`              | Global Override Ingress API version                      | `""`  |
-| `global.apiVersions.pdb`                  | Global Override PodDisruptionBudget API version          | `""`  |
-| `global.apiVersions.traefik`              | Global Override Traefik resources API version            | `""`  |
-| `global.apiVersions.istioGateway`         | Global Override Istio Gateway API version                | `""`  |
-| `global.apiVersions.istioVirtualService`  | Global Override Istio VirtualService API version         | `""`  |
-| `global.apiVersions.istioDestinationRule` | Global Override Istio DestinationRule API version        | `""`  |
-
-### Generic parameters
-
-| Name                            | Description                                                                                         | Value  |
-|---------------------------------|-----------------------------------------------------------------------------------------------------|--------|
-| `generic.labels`                | Labels to add to all deployed objects                                                               | `{}`   |
-| `generic.annotations`           | Annotations to add to all deployed objects                                                          | `{}`   |
-| `generic.extraSelectorLabels`   | SelectorLabels to add to deployments and services                                                   | `{}`   |
-| `generic.podLabels`             | Labels to add to all deployed pods                                                                  | `{}`   |
-| `generic.podAnnotations`        | Annotations to add to all deployed pods                                                             | `{}`   |
-| `generic.serviceAccountName`    | The name of the ServiceAccount to use by workload                                                   | `[]`   |
-| `generic.hostAliases`           | Pods host aliases to use by workload                                                                | `[]`   |
-| `generic.dnsPolicy`             | DnsPolicy for workload pods                                                                         | `[]`   |
-| `generic.priorityClassName`     | priorityClassName for workload pods                                                                 | `[]`   |
-| `generic.volumes`               | Array of typed Volumes to add to all deployed workloads                                             | `[]`   |
-| `generic.volumeMounts`          | Array of k8s VolumeMounts to add to all deployed workloads                                          | `[]`   |
-| `generic.extraVolumes`          | Array of k8s Volumes to add to all deployed workloads                                               | `[]`   |
-| `generic.extraImagePullSecrets` | Array of existing pull secrets to add to all deployed workloads                                     | `[]`   |
-| `generic.usePredefinedAffinity` | Use Affinity presets in all workloads by default                                                    | `true` |
-| `generic.tolerations`           | Tolerations to add to all deployed workloads. It's overrided by the specific resource's tolerations | `[]`   |
-| `generic.tolerations.key`       | The key that the toleration applies to                                                              | `""`   |
-| `generic.tolerations.operator`  | Operator used to compare the key. Allowed values: `Exists` or `Equal`                               | `""`   |
-| `generic.tolerations.value`     | The value associated with the key, used when the operator is `Equal`                                | `""`   |
-| `generic.tolerations.effect`    | Effect of the toleration. Allowed values: `NoSchedule`, `PreferNoSchedule`, `NoExecute`             | `""`   |
-| `generic.hookAnnotations`       | Helm hook annotations to add for all deployed configmaps or secrets                                 | `{}`   |
-
-
-### Common parameters
-
-| Name                        | Description                                                                                                   | Value            |
-|-----------------------------|---------------------------------------------------------------------------------------------------------------|------------------|
-| `kubeVersion`               | Override Kubernetes version                                                                                   | `""`             |
-| `nameOverride`              | String to override release name                                                                               | `""`             |
-| `envs`                      | Map of environment variables which will be deplyed as ConfigMap with name `RELEASE_NAME-envs`                 | `{}`             |
-| `envsString`                | String with map of environment variables which will be deplyed as ConfigMap with name `RELEASE_NAME-envs`     | `""`             |
-| `secretEnvs`                | Map of environment variables which will be deplyed as Secret with name `RELEASE_NAME-secret-envs`             | `{}`             |
-| `secretEnvsString`          | String with map of environment variables which will be deplyed as Secret with name `RELEASE_NAME-secret-envs` | `""`             |
-| `containerEnvs`             | Map of environment variables which will be added to all containers in all workloads                           | `{}`             |
-| `envsFromSecret`             | Global Map of Secrets and envs from it                            | `{}`
-| `imagePullSecrets`          | Map of registry secrets in `.dockerconfigjson` format                                                         | `{}`             |
-| `defaultImage`              | Docker image that will be used by default                                                                     | `[]`             |
-| `defaultImageTag`           | Docker image tag that will be used by default                                                                 | `[]`             |
-| `defaultImagePullPolicy`    | Docker image pull policy that will be used by default                                                         | `"IfNotPresent"` |
-| `podAffinityPreset`         | Pod affinity preset. Ignored if workload `affinity` is set. Allowed values: `soft` or `hard`                  | `soft`           |
-| `podAntiAffinityPreset`     | Pod anti-affinity preset. Ignored if workload `affinity` is set. Allowed values: `soft` or `hard`             | `soft`           |
-| `nodeAffinityPreset.type`   | Node affinity preset type. Ignored if workload `affinity` is set. Allowed values: `soft` or `hard`            | `""`             |
-| `nodeAffinityPreset.key`    | Node label key to match. Ignored if workload `affinity` is set                                                | `""`             |
-| `nodeAffinityPreset.values` | Node label values to match. Ignored if workload `affinity` is set                                             | `[]`             |
-| `extraDeploy`               | Map of extra objects (k8s manifests or Helm templates) to deploy with the release. [Example](#example-3)      | `[]`             |
-| `diagnosticMode.enabled`    | Enable diagnostic mode (all probes will be disabled and the command will be overridden)                       | `false`          |
-| `diagnosticMode.command`    | Command to override all containers in the deployment                                                          | `["sleep"]`      |
-| `diagnosticMode.args`       | Args to override all containers in the deployment                                                             | `["infinity"]`   |
-| `releasePrefix`             | Override prefix for all manifests names. Release name used by default. You should use `"-"` to make it empty. | `""`             |
-
-
-### Ingresses parameters
-
-`ingresses` is a map of the Ingress parameters, where key is a hostname (domain) of Ingress.
-
-| Name                     | Description                                                                                             | Value              |
-|--------------------------|---------------------------------------------------------------------------------------------------------|--------------------|
-| `name`                   | Custom name of the ingress, if empty ingress hostname will be used                                      | `""`               |
-| `labels`                 | Extra labels for ingress                                                                                | `{}`               |
-| `annotations`            | Extra annotations for ingress                                                                           | `{}`               |
-| `certManager.issuerName` | CertManager issuer name for ingress TLS                                                                 | `""`               |
-| `certManager.issuerType` | CertManager issuer type for ingress TLS                                                                 | `"cluster-issuer"` |
-| `ingressClassName`       | The name of ingressClass to use                                                                         | `""`               |
-| `tlsName`                | The name of secret to use for CertManager generated TLS                                                 | `""`               |
-| `hosts`                  | Array of the ingress [hosts](#ingress-hosts-object-parameters) objects                                  | `[]`               |
-| `extraTls`               | Array of the ingress [tls params](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) | `[]`               |
-
-#### Ingress `hosts` object parameters
-
-| Name       | Description                                                            | Value |
-|------------|------------------------------------------------------------------------|-------|
-| `hostname` | Hostname to serve by ingress, if empty ingress hostname will be used   | `""`  |
-| `paths`    | Array of the ingress [paths](#ingress-paths-object-parameters) objects | `[]`  |
-
-#### Ingress `paths` object parameters
-
-| Name          | Description                                                                                                             | Value      |
-|---------------|-------------------------------------------------------------------------------------------------------------------------|------------|
-| `path`        | URL path                                                                                                                | `"/"`      |
-| `pathType`    | Type of the ingress path [see for details](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types) | `"Prefix"` |
-| `serviceName` | Name of the service to route requests                                                                                   | `""`       |
-| `servicePort` | Name or number of the service port to route requests                                                                    | `""`       |
-
-### Services parameters
-
-`services` is a map of the Service parameters, where key is a name of Service.
-
-| Name                       | Description                                                           | Value       |
-|----------------------------|-----------------------------------------------------------------------|-------------|
-| `labels`                   | Extra labels for service                                              | `{}`        |
-| `annotations`              | Extra annotations for service                                         | `{}`        |
-| `type`                     | Type of a service                                                     | `""`        |
-| `loadBalancerIP`           | IP of a service with LoadBalancer type                                | `""`        |
-| `loadBalancerSourceRanges` | Service Load Balancer sources                                         | `[]`        |
-| `loadBalancerClass`        | Service Load Balancer Class                                           | `""`        |
-| `allocateLoadBalancerNodePorts`  | Load Balancer NodePort allocation                               | `true`      |
-| `externalTrafficPolicy`    | Service external traffic policy                                       | `"Cluster"` |
-| `healthCheckNodePort`      | Health check node port (numeric port number) for the service          | ``          |
-| `externalIPs`              | Array of the external IPs that route to one or more cluster nodes     | `[]`        |
-| `ports`                    | Array of the service [port](#service-ports-object-parameters) objects | `[]`        |
-| `extraSelectorLabels`      | Extra selectorLabels for select workload                              | `{}`        |
-| `clusterIP`                | Service clusterIP parameter value                                     | `""`        |
-
-#### Service `ports` object parameters:
-
-| Name         | Description                  | Value   |
-|--------------|------------------------------|---------|
-| `name`       | Name of the service port     | `""`    |
-| `protocol`   | Protocol of the service port | `"TCP"` |
-| `port`       | Service port number          | ``      |
-| `targetPort` | Service target port number   | ``      |
-| `nodePort`   | Service NodePort number      | ``      |
-
-### Deployments parameters
-
-`deploymentsGeneral` is a map of the Deployments parameters, which uses for all Deployments.
-
-| Name                                       | Description                                         | Value   |
-|--------------------------------------------|-----------------------------------------------------|---------|
-| `deploymentsGeneral.labels`                | Labels to add to all deployments                    | `{}`    |
-| `deploymentsGeneral.annotations`           | Annotations to add to all deployments               | `{}`    |
-| `deploymentsGeneral.envsFromConfigmap`     | Map of ConfigMaps and envs from it                  | `{}`    |
-| `deploymentsGeneral.containerEnvs`         | Envs for container in KEY:VALUE format              | `{}`    |
-| `deploymentsGeneral.envsFromSecret`        | Map of Secrets and envs from it                     | `{}`    |
-| `deploymentsGeneral.env`                   | Array of extra environment variables                | `[]`    |
-| `deploymentsGeneral.envConfigmaps`         | Array of Configmaps names with extra envs           | `[]`    |
-| `deploymentsGeneral.envSecrets`            | Array of Secrets names with extra envs              | `[]`    |
-| `deploymentsGeneral.envFrom`               | Array of extra envFrom objects                      | `[]`    |
-| `deploymentsGeneral.extraVolumes`          | Array of k8s Volumes to add to all deployments      | `[]`    |
-| `deploymentsGeneral.volumeMounts`          | Array of k8s VolumeMounts to add to all deployments | `[]`    |
-| `deploymentsGeneral.affinity`                   | Affinity for CronJob; replicas pods assignment (ignored if defined on CronJob level)       | `{}`    |
-| `deploymentsGeneral.usePredefinedAffinity` | Use Affinity presets in all deployments by default  | `false` |
-
-`deployments` is a map of the Deployment parameters, where key is a name of the Deployment.
-
-| Name                            | Description                                                                                                                       | Value |
-|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|-------|
-| `labels`                        | Extra labels for deployment                                                                                                       | `{}`  |
-| `annotations`                   | Extra annotations for deployment                                                                                                  | `{}`  |
-| `replicas`                      | Deployment replicas count                                                                                                         | `1`   |
-| `strategy`                      | Deployment strategy                                                                                                               | `{}`  |
-| `progressDeadlineSeconds`       | The maximum time in seconds for a deployment to make progress before it is considered failed | `600`  |
-| `extraSelectorLabels`           | Extra selectorLabels for deployment                                                                                               | `{}`  |
-| `podLabels`                     | Extra pod labels for deployment                                                                                                   | `{}`  |
-| `podAnnotations`                | Extra pod annotations for deployment                                                                                              | `{}`  |
-| `serviceAccountName`            | The name of the ServiceAccount to use by deployment                                                                               | `""`  |
-| `hostAliases`                   | Pods host aliases                                                                                                                 | `[]`  |
-| `affinity`                      | Affinity for deployment; replicas pods assignment                                                                                 | `{}`  |
-| `securityContext`               | Security Context for deployment pods                                                                                              | `{}`  |
-| `dnsPolicy`                     | DnsPolicy for deployment pods                                                                                                     | `""`  |
-| `priorityClassName`             | priorityClassName for deployment pods                                                                                             | `""`  |
-| `nodeSelector`                  | Node labels for deployment; pods assignment                                                                                       | `{}`  |
-| `tolerations`                   | Tolerations for deployment; replicas pods assignment                                                                              | `[]`  |
-| `imagePullSecrets`              | DEPRECATED. Array of existing pull secrets                                                                                        | `[]`  |
-| `extraImagePullSecrets`         | Array of existing pull secrets                                                                                                    | `[]`  |
-| `terminationGracePeriodSeconds` | Integer setting the termination grace period for the pods                                                                         | `30`  |
-| `initContainers`                | Array of the deployment initContainers ([container](#container-object-parameters) objects)                                        | `[]`  |
-| `containers`                    | Array of the deployment Containers ([container](#container-object-parameters) objects)                                            | `[]`  |
-| `volumes`                       | Array of the deployment typed [volume](#typed-volumes-parameters) objects                                                         | `[]`  |
-| `extraVolumes`                  | Array of [k8s Volumes](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#volume-v1-core) to add to deployments | `[]`  |
-
-### StatefulSets parameters
-
-`statefulSetsGeneral` is a map of the StatefulSets parameters, which uses for all StatefulSets.
-
-| Name                                        | Description                                          | Value   |
-|---------------------------------------------|------------------------------------------------------|---------|
-| `statefulSetsGeneral.labels`                | Labels to add to all StatefulSets                    | `{}`    |
-| `statefulSetsGeneral.annotations`           | Annotations to add to all StatefulSets               | `{}`    |
-| `statefulSetsGeneral.envsFromConfigmap`     | Map of ConfigMaps and envs from it                   | `{}`    |
-| `statefulSetsGeneral.containerEnvs`         | Envs for container in KEY:VALUE format               | `{}`    |
-| `statefulSetsGeneral.envsFromSecret`        | Map of Secrets and envs from it                      | `{}`    |
-| `statefulSetsGeneral.env`                   | Array of extra environment variables                 | `[]`    |
-| `statefulSetsGeneral.envConfigmaps`         | Array of Configmaps names with extra envs            | `[]`    |
-| `statefulSetsGeneral.envSecrets`            | Array of Secrets names with extra envs               | `[]`    |
-| `statefulSetsGeneral.envFrom`               | Array of extra envFrom objects                       | `[]`    |
-| `statefulSetsGeneral.extraVolumes`          | Array of k8s Volumes to add to all StatefulSets      | `[]`    |
-| `statefulSetsGeneral.volumeMounts`          | Array of k8s VolumeMounts to add to all StatefulSets | `[]`    |
-| `statefulSetsGeneral.affinity`                   | Affinity for CronJob; replicas pods assignment (ignored if defined on CronJob level)       | `{}`    |
-| `statefulSetsGeneral.usePredefinedAffinity` | Use Affinity presets in all StatefulSets by default  | `false` |
-
-`statefulSets` is a map of the StatefulSets parameters, where key is a name of the StatefulSets.
-
-| Name                            | Description                                                                                                                                                            | Value |
-|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
-| `labels`                        | Extra labels for statefulSet                                                                                                                                           | `{}`  |
-| `annotations`                   | Extra annotations for statefulSet                                                                                                                                      | `{}`  |
-| `replicas`                      | StatefulSet replicas count                                                                                                                                             | `1`   |
-| `minReadySeconds`               | StatefulSet minReadySeconds                                                                                                                                            | ``    |
-| `podManagementPolicy`           | StatefulSet podManagementPolicy                                                                                                                                        | ``    |
-| `strategy`                      | StatefulSet strategy                                                                                                                                                   | `{}`  |
-| `extraSelectorLabels`           | Extra selectorLabels for statefulSet                                                                                                                                   | `{}`  |
-| `podLabels`                     | Extra pod labels for statefulSet                                                                                                                                       | `{}`  |
-| `podAnnotations`                | Extra pod annotations for statefulSet                                                                                                                                  | `{}`  |
-| `serviceAccountName`            | The name of the ServiceAccount to use by statefulSet                                                                                                                   | `""`  |
-| `hostAliases`                   | Pods host aliases                                                                                                                                                      | `[]`  |
-| `affinity`                      | Affinity for statefulSet; replicas pods assignment                                                                                                                     | `{}`  |
-| `securityContext`               | Security Context for statefulSet pods                                                                                                                                  | `{}`  |
-| `dnsPolicy`                     | DnsPolicy for statefulSet pods                                                                                                                                         | `""`  |
-| `priorityClassName`             | priorityClassName for statefulSet pods                                                                                                                                 | `""`  |
-| `nodeSelector`                  | Node labels for statefulSet; pods assignment                                                                                                                           | `{}`  |
-| `tolerations`                   | Tolerations for statefulSet; replicas pods assignment                                                                                                                  | `[]`  |
-| `imagePullSecrets`              | DEPRECATED. Array of existing pull secrets                                                                                                                             | `[]`  |
-| `extraImagePullSecrets`         | Array of existing pull secrets                                                                                                                                         | `[]`  |
-| `terminationGracePeriodSeconds` | Integer setting the termination grace period for the pods                                                                                                              | `30`  |
-| `initContainers`                | Array of the statefulSet initContainers ([container](#container-object-parameters) objects)                                                                            | `[]`  |
-| `containers`                    | Array of the statefulSet Containers ([container](#container-object-parameters) objects)                                                                                | `[]`  |
-| `volumes`                       | Array of the statefulSet typed [volume](#typed-volumes-parameters) objects                                                                                             | `[]`  |
-| `extraVolumes`                  | Array of [k8s Volumes](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#volume-v1-core) to add to statefulSets                                     | `[]`  |
-| `volumeClaimTemplates`          | Array of [k8s volumeClaimTemplates](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#persistentvolumeclaimtemplate-v1-core) to add to statefulSets | `[]`  |
-
-
-#### Container object parameters
-
-| Name                   | Description                                                                                                                | Value            |
-|------------------------|----------------------------------------------------------------------------------------------------------------------------|------------------|
-| `name`                 | The name of the container                                                                                                  | `""`             |
-| `image`                | Docker image of the container                                                                                              | `""`             |
-| `imageTag`             | Docker image tag of the container                                                                                          | `"latest"`       |
-| `imagePullPolicy`      | Docker image pull policy                                                                                                   | `"IfNotPresent"` |
-| `securityContext`      | Security Context for container                                                                                             | `{}`             |
-| `command`              | Container command override (list or string)                                                                                | `[]`             |
-| `commandMaxDuration`   | Duration of command execution (for jobs and cronJobs only)                                                                 | ``               |
-| `commandDurationAlert` | Create Prometheus Alert on command execution time exceeded (for jobs and cronJobs only)                                    | ``               |
-| `args`                 | Container arguments override                                                                                               | `[]`             |
-| `envsFromConfigmap`    | Map of ConfigMaps and envs from it                                                                                         | `{}`             |
-| `containerEnvs`         | Envs for container in KEY:VALUE format               | `{}`    |
-| `envsFromSecret`       | Map of Secrets and envs from it                                                                                            | `{}`             |
-| `env`                  | Array of extra environment variables                                                                                       | `[]`             |
-| `envConfigmaps`        | Array of Configmaps names with extra envs                                                                                  | `[]`             |
-| `envSecrets`           | Array of Secrets names with extra envs                                                                                     | `[]`             |
-| `envFrom`              | Array of extra envFrom objects                                                                                             | `[]`             |
-| `ports`                | Array of ports to be exposed from container                                                                                | `[]`             |
-| `lifecycle`            | Containers lifecycle hooks                                                                                                 | `{}`             |
-| `livenessProbe`        | Liveness probe object for container                                                                                        | `{}`             |
-| `readinessProbe`       | Readiness probe object for container                                                                                       | `{}`             |
-| `resources`            | The resources requests and limits for container                                                                            | `{}`             |
-| `volumeMounts`         | Array of the [k8s Volume mounts](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#volumemount-v1-core) | `[]`             |
-
-### Service accounts parameters
-`serviceAccountGeneral` is a map of the ServiceAccount parameters, which uses for all service accounts and its roles/clusterroles and corresponding bindings.
-
-| Name                                         | Description                                                                                | Value   |
-|----------------------------------------------|--------------------------------------------------------------------------------------------|---------|
-| `serviceAccountGeneral.labels`               | Extra labels for all ServiceAccounts                                                       | `{}`    |
-| `serviceAccountGeneral.annotations`          | Extra annotations for all ServiceAccounts                                                  | `{}`    |
-
-`serviceAccount` is a map of the ServiceAccount parameters, where key is name of the service account.
-
-| Name                         | Description                                                                             | Value     |
-|------------------------------|-----------------------------------------------------------------------------------------|-----------|
-| `labels`                     | Extra ServiceAccount, role and binding labels                                           | `{}`      |
-| `annotations`                | Extra ServiceAccount annotations                                                        | `{}`      |
-| `role`                       | Map of role parametres to create and bind                                               | `{}`      |
-| `role.name`                  | Name of role to create/bind                                                             | `{}`      |
-| `role.rules`                 | List of rules for role                                                                  | `{}`      |
-| `clusterRole`                | Map of clusterRole parametres to create and bind                                        | `{}`      |
-| `clusterRole.name`           | Name of clusterRole to create/bind                                                      | `{}`      |
-| `clusterRole.rules`          | List of rules for clusterRole                                                           | `{}`      |
-
-`role/clusterRole` is a map of parameters of role/clusterrole. If *rules* are not set then only binding to existing role/clusterrole will be created. If *rules* are set then corresponding role/clusterrole will be created and binded to service account. Service account can be created without corresponding roles and bindings.
-
-### Secrets parameters
-
-`secrets` is a map of the Secret parameters, where key is a name of Secret.
-
-| Name               | Description                                  | Value      |
-|--------------------|----------------------------------------------|------------|
-| `type`             | Secret type                                  | `"Opaque"` |
-| `labels`           | Extra secret labels                          | `{}`       |
-| `annotations`      | Extra secret annotations                     | `{}`       |
-| `data`             | Map of Secret data                           | `{}`       |
-
-Secret `data` object is a map where value can be a string, json or base64 encoded string with prefix `b64:`.
-
-### SealedSecrets paramaters
-
-`sealedSecrets` is a map of the SealedSecret parameters, where key is a name of SealedSecret.
-
-| Name               | Description                                  | Value      |
-|--------------------|----------------------------------------------|------------|
-| `labels`           | Extra SealedSecret labels                    | `{}`       |
-| `annotations`      | Extra SealedSecret annotations               | `{}`       |
-| `encryptedData`    | Map of SealedSecret encrypted data           | `{}`       |
-
-### ConfigMaps parameters
-
-`configMaps` is a map of the ConfigMap parameters, where key is a name of ConfigMap.
-
-| Name               | Description                                     | Value     |
-|--------------------|-------------------------------------------------|-----------|
-| `labels`           | Extra ConfigMap labels                          | `{}`      |
-| `annotations`      | Extra ConfigMap annotations                     | `{}`      |
-| `data`             | Map of ConfigMap data                           | `{}`      |
-
-### PersistentVolumeClaims parameters
-
-`pvcs` is a map of the PersistentVolumeClaim parameters, where key is a name of PersistentVolumeClaim.
-
-| Name               | Description                                          | Value          |
-|--------------------|------------------------------------------------------|----------------|
-| `labels`           | Extra Persistent Volume Claim labels                 | `{}`           |
-| `annotations`      | Extra Persistent Volume Claim annotations            | `{}`           |
-| `accessModes`      | Persistent Volume access modes                       | `[]`           |
-| `volumeMode`       | Persistent Volume volume mode                        | `"Filesystem"` |
-| `volumeName`       | Persistent Volume volume name (if already exists)    | ``             |
-| `storageClassName` | Persistent Volume Storage Class name                 | `""`           |
-| `selector`         | Labels selector to further filter the set of volumes | `{}`           |
-
-### typed Volumes parameters
-
-| Name           | Description                                                | Value |
-|----------------|------------------------------------------------------------|-------|
-| `type`         | Resource type of the volume ("configMap","secret","pvc")   | `""`  |
-| `name`         | Name of the resource that will be used with release prefix | `""`  |
-| `originalName` | Original name of the resource                              | `""`  |
-| `items`        | Array of volume items                                      | `[]`  |
-
-### Hooks parameters
-
-`hooksGeneral` is a map of the Helm Hooks Jobs parameters, which uses for all Helm Hooks Jobs.
-
-| Name                                   | Description                                                                             | Value   |
-|----------------------------------------|-----------------------------------------------------------------------------------------|---------|
-| `hooksGeneral.labels`                  | Extra labels for all Hook Job                                                           | `{}`    |
-| `hooksGeneral.annotations`             | Extra annotations for all Hook Job                                                      | `{}`    |
-| `hooksGeneral.envsFromConfigmap`       | Map of ConfigMaps and envs from it                                                      | `{}`    |
-| `hooksGeneral.containerEnvs`          | Envs for container in KEY:VALUE format                                                          | `{}`    |
-| `hooksGeneral.envsFromSecret`          | Map of Secrets and envs from it                                                         | `{}`    |
-| `hooksGeneral.env`                     | Array of extra environment variables                                                    | `[]`    |
-| `hooksGeneral.envConfigmaps`           | Array of Configmaps names with extra envs                                               | `[]`    |
-| `hooksGeneral.envSecrets`              | Array of Secrets names with extra envs                                                  | `[]`    |
-| `hooksGeneral.envFrom`                 | Array of extra envFrom objects                                                          | `[]`    |
-| `hooksGeneral.parallelism`             | How much Jobs can be run in parallel (ignored if defined on Hook level)                 | `1`     |
-| `hooksGeneral.completions`             | How much Pods should finish to finish Job (ignored if defined on Hook level)            | `1`     |
-| `hooksGeneral.activeDeadlineSeconds`   | Duration of the Job (ignored if defined on Hook level)                                  | `100`   |
-| `hooksGeneral.backoffLimit`            | Number of retries before considering a Job as failed (ignored if defined on Hook level) | `6`     |
-| `hooksGeneral.ttlSecondsAfterFinished` | TTL for delete finished Hook Job (ignored if defined on Hook level)                     | `100`   |
-| `hooksGeneral.podLabels`               | Extra pod labels for Hook Job (ignored if defined on Hook level)                        | `{}`    |
-| `hooksGeneral.podAnnotations`          | Extra pod annotations for Hook Job (ignored if defined on Hook level)                   | `{}`    |
-| `hooksGeneral.serviceAccountName`      | The name of the ServiceAccount to use by Hook Job (ignored if defined on Hook level)    | `""`    |
-| `hooksGeneral.hostAliases`             | Pods host aliases (ignored if defined on Hook level)                                    | `[]`    |
-| `hooksGeneral.affinity`                | Affinity for Hook Job; replicas pods assignment (ignored if defined on Hook level)      | `{}`    |
-| `hooksGeneral.dnsPolicy`               | DnsPolicy for Hook Job pods (ignored if defined on Hook level)                          | `""`    |
-| `hooksGeneral.extraVolumes`            | Array of k8s Volumes to add to all Hook Jobs                                            | `[]`    |
-| `hooksGeneral.volumeMounts`            | Array of k8s VolumeMounts to add to all Hook Jobs                                       | `[]`    |
-| `hooksGeneral.usePredefinedAffinity`   | Use Affinity presets in all Hook Jobs by default                                        | `false` |
-
-`hooks` is a map of the Helm Hooks Jobs parameters, where key is name of the Helm Hook job.
-
-| Name                      | Description                                                                              | Value                       |
-|---------------------------|------------------------------------------------------------------------------------------|-----------------------------|
-| `labels`                  | Extra Hook Job labels                                                                    | `{}`                        |
-| `annotations`             | Extra Hook Job annotations                                                               | `{}`                        |
-| `kind`                    | Kind of the Helm Hook                                                                    | `"pre-install,pre-upgrade"` |
-| `weight`                  | Weight of the Helm Hook                                                                  | `"5"`                       |
-| `deletePolicy`            | Delete Policy of the Helm Hook                                                           | `"before-hook-creation"`    |
-| `parallelism`             | How much pods of Jobs can be run in parallel                                             | `1`                         |
-| `completions`             | How much pods should finish to finish Job                                                | `1`                         |
-| `activeDeadlineSeconds`   | Duration of the Job                                                                      | `100`                       |
-| `backoffLimit`            | Number of retries before considering a Job as failed                                     | `6`                         |
-| `ttlSecondsAfterFinished` | TTL for delete finished Hook Job                                                         | `100`                       |
-| `podLabels`               | Extra pod labels for Hook Job                                                            | `{}`                        |
-| `podAnnotations`          | Extra pod annotations for Hook Job                                                       | `{}`                        |
-| `serviceAccountName`      | The name of the ServiceAccount to use by Hook Job                                        | `""`                        |
-| `hostAliases`             | Pods host aliases                                                                        | `[]`                        |
-| `affinity`                | Affinity for Hook Job; replicas pods assignment                                          | `{}`                        |
-| `securityContext`         | Security Context for Hook Job pods                                                       | `{}`                        |
-| `dnsPolicy`               | DnsPolicy for Hook Job pods                                                              | `""`                        |
-| `priorityClassName`       | priorityClassName for Hook Job pods                                                      | `""`                        |
-| `nodeSelector`            | Node labels for Hook Job; pods assignment                                                | `{}`                        |
-| `tolerations`             | Tolerations for Hook Job; replicas pods assignment                                       | `[]`                        |
-| `imagePullSecrets`        | DEPRECATED. Array of existing pull secrets                                               | `[]`                        |
-| `extraImagePullSecrets`   | Array of existing pull secrets                                                           | `[]`                        |
-| `initContainers`          | Array of the Hook Job initContainers ([container](#container-object-parameters) objects) | `[]`                        |
-| `containers`              | Array of the Hook Job Containers ([container](#container-object-parameters) objects)     | `[]`                        |
-| `volumes`                 | Array of the Hook Job typed volumes                                                      | `[]`                        |
-| `extraVolumes`            | Array of k8s Volumes to add to Hook Job                                                  | `[]`                        |
-| `restartPolicy`           | Restart Policy of the Hook Job                                                           | `"Never"`                   |
-
-### CronJobs parameters
-
-`cronJobsGeneral` is a map of the CronJobs parameters, which uses for all CronJobs.
-
-| Name                                         | Description                                                                                | Value   |
-|----------------------------------------------|--------------------------------------------------------------------------------------------|---------|
-| `cronJobsGeneral.labels`                     | Extra labels for all CronJobs                                                              | `{}`    |
-| `cronJobsGeneral.annotations`                | Extra annotations for all CronJobs                                                         | `{}`    |
-| `cronJobsGeneral.envsFromConfigmap`          | Map of ConfigMaps and envs from it                                                         | `{}`    |
-| `cronJobsGeneral.containerEnvs`          | Envs for container in KEY:VALUE format                                                          | `{}`    |
-| `cronJobsGeneral.envsFromSecret`             | Map of Secrets and envs from it                                                            | `{}`    |
-| `cronJobsGeneral.env`                        | Array of extra environment variables                                                       | `[]`    |
-| `cronJobsGeneral.envConfigmaps`              | Array of Configmaps names with extra envs                                                  | `[]`    |
-| `cronJobsGeneral.envSecrets`                 | Array of Secrets names with extra envs                                                     | `[]`    |
-| `cronJobsGeneral.envFrom`                    | Array of extra envFrom objects                                                             | `[]`    |
-| `cronJobsGeneral.startingDeadlineSeconds`    | Duration for starting all CronJobs (ignored if defined on CronJob level)                   | ``      |
-| `cronJobsGeneral.successfulJobsHistoryLimit` | Limitation of completed jobs should be kept (ignored if defined on CronJob level)          | `3`     |
-| `cronJobsGeneral.failedJobsHistoryLimit`     | Limitation of failed jobs should be kept (ignored if defined on CronJob level)             | `1`     |
-| `cronJobsGeneral.parallelism`                | How much pods of Job can be run in parallel (ignored if defined on CronJob level)          | `1`     |
-| `cronJobsGeneral.completions`                | How much pods should finish to finish Job (ignored if defined on CronJob level)            | `1`     |
-| `cronJobsGeneral.activeDeadlineSeconds`      | Duration of the Job (ignored if defined on CronJob level)                                  | `100`   |
-| `cronJobsGeneral.backoffLimit`               | Number of retries before considering a Job as failed (ignored if defined on CronJob level) | `6`     |
-| `cronJobsGeneral.ttlSecondsAfterFinished`    | TTL for delete finished Jobs (ignored if defined on CronJob level)                         | `100`   |
-| `cronJobsGeneral.podLabels`                  | Extra pod labels for CronJob (ignored if defined on CronJob level)                         | `{}`    |
-| `cronJobsGeneral.podAnnotations`             | Extra pod annotations for CronJob (ignored if defined on CronJob level)                    | `{}`    |
-| `cronJobsGeneral.serviceAccountName`         | The name of the ServiceAccount to use by Job (ignored if defined on CronJob level)         | `""`    |
-| `cronJobsGeneral.hostAliases`                | Pods host aliases (ignored if defined on CronJob level)                                    | `[]`    |
-| `cronJobsGeneral.affinity`                   | Affinity for CronJob; replicas pods assignment (ignored if defined on CronJob level)       | `{}`    |
-| `cronJobsGeneral.dnsPolicy`                  | DnsPolicy for CronJob pods (ignored if defined on CronJob level)                           | `""`    |
-| `cronJobsGeneral.extraVolumes`               | Array of k8s Volumes to add to all CronJobs                                                | `[]`    |
-| `cronJobsGeneral.volumeMounts`               | Array of k8s VolumeMounts to add to all CronJobs                                           | `[]`    |
-| `cronJobsGeneral.usePredefinedAffinity`      | Use Affinity presets in all CronJobs by default                                            | `false` |
-
-`cronJobs` is a map of the CronJobs parameters, where key is name of the CronJob.
-
-| Name                         | Description                                                                             | Value     |
-|------------------------------|-----------------------------------------------------------------------------------------|-----------|
-| `labels`                     | Extra CronJob labels                                                                    | `{}`      |
-| `annotations`                | Extra CronJob annotations                                                               | `{}`      |
-| `singleOnly`                 | Forbid concurrency policy                                                               | `"false"` |
-| `suspend`                    | Suspend execution of Jobs                                                               | `false`   |
-| `schedule`                   | Cronjob scheduling                                                                      | ``        |
-| `startingDeadlineSeconds`    | Duration for starting CronJob                                                           | ``        |
-| `successfulJobsHistoryLimit` | Limitation of completed jobs should be kept                                             | `3`       |
-| `failedJobsHistoryLimit`     | Limitation of failed jobs should be kept                                                | `1`       |
-| `parallelism`                | How much pods of CronJob can be run in parallel                                         | `1`       |
-| `completions`                | How much pods should finish to finish Job                                               | `1`       |
-| `activeDeadlineSeconds`      | Duration of the Job                                                                     | `100`     |
-| `backoffLimit`               | Number of retries before considering a Job as failed                                    | `6`       |
-| `ttlSecondsAfterFinished`    | TTL for delete finished CronJob                                                         | `100`     |
-| `podLabels`                  | Extra pod labels for CronJob                                                            | `{}`      |
-| `podAnnotations`             | Extra pod annotations for CronJob                                                       | `{}`      |
-| `serviceAccountName`         | The name of the ServiceAccount to use by CronJob                                        | `""`      |
-| `hostAliases`                | Pods host aliases                                                                       | `[]`      |
-| `affinity`                   | Affinity for CronJob; replicas pods assignment                                          | `{}`      |
-| `securityContext`            | Security Context for CronJob pods                                                       | `{}`      |
-| `dnsPolicy`                  | DnsPolicy for CronJob pods                                                              | `""`      |
-| `priorityClassName`          | priorityClassName for CronJob pods                                                      | `""`      |
-| `nodeSelector`               | Node labels for CronJob; pods assignment                                                | `{}`      |
-| `tolerations`                | Tolerations for CronJob; replicas pods assignment                                       | `[]`      |
-| `imagePullSecrets`           | DEPRECATED. Array of existing pull secrets                                              | `[]`      |
-| `extraImagePullSecrets`      | Array of existing pull secrets                                                          | `[]`      |
-| `initContainers`             | Array of the CronJob initContainers ([container](#container-object-parameters) objects) | `[]`      |
-| `containers`                 | Array of the CronJob Containers ([container](#container-object-parameters) objects)     | `[]`      |
-| `volumes`                    | Array of the CronJob typed volumes                                                      | `[]`      |
-| `extraVolumes`               | Array of k8s Volumes to add to CronJob                                                  | `[]`      |
-| `restartPolicy`              | Restart Policy of the Jobs                                                              | `"Never"` |
-
-### Jobs parameters
-
-`jobsGeneral` is a map of the Jobs parameters, which uses for all Jobs.
-
-| Name                                  | Description                                                                            | Value   |
-|---------------------------------------|----------------------------------------------------------------------------------------|---------|
-| `jobsGeneral.labels`                  | Extra labels for all Job                                                               | `{}`    |
-| `jobsGeneral.annotations`             | Extra annotations for all Job                                                          | `{}`    |
-| `jobsGeneral.envsFromConfigmap`       | Map of ConfigMaps and envs from it                                                     | `{}`    |
-| `jobsGeneral.containerEnvs`          | Envs for container in KEY:VALUE format                                                          | `{}`    |
-| `jobsGeneral.envsFromSecret`          | Map of Secrets and envs from it                                                        | `{}`    |
-| `jobsGeneral.env`                     | Array of extra environment variables                                                   | `[]`    |
-| `jobsGeneral.envConfigmaps`           | Array of Configmaps names with extra envs                                              | `[]`    |
-| `jobsGeneral.envSecrets`              | Array of Secrets names with extra envs                                                 | `[]`    |
-| `jobsGeneral.envFrom`                 | Array of extra envFrom objects                                                         | `[]`    |
-| `jobsGeneral.parallelism`             | How much Jobs can be run in parallel (ignored if defined on Job level)                 | `1`     |
-| `jobsGeneral.completions`             | How much Pods should finish to finish Job (ignored if defined on Job level)            | `1`     |
-| `jobsGeneral.activeDeadlineSeconds`   | Duration of the Job (ignored if defined on Job level)                                  | `100`   |
-| `jobsGeneral.backoffLimit`            | Number of retries before considering a Job as failed (ignored if defined on Job level) | `6`     |
-| `jobsGeneral.ttlSecondsAfterFinished` | TTL for delete finished Job (ignored if defined on Job level)                          | `100`   |
-| `jobsGeneral.podLabels`               | Extra pod labels for Job (ignored if defined on Job level)                             | `{}`    |
-| `jobsGeneral.podAnnotations`          | Extra pod annotations for Job (ignored if defined on Job level)                        | `{}`    |
-| `jobsGeneral.serviceAccountName`      | The name of the ServiceAccount to use by Job (ignored if defined on Job level)         | `""`    |
-| `jobsGeneral.hostAliases`             | Pods host aliases (ignored if defined on Job level)                                    | `[]`    |
-| `jobsGeneral.affinity`                | Affinity for Job; replicas pods assignment (ignored if defined on Job level)           | `{}`    |
-| `jobsGeneral.dnsPolicy`               | DnsPolicy for Job pods (ignored if defined on Job level)                               | `""`    |
-| `jobsGeneral.extraVolumes`            | Array of k8s Volumes to add to all Jobs                                                | `[]`    |
-| `jobsGeneral.volumeMounts`            | Array of k8s VolumeMounts to add to all Jobs                                           | `[]`    |
-| `jobsGeneral.usePredefinedAffinity`   | Use Affinity presets in all Jobs by default                                            | `false` |
-
-`jobs` is a map of the Jobs parameters, where key is a name of the Job.
-
-| Name                      | Description                                                                              | Value     |
-|---------------------------|------------------------------------------------------------------------------------------|-----------|
-| `labels`                  | Extra Job labels                                                                         | `{}`      |
-| `annotations`             | Extra Job annotations                                                                    | `{}`      |
-| `parallelism`             | How much pods of Job can be run in parallel                                              | `1`       |
-| `completions`             | How much pods should finish to finish Job                                                | `1`       |
-| `activeDeadlineSeconds`   | Duration of the Job                                                                      | `100`     |
-| `backoffLimit`            | Number of retries before considering a Job as failed                                     | `6`       |
-| `ttlSecondsAfterFinished` | TTL for delete finished Hook Job                                                         | `100`     |
-| `podLabels`               | Extra pod labels for Hook Job                                                            | `{}`      |
-| `podAnnotations`          | Extra pod annotations for Hook Job                                                       | `{}`      |
-| `serviceAccountName`      | The name of the ServiceAccount to use by deployment                                      | `""`      |
-| `hostAliases`             | Pods host aliases                                                                        | `[]`      |
-| `affinity`                | Affinity for Hook Job; replicas pods assignment                                          | `{}`      |
-| `securityContext`         | Security Context for Hook Job pods                                                       | `{}`      |
-| `dnsPolicy`               | DnsPolicy for Hook Job pods                                                              | `""`      |
-| `priorityClassName`       | priorityClassName for Hook Job pods                                                      | `""`      |
-| `nodeSelector`            | Node labels for Hook Job; pods assignment                                                | `{}`      |
-| `tolerations`             | Tolerations for Hook Job; replicas pods assignment                                       | `[]`      |
-| `imagePullSecrets`        | DEPRECATED. Array of existing pull secrets                                               | `[]`      |
-| `extraImagePullSecrets`   | Array of existing pull secrets                                                           | `[]`      |
-| `initContainers`          | Array of the Hook Job initContainers ([container](#container-object-parameters) objects) | `[]`      |
-| `containers`              | Array of the Hook Job Containers ([container](#container-object-parameters) objects)     | `[]`      |
-| `volumes`                 | Array of the Hook Job typed volumes                                                      | `[]`      |
-| `extraVolumes`            | Array of k8s Volumes to add to Hook Job                                                  | `[]`      |
-| `restartPolicy`           | Restart Policy of the Job                                                                | `"Never"` |
-
-### ServiceMonitors parameters
-
-`serviceMonitors` is a map of the Prometheus ServiceMonitor parameters, where key is name of ServiceMonitor.
-
-| Name                  | Description                              | Value |
-|-----------------------|------------------------------------------|-------|
-| `labels`              | Extra ServiceMonitor labels              | `{}`  |
-| `endpoints`           | Array of ServiceMonitor endpoints        | `[]`  |
-| `extraSelectorLabels` | Extra selectorLabels for select workload | `{}`  |
-
-### VMServiceScrapes parameters
-
-`vmServiceScrapes` is a map of the VictoriaMetrics VMServiceScrape parameters, where key is name of VMServiceScrape.
-
-| Name                  | Description                              | Value |
-|-----------------------|------------------------------------------|-------|
-| `labels`              | Extra VMServiceScrape labels             | `{}`  |
-| `endpoints`           | Array of VMServiceScrape endpoints       | `[]`  |
-| `extraSelectorLabels` | Extra selectorLabels for select workload | `{}`  |
-| `sampleLimit`         | Maximum number of samples to scrape per target | `""`  |
-| `streamParse`         | Enable streaming parsing for better performance | `""`  |
-
-**Note:** VMServiceScrape is the VictoriaMetrics equivalent of ServiceMonitor and provides additional features specific to VictoriaMetrics ecosystem.
-
-### PodDisruptionBudget parameters
-
-`pdbs` is a map of the PDB parameters, where key is a name
-
-| Name                  | Description                                     | Value |
-|-----------------------|-------------------------------------------------|-------|
-| `labels`              | Extra PDB labels                                | `{}`  |
-| `minAvailable`        | Pods that must be available after the eviction  | `""`  |
-| `maxUnavailable`      | Pods that can be unavailable after the eviction | `""`  |
-| `extraSelectorLabels` | Extra selectorLabels for select workload        | `{}`  |
-
-### HorizontalPodAutoscaler parameters
-
-`hpas` is map of HPA parameters, where key is a name
-
-| Name             | Description                                                             | Value                   |
-|------------------|-------------------------------------------------------------------------|-------------------------|
-| `labels`         | Extra HPA labels                                                        | `{}`                    |
-| `annotations`    | Extra HPA annotations                                                   | `{}`                    |
-| `apiVersion`     | apiVersion for HPA object                                               | `"autoscaling/v2beta1"` |
-| `minReplicas`    | minimum replicas for HPA                                                | `2`                     |
-| `maxReplicas`    | maximum replicas for HPA                                                | `3`                     |
-| `scaleTargetRef` | Required [scaleTargetRef](#hpa-scaletargetref-object-parameters) object |                         |
-| `targetCPU`      | target CPU utilization percentage                                       | `""`                    |
-| `targetMemory`   | target memory utilization percentage                                    | `""`                    |
-| `metrics`        | list of custom metrics                                                  | `[]`                    |
-
-### HPA `scaleTargetRef` object parameters
-
-| Name       | Description                      | Value        |
-|------------|----------------------------------|--------------|
-| apiVersion | apiVersion for target HPA object | "apps/v1"    |
-| kind       | kind for target HPA object       | "Deployment" |
-| name       | Required name of target object   | ""           |
-
-### Issuers parameters
-
-`issuers` is map of Issuers parameters, where key is a name
-
-| Name         | Description                                                                                                               | Value           |
-|--------------|---------------------------------------------------------------------------------------------------------------------------|-----------------|
-| `kind`       | issuer type                                                                                                               | "ClusterIssuer" |
-| `acme`       | map with [acme issuerConfig](https://cert-manager.io/docs/reference/api-docs/#acme.cert-manager.io/v1.ACMEIssuer)         | `{}`            |
-| `ca`         | map with [ca issuerConfig](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CAIssuer)                  | `{}`            |
-| `vault`      | map with [vault issuerConfig](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.VaultIssuer)            | `{}`            |
-| `selfSigned` | map with [selfSigned issuerConfig](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.SelfSignedIssuer)  | `{}`            |
-| `venafi`     | map with [venafi issuerConfig](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.VenafiIssuer)          | `{}`            |
-
-### Certificates parameters
-
- `certificates` is map of certificates parameters, where key is a name according to [CertificateSpec](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec)
-
-| Name                      | Description                                                             | Value             |
-|---------------------------|-------------------------------------------------------------------------|-------------------|
-| `kind`                    | issuer type                                                             | "ClusterIssuer"   |
-| `subject`                 | list of certificate subject attributes                                  | `[]`              |
-| `literalSubject`          | requested certificate subject attributes                                | `""`              |
-| `commonName`              | requested common name attribute                                         | `""`              |
-| `duration`                | requested lifetime of certificate                                       | `""`              |
-| `renewBefore`             | how long to wait before renewing                                        | `""`              |
-| `dnsNames`                | list of requested dns names                                             | `[]`              |
-| `ipAddresses`             | list of requested ip addresses                                          | `[]`              |
-| `uris`                    | list of requested uris                                                  | `[]`              |
-| `emailAddresses`          | list of requested email addresses                                       | `[]`              |
-| `secretName`              | name of secret to be created for certificate                            | `""`              |
-| `secretTemplate`          | [secretTemplate](#certificates-secretTemplate-object-parameters) object |                   |
-| `keystores`               | additionals (certificate keystores)[https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateKeystores]| `[]` |
-| `issuerRef`               | [issuerRef](#certificates-issuerRef-object-parameters) object           |                   |
-| `isCA`                    | check if certificate is CA on issuing                                   | `""`              |
-| `usages`                  | list of requested certificate usages                                    | `[]`              |
-| `privateKey`              | set of [privatekey options](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificatePrivateKey) | `{}`              |
-| `encodeUsagesInRequest`   | set whether key usage should be encoded                                  | `""`              |
-| `revisionHistoryLimit`    | the number of certificate requests being stored                         | `""`              |
-| `additionalOutputFormats` | extra output formats of the private key and signed certificate chain    | `""`              |
-
-### Certificates `secretTemplate` object parameters
-
-| Name           | Description                                                             | Value             |
-|----------------|-------------------------------------------------------------------------|-------------------|
-| annotations    | extra annotations for generated secrets                                 | `{}`              |
-| labels         | extra labels for generated secrets                                      | `{}`              |
-
-### Certificates `issuerRef` object parameters
-
-| Name           | Description                                                             | Value             |
-|----------------|-------------------------------------------------------------------------|-------------------|
-| originalName   | original name of Issuer resource                                        | `""`              |
-| name           | name of the resource that will be used with release prefix              | `""`              |
-| kind           | kind of the issuer resource                                             | `""`              |
-| group          | group of the issuer resource                                            | `""`              |
-
-### IngressRoutes, IngressRoutesTCP, IngressRoutesUDP parameters
-
-`ingressroutes`, `ingressroutesTCP`, `ingressroutesUDP` are maps of IngressRoute parameters, where key is a name
-
-| Name          | Description                                                                                                                            | Value           |
-|---------------|----------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| `entryPoints` | list of entryPoints names. [EntryPoints](https://doc.traefik.io/traefik/routing/routers/#entrypoints)                                  | `[]`            |
-| `routes`      | list of routes. [Routes](#ingressroutes-routes-object-parameters) object                                                               | `[]`            |
-| `tls`         | defines TLS certificate configuration. Only for ingressroutes and ingressroutesTCP. [TLS](#ingressroutes-tls-object-parameters) object | `{}`            |
-
-### IngressRoutes `routes` object parameters
-
-| Name                                      | Description                                                                       | Value             |
-|-------------------------------------------|-----------------------------------------------------------------------------------|-------------------|
-| match                                     | defines the rule corresponding to an underlying router                            | `""`              |
-| priority                                  | defines the priority to disambiguate rules of the same length, for route matching | `""`              |
-| middlewares                               | list of reference to [Middleware](#middlewares-middlewarestcp-parameters)         | `[]`              |
-| middlewares.name                          | defines the Middleware name                                                       | `""`              |
-| middlewares.namespace                     | defines the Middleware namespace                                                  | `""`              |
-| services                                  | list of any combination of [TraefikService](#traefikservices-parameters) and reference to a Kubernetes service   | `[]`              |
-| services.name                             | defines the name of the service                                                   | `""`              |
-| services.namespace                        | defines the namespace of the service                                              | `""`              |
-| services.passHostHeader                   | defines whether the Host header should be passed to the backend services          | `true`            |
-| services.kind                             | defines the kind of service (e.g., `Service`, `TraefikService`)                   | `""`              |
-| services.port                             | defines the port of the service. This can be a reference to a named port          | `""`              |
-| services.responseForwarding.flushInterval | defines the interval for flushing response data                                   | `""`              |
-| services.scheme                           | defines the scheme used to communicate with the service (`http` or `https`)       | `""`              |
-| services.serversTransport                 | defines the [ServersTransport](#serverstransport-serverstransporttcp-parameters) name. See also [ServersTransport reference](https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#serverstransport-reference) | `""`              |
-| services.sticky.cookie.httpOnly           | defines if the sticky cookie is HTTP only                                         | `true`            |
-| services.sticky.cookie.name               | defines the name of the sticky cookie                                             | `""`              |
-| services.sticky.cookie.secure             | defines if the sticky cookie is secure                                            | `true`            |
-| services.sticky.cookie.sameSite           | defines the sameSite attribute of the sticky cookie (`Strict`, `Lax`, `None`)     | `""`              |
-| services.sticky.cookie.maxAge             | defines the maxAge of the sticky cookie                                           | `0`               |
-| services.strategy                         | defines the load balancing strategy for the service (`RoundRobin`)                | `"RoundRobin"`    |
-| services.weight                           | defines the weight                                                                | `0`               |
-| services.nativeLB                         | defines if native load balancing is used                                          | `false`           |
-
-### IngressRoutes `tls` object parameters
-
-| Name                  | Description                                                                                                                                                              | Value             |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| secretName            | defines the name of the secret that contains the TLS certificate                                                                                                         | `""`              |
-| store.name            | defines the name of the [TLSStore](#tlsstore-parameters). See also [TLSStore](https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#kind-tlsstore)            | `""`              |
-| store.namespace       | defines the namespace of the [TLSStore](#tlsstore-parameters). See also [TLSStore](https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#kind-tlsstore)       | `""`              |
-| options.name          | defines the name of the [TLSOption](#tlsoptions-parameters). See also [TLSOptions](https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#kind-tlsoption)      | `""`              |
-| options.namespace     | defines the namespace of the [TLSOption](#tlsoptions-parameters). See also [TLSOptions](https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#kind-tlsoption) | `""`              |
-| certResolver          | defines the name of the Certificates Resolver to use. See also [Certificate Resolvers](https://doc.traefik.io/traefik/v3.1/https/acme/#certificate-resolvers)            | `""`              |
-| domains               | list of domains for which the certificate should be valid                                                                                                                | `[]`              |
-| passthrough           | only for ingressroutesTCP. Defines whether to enable passthrough mode for the TLS connection                                                                             | `false`           |
-
-### Middlewares, MiddlewaresTCP parameters
-
-`middlewares`, `middlewaresTCP` are maps of Middleware parameters, where key is a name
-
-| Name            | Description                                                                                                                | Value           |
-|-----------------|----------------------------------------------------------------------------------------------------------------------------|-----------------|
-| spec            | Defines the specification for the Middleware. See also [Middlewares](https://doc.traefik.io/traefik/middlewares/overview)  | `{}`            |
-
-### ServersTransport, ServersTransportTCP parameters
-
-`ServersTransport`, `ServersTransportTCP` are maps of ServersTransport parameters, where key is a name
-
-| Name            | Description                                                                                                                                                              | Value           |
-|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| spec            | Defines the specification for the ServersTransport. See also [ServersTransport](https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#kind-serverstransport)  | `{}`            |
-
-### TraefikServices parameters
-
-`traefikservices` is a map of TraefikService parameters, where key is a name
-
-| Name            | Description                                                                                                                                                         | Value           |
-|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| spec            | Defines the specification for the TraefikService. See also [TraefikServices](https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#kind-traefikservice)  | `{}`            |
-
-### TLSOptions parameters
-
-`TLSOptions` is a map of TLSOption parameters, where key is a name
-
-| Name             | Description                                                                                                                                                        | Value           |
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| minVersion       | defines the [minimum TLS version](https://doc.traefik.io/traefik/https/tls/#minimum-tls-version) that is acceptable                                                | `""`            |
-| maxVersion       | defines the [maximum TLS version](https://doc.traefik.io/traefik/https/tls/#maximum-tls-version) that is acceptable                                                | `""`            |
-| curvePreferences | list of the [elliptic curves references](https://doc.traefik.io/traefik/https/tls/#curve-preferences) that will be used in an ECDHE handshake, in preference order | `[]`            |
-| cipherSuites     | list of supported [cipher suites](https://doc.traefik.io/traefik/https/tls/#cipher-suites) for TLS versions up to TLS 1.2                                          | `[]`            |
-| clientAuth       | determines the server's policy for TLS [Client Authentication](https://doc.traefik.io/traefik/https/tls/#client-authentication-mtls)                               | `{}`            |
-| sniStrict        | if true, Traefik won't allow connections from clients connections that do not specify a server_name extension                                                      | `false`         |
-| alpnProtocols    | list of supported [application level protocols](https://doc.traefik.io/traefik/https/tls/#alpn-protocols) for the TLS handshake, in order of preference            | `[]`            |
-
-### TLSStores parameters
-
-`TLSStores` is a map of TLSStore parameters, where key is a name
-
-| Name                          | Description                                                                                     | Value           |
-|-------------------------------|-------------------------------------------------------------------------------------------------|-----------------|
-| certificates                  | list of Kubernetes Secrets, each of them holding a key/certificate pair to add to the store     | `[]`            |
-| certificates.secretName       | name of the secret containing the certificate                                                   | `""`            |
-| defaultCertificate            | name of a Kubernetes Secret that holds the default key/certificate pair for the store           | `{}`            |
-| defaultCertificate.secretName | name of the secret containing the default certificate                                           | `""`            |
-| defaultGeneratedCert          | defines the default generated certificate settings for the TLSStore                             | `{}`            |
-
-### Gateways parameters
-
-`istiogateways` is a map of Gateway parameters, where key is a name
-
-See more [Gateways](https://preliminary.istio.io/latest/docs/reference/config/networking/gateway/#Gateway)
-
-| Name              | Description                                                                                                   | Value           |
-|-------------------|---------------------------------------------------------------------------------------------------------------|-----------------|
-| labels            | labels to apply                                                                                               | `{}`            |
-| annotations       | annotations to apply                                                                                          | `{}`            |
-| selector          | one or more labels that indicate a specific set of pods on which this gateway configuration should be applied | `{}`            |
-| servers           | a list of server specifications. [Servers](#istiogateways-servers-object-parameters) object                   | `[]`            |
-
-### Gateways `servers` object parameters
-
-See more [Server](https://preliminary.istio.io/latest/docs/reference/config/networking/gateway/#Server)
-
-| Name          | Description                                                                                            | Value           |
-|---------------|--------------------------------------------------------------------------------------------------------|-----------------|
-| hosts         | one or more hosts exposed by this gateway                                                              | `[]`            |
-| port.name     | label assigned to the port                                                                             | `""`            |
-| port.number   | a valid non-negative integer port number                                                               | `""`            |
-| port.protocol | the protocol exposed on the port (`HTTP`, `HTTPS`, `GRPC`, `GRPC-WEB`, `HTTP2`, `MONGO`, `TCP`, `TLS`) | `""`            |
-| tls           | set of TLS related options that govern the server’s behavior                                           | `{}`            |
-
-### VirtualServices parameters
-
-`istiovirtualservices` is a map of VirtualService paramaters, where key is a name
-
-See more [VirtualServices](https://preliminary.istio.io/latest/docs/reference/config/networking/virtual-service/#VirtualService)
-
-| Name                  | Description                                                                                                                | Value           |
-|-----------------------|----------------------------------------------------------------------------------------------------------------------------|-----------------|
-| labels           | labels to apply                                                                                                                 | `{}`            |
-| annotations      | annotations to apply                                                                                                            | `{}`            |
-| hosts            | the destination hosts to which traffic is being sent                                                                            | `[]`            |
-| gateways         | the names of gateways and sidecars that should apply these routes                                                               | `[]`            |
-| http             | an ordered list of route rules for HTTP traffic. [HTTP](#istiovirtualservices-http-object-parameters) object                    | `[]`            |
-| tls              | an ordered list of route rule for non-terminated TLS & HTTPS traffic. [TLS](#istiovirtualservices-tls-object-parameters) object | `[]`            |
-| tcp              | an ordered list of route rules for opaque TCP traffic                                                                           | `[]`            |
-| exportTo         | a list of namespaces to which this virtual service is exported                                                                  | `[]`            |
-
-### VirtualServices `http` object parameters
-
-See more [HTTPRoute](https://preliminary.istio.io/latest/docs/reference/config/networking/virtual-service/#HTTPRoute)
-
-| Name        | Description                                                                                     | Value           |
-|-------------|-------------------------------------------------------------------------------------------------|-----------------|
-| name        | the name assigned to the route for debugging purposes                                           | `""`            |
-| match       | match conditions to be satisfied for the rule to be activated                                   | `[]`            |
-| route       | a HTTP rule can either return a direct_response, redirect or forward (default) traffic          | `[]`            |
-| retries     | retry policy for HTTP requests                                                                  | `{}`            |
-| fault       | fault injection policy to apply on HTTP traffic at the client side                              | `{}`            |
-| timeout     | timeout for HTTP requests, default is disabled                                                  | `""`            |
-| rewrite     | rewrite HTTP URIs and Authority headers                                                         | `{}`            |
-| corsPolicy  | Cross-Origin Resource Sharing policy (CORS)                                                     | `{}`            |
-
-### VirtualServices `tls` object parameters
-
-See more [TLSRoute](https://preliminary.istio.io/latest/docs/reference/config/networking/virtual-service/#TLSRoute)
-
-| Name         | Description                                                    | Value           |
-|--------------|----------------------------------------------------------------|-----------------|
-| match        | match conditions to be satisfied for the rule to be activated  | `[]`            |
-| route        | the destination to which the connection should be forwarded to | `[]`            |
-
-### DestinationRules parameters
-
-`istiodestinationrules` is a map of DestinationRule parameters, where key is a name
-
-See more [DestinationRules](https://preliminary.istio.io/latest/docs/reference/config/networking/destination-rule/#DestinationRule)
-
-| Name                         | Description                                                                                                                                | Value           |
-|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| labels                       | labels to apply                                                                                                                            | `{}`            |
-| annotations                  | annotations to apply                                                                                                                       | `{}`            |
-| host                         | the name of a service from the service registry                                                                                            | `""`            |
-| trafficPolicy                | traffic policies to apply (load balancing policy, connection pool sizes, outlier detection)                                                | `{}`            |
-| subsets                      | one or more named sets that represent individual versions of a service. [Subsets](#istiodestinationrules-subsets-object-parameters) object | `[]`            |
-| exportTo                     | a  list of namespaces to which this destination rule is exported                                                                           | `[]`            |
-| workloadSelector             | criteria used to select the specific set of pods/VMs on which this DestinationRule configuration should be applied. [WorkloadSelector](#istiodestinationrules-workloadselector-object-parameters) object | `{}`            |
-
-### DestinationRules `subsets` object parameters
-
-See more [Subset](https://preliminary.istio.io/latest/docs/reference/config/networking/destination-rule/#Subset)
-
-| Name                 | Description                                                                   | Value           |
-|----------------------|-------------------------------------------------------------------------------|-----------------|
-| name                 | name of the subset                                                            | `""`            |
-| labels               | labels apply a filter over the endpoints of a service in the service registry | `{}`            |
-| trafficPolicy        | traffic policies that apply to this subset                                    | `{}`            |
-
-### DestinationRules `workloadSelector` object parameters
-
-See more [Workload Selector](https://preliminary.istio.io/latest/docs/reference/config/type/workload-selector/#WorkloadSelector)
-
-| Name         | Description                                                                                 | Value           |
-|--------------|---------------------------------------------------------------------------------------------|-----------------|
-| matchLabels  | one or more labels that indicate a specific set of pods on which a policy should be applied | `{}`            |
+The command deploys your application with custom values on the Kubernetes/OpenShift cluster. For additional ways to customize your experience with appchart please check [Additional features](docs/ADDITIONAL_FEATURES.md).
+
+Install the local README generator hook:
+
+```bash
+pre-commit install
+pre-commit install-hooks
+```
+
+## Supported Resources
+
+The chart can render these Kubernetes resource families:
+
+- `Deployment`
+- `StatefulSet`
+- `Service`
+- `Ingress`
+- `ConfigMap`
+- `Secret`
+- `SealedSecret`
+- `PersistentVolumeClaim`
+- `ServiceAccount`, `Role`, `RoleBinding`, `ClusterRoleBinding`
+- `Job`
+- `CronJob`
+- `HorizontalPodAutoscaler`
+- `PodDisruptionBudget`
+- raw resources through `extraDeploy`
+
+## Dependency Subcharts
+
+The chart also declares reusable dependency subcharts. `common` is always loaded as the shared helper library; most remaining `*` dependencies are enabled through their matching `.Values.<name>.enabled` flags. `envoy-gateway` is enabled through `global.envoy-gateway.enabled` because its subchart schema does not accept an `enabled` key under `envoy-gateway`.
+
+| Subchart | Version | Enabled by | Source chart | Includes |
+|----------|---------|------------|--------------|----------|
+| `common` | `1.0.5` | always | [common](https://github.com/nixys/common) | Shared Helm library helpers for capability detection, pod/workload rendering, labels, templating, configmaps, secrets, ingress, volumes, and deprecation notices. |
+| `traefik` | `1.0.5` | `traefik.enabled` | [traefik](https://github.com/nixys/traefik) | Traefik CRDs: `IngressRoute`, `IngressRouteTCP`, `IngressRouteUDP`, `Middleware`, `MiddlewareTCP`, `TLSOption`, `TLSStore`, `ServersTransport`, `ServersTransportTCP`, and `TraefikService`. |
+| `cert-manager` | `1.0.4` | `cert-manager.enabled` | [cert-manager](https://github.com/nixys/cert-manager) | cert-manager resources: `Certificate`, `CertificateRequest`, `Issuer`, `ClusterIssuer`, `Challenge`, and `Order`. |
+| `istio` | `1.0.5` | `istio.enabled` | [istio](https://github.com/nixys/istio) | Istio traffic-management resources: `Gateway`, `VirtualService`, and `DestinationRule`. |
+| `fluxcd` | `1.0.4` | `fluxcd.enabled` | [fluxcd](https://github.com/nixys/fluxcd) | Flux CD resources: `GitRepository`, `Kustomization`, `HelmRepository`, `HelmRelease`, `OCIRepository`, image automation, and notification resources. |
+| `knative` | `1.0.5` | `knative.enabled` | [knative](https://github.com/nixys/knative) | Knative Serving resources including `Service`, `Route`, `Configuration`, `Revision`, `Ingress`, `PodAutoscaler`, `ServerlessService`, `DomainMapping`, and related serving objects. |
+| `kserve` | `1.0.4` | `kserve.enabled` | [kserve](https://github.com/nixys/kserve) | KServe resources such as `InferenceService`, `InferenceGraph`, `ServingRuntime`, `ClusterServingRuntime`, `TrainedModel`, and model cache/storage CRDs. |
+| `kube-prometheus-stack` | `1.0.5` | `kube-prometheus-stack.enabled` | [kube-prometheus-stack](https://github.com/nixys/kube-prometheus-stack) | Prometheus Operator monitoring resources: `PodMonitor`, `Probe`, `PrometheusRule`, `ScrapeConfig`, and `ServiceMonitor`. |
+| `native-gateway` | `1.0.6` | `native-gateway.enabled` | [native-gateway](https://github.com/nixys/native-gateway) | Gateway API resources: `GatewayClass`, `Gateway`, `HTTPRoute`, `GRPCRoute`, `TLSRoute`, `ReferenceGrant`, `BackendTLSPolicy`, and `ListenerSet`. |
+| `envoy-gateway` | `1.0.1` | `global.envoy-gateway.enabled` | [envoy-gateway](https://github.com/nixys/envoy-gateway) | Envoy Gateway extension resources: `Backend`, `BackendTrafficPolicy`, `ClientTrafficPolicy`, `EnvoyExtensionPolicy`, `EnvoyPatchPolicy`, `EnvoyProxy`, `HTTPRouteFilter`, and `SecurityPolicy`. |
+| `victoria-metrics` | `1.0.4` | `victoria-metrics.enabled` | [victoria-metrics](https://github.com/nixys/victoria-metrics) | VictoriaMetrics Operator resources: `VMAlert`, `VMRule`, `VMProbe`, `VMScrapeConfig`, `VMServiceScrape`, and `VMStaticScrape`. |
+| `vault-secret-operator` | `1.0.5` | `vault-secret-operator.enabled` | [vault-secret-operator](https://github.com/nixys/vault-secret-operator) | Vault Secret Operator resources: `VaultAuth` and `VaultStaticSecret`. |
+| `argocd` | `1.0.4` | `argocd.enabled` | [argocd](https://github.com/nixys/argocd) | Argo CD resources: `Application`, `ApplicationSet`, and `AppProject`. |
+| `keda` | `1.0.4` | `keda.enabled` | [keda](https://github.com/nixys/keda) | KEDA autoscaling resources: `ScaledObject`, `ScaledJob`, `TriggerAuthentication`, and `ClusterTriggerAuthentication`. |
+| `cloudnativepg` | `1.0.0` | `cloudnativepg.enabled` | [cloudnativepg](https://github.com/nixys/cloudnativepg) | CloudNativePG resources: `Backup`, `ClusterImageCatalog`, `Cluster`, `Database`, `FailoverQuorum`, `ImageCatalog`, `Pooler`, `Publication`, `ScheduledBackup`, and `Subscription`. |
+| `mysql-percona-operator` | `1.0.0` | `mysql-percona-operator.enabled` | [mysql-percona-operator](https://github.com/nixys/mysql-percona-operator) | Percona XtraDB Cluster Operator resources: `PerconaXtraDBCluster`, `PerconaXtraDBClusterBackup`, and `PerconaXtraDBClusterRestore`. |
+| `rabbitmq` | `1.0.1` | `rabbitmq.enabled` | [rabbitmq](https://github.com/nixys/rabbitmq) | RabbitMQ Cluster Operator and Messaging Topology Operator resources: `RabbitmqCluster`, `Queue`, `Policy`, `Exchange`, `Binding`, `User`, `Permission`, `Vhost`, `Federation`, and `Shovel`. |
+| `clickhouse` | `1.0.1` | `clickhouse.enabled` | [clickhouse](https://github.com/nixys/clickhouse) | Altinity ClickHouse Operator resources: `ClickHouseInstallation`, `ClickHouseInstallationTemplate`, `ClickHouseOperatorConfiguration`, and `ClickHouseKeeperInstallation`. |
+| `elk` | `1.0.0` | `elk.enabled` | [elk](https://github.com/nixys/elk) | Elastic Cloud on Kubernetes resources: `Elasticsearch`, `Kibana`, `ApmServer`, `Beat`, `Agent`, `EnterpriseSearch`, `ElasticMapsServer`, and `Logstash`. |
+| `external-secrets` | `1.1.0` | `external-secrets.enabled` | [external-secrets](https://github.com/nixys/external-secrets) | External Secrets Operator resources: `ExternalSecret`, `SecretStore`, `ClusterSecretStore`, push secrets, and generator resources. |
+| `mongodb-percona-operator` | `1.0.0` | `mongodb-percona-operator.enabled` | [mongodb-percona-operator](https://github.com/nixys/mongodb-percona-operator) | Percona Server for MongoDB Operator resources: `PerconaServerMongoDB`, `PerconaServerMongoDBBackup`, and `PerconaServerMongoDBRestore`. |
+| `valkey` | `1.0.0` | `valkey.enabled` | [valkey](https://github.com/nixys/valkey) | Valkey Operator resources: `ValkeyCluster` and `ValkeyNode`. |
+| `keycloak-operator` | `1.0.1` | `keycloak-operator.enabled` | [keycloak-operator](https://github.com/nixys/keycloak-operator) | Keycloak Operator resources: `Keycloak` and `KeycloakRealmImport`. |
+| `strimzi-kafka-operator` | `1.0.0` | `strimzi-kafka-operator.enabled` | [strimzi-kafka-operator](https://github.com/nixys/strimzi-kafka-operator) | Strimzi Kafka Operator resources: `Kafka`, `KafkaTopic`, `KafkaUser`, `KafkaConnect`, `KafkaBridge`, `KafkaMirrorMaker2`, and `KafkaRebalance`. |
+
+## Values Model
+
+The values contract is grouped by resource family:
+
+- `deployments`, `statefulSets`
+- `services`, `ingresses`
+- `configMaps`, `secrets`, `sealedSecrets`, `pvcs`
+- `jobs`, `cronJobs`, `hooks`
+- `serviceAccount`
+- `hpas`, `pdbs`
+- `extraDeploy`
+
+Shared controls:
+
+- `generic.*` for common labels, annotations, selectors, pod metadata, shared mounts, templated variables, and helper capability overrides
+- `envs` / `secretEnvs` for generated shared ConfigMap and Secret resources
+- `defaultImage*` for container image defaults
+- affinity presets and optional `generic` capability overrides
+
+Additional keys under `generic` are available to `tpl` rendering as `.Values.generic.*`, so one shared variable set can be reused across resources without a separate `global` block.
+
+The values contract is validated by [values.schema.json](values.schema.json).
+
+## Helm Values
+
+This section contains a resource-oriented values reference. It is grouped by resource families and shared contracts to make day-to-day editing easier.
+
+Quick links to value tables:
+- [Global Controls](#global-controls)
+- [GitOps Metadata](#gitops-metadata)
+- [Shared Generic Contract](#shared-generic-contract)
+- [Runtime Defaults and Shared Generated Resources](#runtime-defaults-and-shared-generated-resources)
+- [Workload Families (Top-Level Maps)](#workload-families-top-level-maps)
+- [Common Workload Entry Fields](#common-workload-entry-fields)
+- [Container Entry Fields](#container-entry-fields)
+- [Workload-Specific Fields](#workload-specific-fields)
+- [Workload General Fields](#workload-general-fields)
+- [Networking Resources](#networking-resources)
+- [Config and Secret Resources](#config-and-secret-resources)
+- [RBAC, Storage, and Observability](#rbac-storage-and-observability)
+- [Dependency Toggle Fields](#dependency-toggle-fields)
+- [Reusable Schema Contracts (Exact Definitions)](#reusable-schema-contracts-exact-definitions)
+
+Schema matching note:
+- Field names below follow `values.schema.json` 1:1, including legacy aliases (`diagnosticMode.enbled`) and `string|map` contracts.
+- Where schema has `additionalProperties: true`, extra keys are allowed and passed through to templates/helpers.
+- `Default` reflects chart runtime defaults from `values.yaml`/templates; `schema default` exists only where explicitly defined in `values.schema.json`.
+
+### Global Controls
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `nameOverride` | `nameOverride: "platform"` | `""` | Overrides generated application name used in labels and resource names. |
+| `releasePrefix` | `releasePrefix: "prod"` | `""` | Prefix for rendered names. Use `"-"` to disable release-name prefixing. |
+| `kubeVersion` | `kubeVersion: "1.31.0"` | `""` | Optional Kubernetes version override used by capability helpers. |
+| `workloadMode` | `workloadMode: "batch"` | `"auto"` | Limits which workload families are rendered (`auto`, `deployment`, `daemonset`, `pod`, `statefulset`, `batch`, `job`, `cronjob`, `hook`, `none`). |
+| `extraDeploy` | `extraDeploy.my-crd: "apiVersion: v1\nkind: ConfigMap\n..."` | `{}` | Additional raw manifests rendered via `tpl`. |
+
+### GitOps Metadata
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `gitops.commonLabels` | `gitops.commonLabels.team: "platform"` | `{}` | Labels merged into metadata for all resources. |
+| `gitops.commonAnnotations` | `gitops.commonAnnotations.owner: "platform"` | `{}` | Annotations merged into metadata for all resources. |
+| `gitops.argo.enabled` | `gitops.argo.enabled: true` | `false` | Enables Argo CD metadata annotations rendering. |
+| `gitops.argo.syncWave` | `gitops.argo.syncWave: "10"` | `null` | Global Argo sync wave (`argocd.argoproj.io/sync-wave`). |
+| `gitops.argo.syncOptions` | `["ServerSideApply=true"]` | `[]` | Global Argo sync options joined into a comma-separated annotation. |
+| `gitops.argo.compareOptions` | `["IgnoreExtraneous"]` | `[]` | Global Argo compare options annotation value. |
+| `gitops.flux.enabled` | `gitops.flux.enabled: true` | `false` | Enables Flux-specific metadata overlays. |
+| `gitops.flux.labels` | `gitops.flux.labels.kustomize.toolkit.fluxcd.io/name: "app"` | `{}` | Flux labels merged when Flux mode is enabled. |
+| `gitops.flux.annotations` | `gitops.flux.annotations.kustomize.toolkit.fluxcd.io/namespace: "flux-system"` | `{}` | Flux annotations merged when Flux mode is enabled. |
+| `gitOps.safeMode` | `gitOps.safeMode: true` | `false` | Legacy alias for deterministic naming behavior. |
+
+### Shared Generic Contract
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `generic.labels` | `generic.labels.environment: "prod"` | `{}` | Global labels merged into every rendered object. |
+| `generic.annotations` | `generic.annotations.contact: "platform@corp"` | `{}` | Global annotations merged into every rendered object. |
+| `generic.hookAnnotations` | `generic.hookAnnotations.helm.sh/hook: "pre-install,pre-upgrade"` | `{"helm.sh/hook":"pre-install,pre-upgrade","helm.sh/hook-weight":"-999","helm.sh/hook-delete-policy":"before-hook-creation"}` | Default hook annotations for generated ConfigMaps and Secrets. Set to `null` to disable them. |
+| `generic.fullnameOverride` | `generic.fullnameOverride: "platform-core"` | `""` | Deterministic base name override for all resources. |
+| `generic.nameSuffix` | `generic.nameSuffix: "blue"` | `""` | Suffix appended to deterministic base name. |
+| `generic.deterministicNames` | `generic.deterministicNames: true` | `true` | Enables deterministic fallback names for unnamed containers/initContainers. |
+| `generic.autoRolloutChecksums` | `generic.autoRolloutChecksums: true` | `true` | Adds checksum pod annotations for ConfigMaps/Secrets referenced by each workload. |
+| `generic.extraSelectorLabels` | `generic.extraSelectorLabels.tenant: "shared"` | `{}` | Extra labels merged into selectors and pod labels. |
+| `generic.podLabels` | `generic.podLabels.tier: "backend"` | `{}` | Labels applied to all workload pod templates. |
+| `generic.podAnnotations` | `generic.podAnnotations.rendered-from: "values"` | `{}` | Annotations applied to all workload pod templates. |
+| `generic.podSecurityContext` | `generic.podSecurityContext.runAsNonRoot: true` | `{}` | Default pod security context applied when workload-level `securityContext` is omitted. |
+| `generic.containerSecurityContext` | `generic.containerSecurityContext.readOnlyRootFilesystem: true` | `{}` | Default container security context applied when container-level `securityContext` is omitted. |
+| `generic.defaultURL` | `generic.defaultURL: "https://app.example.com"` | `""` | Optional shared URL value for templates and `tpl` usage. |
+| `generic.helmVersion` | `generic.helmVersion: "v3.17.1"` | `""` | Optional Helm version override for capability checks. |
+| `generic.kubeVersion` | `generic.kubeVersion: "1.31.0"` | `""` | Optional Kubernetes version override for capability checks. |
+| `generic.apiVersions` | `generic.apiVersions.networking.k8s.io/v1/Ingress: true` | `{}` | Extra API-version availability overrides. |
+| `generic.volumes` | `generic.volumes: [{name: shared, type: configMap}]` | `[]` | Typed volumes appended to all workloads. |
+| `generic.extraVolumes` | `generic.extraVolumes: [{name: cache, emptyDir: {}}]` | `[]` | Raw volume specs appended to all workloads. |
+| `generic.volumeMounts` | `generic.volumeMounts: [{name: shared, mountPath: /etc/shared}]` | `[]` | Volume mounts appended to all containers. |
+| `generic.extraVolumeMounts` | `generic.extraVolumeMounts: [{name: old, mountPath: /old}]` | `[]` | Deprecated alias for `generic.volumeMounts`. |
+| `generic.extraImagePullSecrets` | `generic.extraImagePullSecrets: [{name: regcred}]` | `[]` | Extra pull secrets appended to workload pod specs. |
+| `generic.resources` | `generic.resources.requests.cpu: 100m` | `{}` | Last-resort container resources fallback. Applied when neither the container nor its workload `*General` sets `resources`. Allowed keys: `requests`, `limits`, `claims`. |
+| `generic.tolerations` | `generic.tolerations: [{key: dedicated, operator: Exists}]` | `[]` | Shared pod tolerations. |
+| `generic.nodeSelector` | `generic.nodeSelector.nodepool: apps` | `{}` | Shared node selector applied to workloads when omitted per workload. |
+| `generic.topologySpreadConstraints` | `generic.topologySpreadConstraints: [{maxSkew: 1, topologyKey: kubernetes.io/hostname, whenUnsatisfiable: ScheduleAnyway}]` | `[]` | Shared topology spread constraints for workloads. |
+| `generic.hostAliases` | `generic.hostAliases: [{ip: 10.0.0.1, hostnames: [internal.local]}]` | `[]` | Shared host aliases block. |
+| `generic.priorityClassName` | `generic.priorityClassName: "high-priority"` | `""` | Shared priority class for workload pods. |
+| `generic.dnsPolicy` | `generic.dnsPolicy: "ClusterFirst"` | `""` | Shared DNS policy for workload pods. |
+| `generic.serviceAccountName` | `generic.serviceAccountName: "deployer"` | `""` | Default service account name when workload-level field is omitted. |
+| `generic.automountServiceAccountToken` | `generic.automountServiceAccountToken: false` | `n/a` | Default `automountServiceAccountToken` for workload pods when omitted per workload. |
+| `generic.usePredefinedAffinity` | `generic.usePredefinedAffinity: true` | `false` | Enables generated affinity presets when explicit affinity is not set. Disabled by default since v3.1.1: no `affinity` block is rendered unless requested. |
+
+### Runtime Defaults and Shared Generated Resources
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `podAffinityPreset` | `podAffinityPreset: "soft"` | `""` | Preset used by generated pod affinity helper: `""` (disabled), `soft` or `hard`. Empty presets are omitted from the rendered `affinity` block. |
+| `podAntiAffinityPreset` | `podAntiAffinityPreset: "hard"` | `"soft"` | Preset used by generated pod anti-affinity helper: `""` (disabled), `soft` or `hard`. |
+| `nodeAffinityPreset.type` | `nodeAffinityPreset.type: "hard"` | `""` | Node affinity mode (`soft`/`hard`) for generated affinity. |
+| `nodeAffinityPreset.key` | `nodeAffinityPreset.key: "nodepool"` | `""` | Node label key for generated node affinity. |
+| `nodeAffinityPreset.values` | `nodeAffinityPreset.values: ["apps"]` | `[]` | Node label values for generated node affinity. |
+| `envs` | `envs.APP_MODE: "prod"` | `{}` | Shared key-values for generated `envs` ConfigMap. |
+| `envsString` | `envsString: "LOG_LEVEL: info"` | `""` | Raw YAML merged into generated `envs` ConfigMap. |
+| `secretEnvs` | `secretEnvs.API_TOKEN: "secret"` | `{}` | Shared key-values for generated `secret-envs` Secret. |
+| `secretEnvsString` | `secretEnvsString: "PASSWORD: strong"` | `""` | Raw YAML merged into generated `secret-envs` Secret. |
+| `imagePullSecrets` | `imagePullSecrets.registry.example.com: '{"auths":{...}}'` | `{}` | Generates `kubernetes.io/dockerconfigjson` Secrets by name. |
+| `serviceAccountDefaultImagePullSecretName` | `serviceAccountDefaultImagePullSecretName: "registry.example.com"` | `""` | Optional default imagePullSecret name that generated ServiceAccounts can reference. |
+| `diagnosticMode.enabled` | `diagnosticMode.enabled: true` | `false` | Enables diagnostic command/args override for all workload containers. |
+| `diagnosticMode.enbled` | `diagnosticMode.enbled: true` | `false` | Backward-compatible typo alias for `diagnosticMode.enabled`. |
+| `diagnosticMode.command` | `diagnosticMode.command: ["sleep"]` | `["sleep"]` | Command used in diagnostic mode. |
+| `diagnosticMode.args` | `diagnosticMode.args: ["infinity"]` | `["infinity"]` | Args used in diagnostic mode. |
+| `defaultImage` | `defaultImage: "nginx"` | `"nginx"` | Default image when a container omits `image`. |
+| `defaultImageTag` | `defaultImageTag: "latest"` | `"latest"` | Default tag when a container omits `imageTag`. |
+| `defaultImagePullPolicy` | `defaultImagePullPolicy: "IfNotPresent"` | `"IfNotPresent"` | Default pull policy when container-level field is omitted. |
+
+### Workload Families (Top-Level Maps)
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `deploymentsGeneral` | `deploymentsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all Deployment entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `strategy`, `progressDeadlineSeconds`. |
+| `deployments` | `deployments.api.replicas: 2` | `{}` | Deployment resources keyed by suffix. |
+| `daemonSetsGeneral` | `daemonSetsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all DaemonSet entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `strategy`, `minReadySeconds`, `revisionHistoryLimit`. |
+| `daemonSets` | `daemonSets.node-agent.containers.agent.image: busybox` | `{}` | DaemonSet resources keyed by suffix. |
+| `podsGeneral` | `podsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all Pod entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields). |
+| `pods` | `pods.toolbox.containers.toolbox.image: busybox` | `{}` | Pod resources keyed by suffix. |
+| `statefulSetsGeneral` | `statefulSetsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all StatefulSet entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `strategy`, `minReadySeconds`, `volumeClaimTemplates`. |
+| `statefulSets` | `statefulSets.worker.serviceName: headless` | `{}` | StatefulSet resources keyed by suffix. |
+| `jobsGeneral` | `jobsGeneral.backoffLimit: 1` | `{}` | Shared defaults applied to one-shot Jobs. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `parallelism`, `completions`, `activeDeadlineSeconds`, `backoffLimit`, `ttlSecondsAfterFinished`, `restartPolicy`, `commandDurationAlert`, `commandDurationAlertNamespace`. |
+| `jobs` | `jobs.migrate.containers.migrate.image: busybox` | `{}` | One-shot batch jobs keyed by suffix, or one raw templated YAML string. |
+| `cronJobsGeneral` | `cronJobsGeneral.suspend: true` | `{}` | Shared defaults applied to all CronJobs. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) and all jobsGeneral fields plus `suspend`, `timeZone`, `singleOnly`, `startingDeadlineSeconds`, `successfulJobsHistoryLimit`, `failedJobsHistoryLimit`. See [cronJobsGeneral](#cronJobsGeneral) for details. |
+| `cronJobs` | `cronJobs.cleanup.schedule: "*/30 * * * *"` | `{}` | CronJobs keyed by suffix, or one raw templated YAML string. |
+| `hooksGeneral` | `hooksGeneral.backoffLimit: 1` | `{}` | Shared defaults for Helm hook jobs. Supports all jobsGeneral fields plus `kind`, `weight`, `deletePolicy`. |
+| `hooks` | `hooks.predeploy.kind: pre-install` | `{}` | Helm hook jobs keyed by suffix, or one raw templated YAML string. |
+
+### Common Workload Entry Fields
+
+These fields are shared by individual workload entries (`deployments.<name>`, `daemonSets.<name>`, `pods.<name>`, `statefulSets.<name>`, `jobs.<name>`, `cronJobs.<name>`, `hooks.<name>`) **and** their corresponding `*General` defaults objects (`deploymentsGeneral`, `cronJobsGeneral`, etc.).
+
+Fields set on a `*General` object act as defaults for every workload in that family. A field on an individual workload entry overrides the `*General` value.
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `disabled` | `disabled: true` | `false` | Disables rendering of a specific entry. |
+| `labels` / `annotations` | `labels.component: api` | `n/a` | Extra metadata on top-level resource object. |
+| `podLabels` / `podAnnotations` | `podLabels.tier: backend` | `n/a` | Extra metadata for rendered pod template/pod. |
+| `extraSelectorLabels` | `extraSelectorLabels.component: api` | `n/a` | Additional labels for selectors and selected pods. |
+| `gitops` | `gitops.argo.syncWave: "20"` | `n/a` | Resource-level GitOps overrides (Argo/Flux/common labels/annotations). |
+| `serviceAccountName` | `serviceAccountName: deployer` | `""` (via generic fallback) | ServiceAccount used by workload pods. |
+| `automountServiceAccountToken` | `automountServiceAccountToken: false` | `n/a` (or generic fallback) | Controls mounting of the pod service-account token. |
+| `hostAliases` | `hostAliases: [{ip: 10.0.0.1, hostnames: [db.local]}]` | `[]` (or generic fallback) | Pod host aliases. |
+| `affinity` | `affinity.nodeAffinity: {...}` | `generated` when enabled | Explicit affinity; overrides generated presets. |
+| `topologySpreadConstraints` | `topologySpreadConstraints: [{...}]` | `[]` (or generic fallback) | Per-workload topology spread constraints. |
+| `priorityClassName` | `priorityClassName: high-priority` | `""` (or generic fallback) | Priority class assigned to pods. |
+| `dnsPolicy` | `dnsPolicy: ClusterFirst` | `""` (or generic fallback) | DNS policy for pods. |
+| `restartPolicy` | `restartPolicy: Never` | `n/a` | Restart policy; typically set explicitly for Pod/Job-like workloads. |
+| `nodeSelector` | `nodeSelector.nodepool: apps` | `n/a` (or generic fallback) | Node selector labels for scheduling. |
+| `tolerations` | `tolerations: [{key: dedicated, operator: Exists}]` | `[]` (or generic fallback) | Pod tolerations list. |
+| `securityContext` | `securityContext.runAsNonRoot: true` | `n/a` | Pod-level security context. Add `mergeWithGeneric: true` to merge with `generic.podSecurityContext`. |
+| `imagePullSecrets` / `extraImagePullSecrets` | `extraImagePullSecrets: [{name: regcred}]` | `[]` | Additional pull secrets for workload pod specs. |
+| `terminationGracePeriodSeconds` | `terminationGracePeriodSeconds: 30` | `n/a` | Grace period before forced pod termination. |
+| `initContainers` | `initContainers.prepare.image: busybox` | `n/a` | Init containers, supports both map and array forms. |
+| `containers` | `containers.api.image: nginx` | `required per workload` | Main containers, supports both map and array forms. |
+| `resources` | `resources.requests.cpu: 100m` | `n/a` | Default container resources for this workload. When set on a `*General` object, acts as a fallback for all containers in that family that omit their own `resources`. Overrides `generic.resources`. Allowed keys: `requests`, `limits`, `claims`. |
+| `volumes` / `extraVolumes` | `volumes: [{name: app, type: configMap}]` | `[]` | Typed and raw volumes for workload pods. |
+| `usePredefinedAffinity` | `usePredefinedAffinity: true` | `false` (via generic) | Enables/disables generated affinity presets for this workload. |
+
+### Container Entry Fields
+
+These fields apply to each entry in `containers` and `initContainers`.
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `name` | `name: api` | deterministic fallback | Explicit container name. |
+| `image` / `imageTag` | `image: nginx`, `imageTag: "1.27.5"` | `defaultImage` / `defaultImageTag` | Image and tag for container. |
+| `imagePullPolicy` | `imagePullPolicy: IfNotPresent` | `defaultImagePullPolicy` | Pull policy override for container. |
+| `command` / `args` | `command: ["sh","-c"]`, `args: ["sleep 3600"]` | `n/a` | Command and args (also overridden by diagnostic mode). |
+| `env`, `envFrom` | `env: [{name: APP_MODE, value: prod}]` | `n/a` | Native env/envFrom blocks. |
+| `envConfigmaps`, `envSecrets` | `envConfigmaps: [envs, app-envs]` | `n/a` | Includes all keys from each named ConfigMap/Secret. Multiple entries are rendered in order; `null` and empty string entries are skipped. |
+| `envsFromConfigmap`, `envsFromSecret` | `envsFromConfigmap.app-settings: [APP_MODE]` | `n/a` | Includes selected keys from named ConfigMaps/Secrets. |
+| `ports` | `ports: [{name: http, containerPort: 8080}]` | `n/a` | Exposed container ports. |
+| `lifecycle` | `lifecycle.preStop.exec.command: ["sleep","5"]` | `n/a` | Lifecycle hook settings. |
+| `startupProbe`, `livenessProbe`, `readinessProbe` | `startupProbe.httpGet.path: /healthz` | `n/a` | Probe configuration blocks. |
+| `resources` | `resources.requests.cpu: 100m` | `n/a` | CPU/memory requests and limits. Resolved with three-level fallback: container `resources` → workload `*General.resources` → `generic.resources`. Allowed keys: `requests`, `limits`, `claims`. |
+| `securityContext` | `securityContext.readOnlyRootFilesystem: true` | `n/a` | Container-level security context. Add `mergeWithGeneric: true` to merge with `generic.containerSecurityContext`. |
+| `volumeMounts`, `extraVolumeMounts` | `volumeMounts: [{name: app, mountPath: /etc/app}]` | `[]` | Volume mounts merged with shared/global mounts. |
+| `stdin` | `stdin: true` | `false` | Whether this container should allocate a buffer for stdin in the container runtime. |
+| `tty` | `tty: true` | `false` | Whether this container should allocate a TTY for itself, also requires `stdin` to be true. |
+
+### Workload-Specific Fields
+
+These tables list only fields that are unique to a workload family. Shared knobs still belong to `Common Workload Entry Fields` and `Container Entry Fields`.
+
+#### Deployments
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `deployments.<name>.replicas` | `replicas: 3` | `1` | Number of desired deployment replicas. |
+| `deployments.<name>.strategy` | `strategy.rollingUpdate.maxUnavailable: 1` | `n/a` | Deployment strategy block. |
+| `deployments.<name>.progressDeadlineSeconds` | `progressDeadlineSeconds: 600` | `600` | Rollout progress deadline in seconds. |
+
+#### DaemonSets
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `daemonSets.<name>.strategy` | `strategy.type: RollingUpdate` | `n/a` | DaemonSet update strategy. |
+| `daemonSets.<name>.minReadySeconds` | `minReadySeconds: 10` | `n/a` | Minimum seconds for pod readiness before considered available. |
+| `daemonSets.<name>.revisionHistoryLimit` | `revisionHistoryLimit: 3` | `n/a` | Number of old ControllerRevisions retained for rollback. Defaults to the Kubernetes default (10) when unset; falls back to `daemonSetsGeneral.revisionHistoryLimit`. |
+
+#### Pods
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `pods.<name>` | `pods.toolbox.containers.toolbox.image: busybox` | `n/a` | Pod entries do not add resource-specific fields beyond `Common Workload Entry Fields` and `Container Entry Fields`. |
+
+#### StatefulSets
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `statefulSets.<name>.replicas` | `replicas: 2` | `1` | Number of desired StatefulSet replicas. |
+| `statefulSets.<name>.strategy` | `strategy.type: RollingUpdate` | `n/a` | StatefulSet update strategy. |
+| `statefulSets.<name>.serviceName` | `serviceName: headless` | `<resource key>` | Governing service name used by StatefulSet. |
+| `statefulSets.<name>.minReadySeconds` | `minReadySeconds: 10` | `n/a` | Minimum ready time per pod. |
+| `statefulSets.<name>.volumeClaimTemplates` | `volumeClaimTemplates: [{...}]` | `n/a` | PVC templates for StatefulSet pods. |
+
+#### Jobs
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `jobs.<name>.parallelism` | `parallelism: 1` | `n/a` | Maximum parallel pods for the job. |
+| `jobs.<name>.completions` | `completions: 1` | `n/a` | Number of successful completions required. |
+| `jobs.<name>.activeDeadlineSeconds` | `activeDeadlineSeconds: 600` | `n/a` | Job timeout in seconds. |
+| `jobs.<name>.backoffLimit` | `backoffLimit: 1` | `n/a` | Retry limit for failed pods. |
+| `jobs.<name>.ttlSecondsAfterFinished` | `ttlSecondsAfterFinished: 3600` | `n/a` | Cleanup TTL after job completion. |
+| `jobs.<name>.restartPolicy` | `restartPolicy: Never` | `"Never"` | Pod restart policy for job pods. |
+| `jobs.<name>.commandDurationAlert` | `commandDurationAlert: "900"` | `n/a` | Optional long-running command alert threshold. |
+| `jobs.<name>.commandDurationAlertNamespace` | `commandDurationAlertNamespace: monitoring` | release namespace | Optional namespace override for generated alert rule. |
+
+#### CronJobs
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `cronJobs.<name>.schedule` | `schedule: "*/15 * * * *"` | `required` | Cron schedule expression. |
+| `cronJobs.<name>.suspend` | `suspend: false` | `false` | Pauses or resumes cron execution. |
+| `cronJobs.<name>.timeZone` | `timeZone: UTC` | `n/a` | Optional cron timezone. |
+| `cronJobs.<name>.singleOnly` | `singleOnly: true` | `false` | If true, sets `concurrencyPolicy: Forbid`. |
+| `cronJobs.<name>.startingDeadlineSeconds` | `startingDeadlineSeconds: 120` | `n/a` | Late start deadline for missed runs. |
+| `cronJobs.<name>.successfulJobsHistoryLimit` | `successfulJobsHistoryLimit: 3` | `n/a` | Number of successful jobs to retain. |
+| `cronJobs.<name>.failedJobsHistoryLimit` | `failedJobsHistoryLimit: 1` | `n/a` | Number of failed jobs to retain. |
+
+#### Hooks
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `hooks.<name>.kind` | `kind: "pre-install,pre-upgrade"` | `"pre-install,pre-upgrade"` | Hook phase list for Helm execution. |
+| `hooks.<name>.weight` | `weight: "5"` | `"5"` | Hook ordering weight. |
+| `hooks.<name>.deletePolicy` | `deletePolicy: "before-hook-creation"` | `"before-hook-creation"` | Hook resource deletion policy. |
+
+### Workload General Fields
+
+Each `*General` object accepts all fields from [Common Workload Entry Fields](#common-workload-entry-fields) (including `resources`, `nodeSelector`, `tolerations`, `podLabels`, `imagePullSecrets`, etc.) as defaults for every workload in that family. In addition, some `*General` objects accept the extra family-specific fields listed below.
+
+`*General` objects also accept default container environment fields: `env`, `envFrom`, `envConfigmaps`, `envSecrets`, `envsFromConfigmap`, and `envsFromSecret`. These defaults are rendered for every main container in that workload family before container-level environment entries.
+
+Empty or `null` entries in `envConfigmaps` and `envSecrets` are ignored. If no valid entries remain, the `envFrom` block is not rendered.
+
+#### deploymentsGeneral
+
+All [Common Workload Entry Fields](#common-workload-entry-fields) plus:
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `deploymentsGeneral.strategy` | `strategy.type: RollingUpdate` | `n/a` | Default deployment strategy for all Deployments. |
+| `deploymentsGeneral.progressDeadlineSeconds` | `progressDeadlineSeconds: 600` | `n/a` | Default rollout progress deadline in seconds. |
+
+Example - set default environment sources for every Deployment container:
+
+```yaml
+deploymentsGeneral:
+  envSecrets:
+    - web-monolith-secret-envs
+  envConfigmaps:
+    - web-monolith-envs
+```
+
+#### daemonSetsGeneral
+
+All [Common Workload Entry Fields](#common-workload-entry-fields) plus:
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `daemonSetsGeneral.strategy` | `strategy.type: RollingUpdate` | `n/a` | Default update strategy for all DaemonSets. |
+| `daemonSetsGeneral.minReadySeconds` | `minReadySeconds: 10` | `n/a` | Default minimum ready seconds before pod is considered available. |
+| `daemonSetsGeneral.revisionHistoryLimit` | `revisionHistoryLimit: 3` | `n/a` | Default number of old ControllerRevisions retained for all DaemonSets. |
+
+#### podsGeneral
+
+Accepts all [Common Workload Entry Fields](#common-workload-entry-fields). No additional family-specific fields.
+
+#### statefulSetsGeneral
+
+All [Common Workload Entry Fields](#common-workload-entry-fields) plus:
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `statefulSetsGeneral.strategy` | `strategy.type: RollingUpdate` | `n/a` | Default update strategy for all StatefulSets. |
+| `statefulSetsGeneral.minReadySeconds` | `minReadySeconds: 10` | `n/a` | Default minimum ready seconds per pod. |
+| `statefulSetsGeneral.volumeClaimTemplates` | `volumeClaimTemplates: [{...}]` | `n/a` | Default PVC templates applied to all StatefulSets. |
+
+#### jobsGeneral
+
+All [Common Workload Entry Fields](#common-workload-entry-fields) plus:
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `jobsGeneral.parallelism` | `parallelism: 2` | `n/a` | Default maximum parallel pods for Jobs. |
+| `jobsGeneral.completions` | `completions: 1` | `n/a` | Default number of successful completions required. |
+| `jobsGeneral.activeDeadlineSeconds` | `activeDeadlineSeconds: 600` | `n/a` | Default job timeout in seconds. |
+| `jobsGeneral.backoffLimit` | `backoffLimit: 1` | `n/a` | Default retry limit for failed pods. |
+| `jobsGeneral.ttlSecondsAfterFinished` | `ttlSecondsAfterFinished: 3600` | `n/a` | Default cleanup TTL after job completion. |
+| `jobsGeneral.restartPolicy` | `restartPolicy: Never` | `"Never"` | Default pod restart policy for Job pods. |
+| `jobsGeneral.commandDurationAlert` | `commandDurationAlert: "900"` | `n/a` | Default long-running command alert threshold (seconds) for all Jobs. |
+| `jobsGeneral.commandDurationAlertNamespace` | `commandDurationAlertNamespace: monitoring` | release namespace | Default namespace for generated PrometheusRule alert. |
+
+#### cronJobsGeneral
+
+All [Common Workload Entry Fields](#common-workload-entry-fields) and all [jobsGeneral](#jobsgeneral) fields plus:
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `cronJobsGeneral.suspend` | `suspend: true` | Kubernetes default `false` | Default suspend flag for all CronJobs. Omitted when unset or `null`. |
+| `cronJobsGeneral.timeZone` | `timeZone: UTC` | `n/a` | Default cron timezone for all CronJobs. |
+| `cronJobsGeneral.singleOnly` | `singleOnly: true` | `false` | If true, sets `concurrencyPolicy: Forbid` on all CronJobs by default. Omitted when unset, false, or `null`. |
+| `cronJobsGeneral.startingDeadlineSeconds` | `startingDeadlineSeconds: 120` | `n/a` | Default late-start deadline for missed runs. |
+| `cronJobsGeneral.successfulJobsHistoryLimit` | `successfulJobsHistoryLimit: 3` | `n/a` | Default number of successful job runs to retain. |
+| `cronJobsGeneral.failedJobsHistoryLimit` | `failedJobsHistoryLimit: 1` | `n/a` | Default number of failed job runs to retain. |
+
+Example - set default resources, environment sources, and schedule controls for all CronJobs:
+
+```yaml
+cronJobsGeneral:
+  suspend: true
+  singleOnly: true
+  timeZone: UTC
+  restartPolicy: Never
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  ttlSecondsAfterFinished: 7200
+  activeDeadlineSeconds: 7200
+  backoffLimit: 3
+  resources:
+    requests:
+      cpu: 10m
+      memory: 30Mi
+    limits:
+      cpu: 2
+      memory: 3072Mi
+  envSecrets:
+    - web-monolith-secret-envs
+  envConfigmaps:
+    - web-monolith-envs
+```
+
+A container with its own `resources` block overrides `cronJobsGeneral.resources`. If neither the container nor `cronJobsGeneral` sets resources, `generic.resources` is used as the last resort.
+
+A CronJob entry can override `cronJobsGeneral.suspend` or `cronJobsGeneral.singleOnly` with `false`. Setting either field to `null` on the entry suppresses the inherited value and omits the rendered field.
+
+#### hooksGeneral
+
+All [Common Workload Entry Fields](#common-workload-entry-fields) and all [jobsGeneral](#jobsgeneral) fields plus:
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `hooksGeneral.kind` | `kind: "pre-install,pre-upgrade"` | `"pre-install,pre-upgrade"` | Default hook phase list for all hook jobs. |
+| `hooksGeneral.weight` | `weight: "5"` | `"5"` | Default hook ordering weight. |
+| `hooksGeneral.deletePolicy` | `deletePolicy: "before-hook-creation"` | `"before-hook-creation"` | Default hook resource deletion policy. |
+
+### Networking Resources
+
+#### Services
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `servicesGeneral` | `servicesGeneral.labels.traffic-scope: "shared"` | `{}` | Shared metadata defaults applied to rendered Service resources, including generated governing Services. |
+| `services` | `services.api.ports: [{port: 8080, targetPort: http}]` | `{}` | Service objects keyed by name. |
+| `services.<name>.disabled` | `disabled: true` | `false` | Disables rendering of a service entry. |
+| `services.<name>.labels` / `annotations` | `labels.tier: backend` | `{}` | Extra metadata for the service resource. |
+| `services.<name>.gitops` | `gitops.argo.syncWave: "5"` | `{}` | Resource-level GitOps metadata overlay. |
+| `services.<name>.clusterIP` | `clusterIP: None` | `n/a` | ClusterIP value (including headless service). |
+| `services.<name>.type` | `type: LoadBalancer` | `n/a` | Service type. |
+| `services.<name>.loadBalancerIP` | `loadBalancerIP: 10.0.0.10` | `n/a` | Static LB IP for LoadBalancer services. |
+| `services.<name>.loadBalancerClass` | `loadBalancerClass: internal` | `n/a` | Optional LoadBalancer class. |
+| `services.<name>.allocateLoadBalancerNodePorts` | `allocateLoadBalancerNodePorts: false` | `n/a` | Enables/disables node port allocation for LB services. |
+| `services.<name>.externalTrafficPolicy` | `externalTrafficPolicy: Local` | `Cluster` for LB/NodePort | Traffic policy for external traffic. |
+| `services.<name>.loadBalancerSourceRanges` | `loadBalancerSourceRanges: ["10.0.0.0/8"]` | `n/a` | Allowed CIDRs for LoadBalancer traffic. |
+| `services.<name>.externalIPs` | `externalIPs: ["192.168.10.10"]` | `n/a` | External IPs for service exposure. |
+| `services.<name>.healthCheckNodePort` | `healthCheckNodePort: 31000` | `n/a` | Health check node port for NodePort service with local policy. |
+| `services.<name>.ports` | `ports: [{name: http, port: 8080, targetPort: http}]` | `required` | Service ports list. |
+| `services.<name>.extraSelectorLabels` | `extraSelectorLabels.component: api` | `{}` | Extra selector labels appended to default selector. |
+
+#### Ingresses
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `ingresses` | `ingresses.app.example.com.hosts: [...]` | `{}` | Ingress resources keyed by host/logical name. |
+| `ingresses.<name>.disabled` | `disabled: true` | `false` | Disables rendering of an ingress entry. |
+| `ingresses.<name>.name` | `name: public` | key/host | Optional explicit ingress resource name suffix. |
+| `ingresses.<name>.labels` / `annotations` | `annotations.nginx.ingress.kubernetes.io/rewrite-target: "/"` | `{}` | Extra metadata for ingress resource. |
+| `ingresses.<name>.gitops` | `gitops.argo.syncOptions: ["ServerSideApply=true"]` | `{}` | Resource-level GitOps metadata overlay. |
+| `ingresses.<name>.ingressClassName` | `ingressClassName: nginx` | `n/a` | Ingress class name. |
+| `ingresses.<name>.hosts` | `hosts: [{hostname: app.example.com, paths: [...]}]` | `required` | Hosts and path mappings. |
+| `ingresses.<name>.certManager` | `certManager.issuerName: letsencrypt` | `n/a` | Cert-manager integration block. |
+| `ingresses.<name>.tlsName` | `tlsName: app-tls` | auto `<name>-tls` | Optional TLS secret name override. |
+| `ingresses.<name>.extraTls` | `extraTls: [{hosts:[...], secretName: tls2}]` | `n/a` | Additional TLS entries. |
+
+#### NetworkPolicies
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `networkPolicies` | `networkPolicies.allow-api.spec: {...}` | `{}` | Network policy resources keyed by suffix. |
+| `networkPolicies.<name>.disabled` | `disabled: true` | `false` | Disables rendering of a network policy entry. |
+| `networkPolicies.<name>.labels` / `annotations` | `labels.policy: baseline` | `{}` | Extra metadata for network policy resource. |
+| `networkPolicies.<name>.gitops` | `gitops.commonAnnotations.team: platform` | `{}` | Resource-level GitOps metadata overlay. |
+| `networkPolicies.<name>.spec` | `spec.podSelector.matchLabels.app: api` | `n/a` | Full spec override. |
+| `networkPolicies.<name>.podSelector` | `podSelector.matchLabels.component: api` | `{}` | Shortcut pod selector when `spec` is not provided. |
+| `networkPolicies.<name>.policyTypes` | `policyTypes: ["Ingress"]` | `n/a` | List of policy types. |
+| `networkPolicies.<name>.ingress` / `egress` | `ingress: [{from:[...]}]` | `n/a` | Ingress/egress rules when `spec` is not provided. |
+
+### Config and Secret Resources
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `configMaps` | `configMaps.app-settings.data.APP_MODE: prod` | `{}` | ConfigMap resources keyed by suffix. |
+| `configMaps.<name>.disabled` | `disabled: true` | `false` | Disables rendering of a ConfigMap entry. |
+| `configMaps.<name>.labels` / `annotations` | `labels.config: app` | `{}` | Extra metadata for ConfigMap resource. |
+| `configMaps.<name>.gitops` | `gitops.flux.enabled: true` | `{}` | Resource-level GitOps metadata overlay. |
+| `configMaps.<name>.data` | `data.LOG_LEVEL: info` | `n/a` | Plain string data entries. |
+| `configMaps.<name>.binaryData` | `binaryData.cert.pem: LS0t...` | `n/a` | Binary/base64 data entries. |
+| `secrets` | `secrets.app-secret.data.password: supersecret` | `{}` | Secret resources keyed by suffix. |
+| `secrets.<name>.disabled` | `disabled: true` | `false` | Disables rendering of a Secret entry. |
+| `secrets.<name>.labels` / `annotations` | `labels.secret: app` | `{}` | Extra metadata for Secret resource. |
+| `secrets.<name>.gitops` | `gitops.argo.enabled: true` | `{}` | Resource-level GitOps metadata overlay. |
+| `secrets.<name>.type` | `type: Opaque` | `"Opaque"` | Secret type. |
+| `secrets.<name>.data` | `data.apiToken: mytoken` | `n/a` | Secret data entries (rendered through helper). |
+| `sealedSecrets` | `sealedSecrets.app.encryptedData.password: Ag...` | `{}` | SealedSecret resources keyed by suffix. |
+| `sealedSecrets.<name>.disabled` | `disabled: true` | `false` | Disables rendering of a SealedSecret entry. |
+| `sealedSecrets.<name>.labels` / `annotations` | `labels.secret: sealed` | `{}` | Extra metadata for SealedSecret resource. |
+| `sealedSecrets.<name>.gitops` | `gitops.commonLabels.team: secops` | `{}` | Resource-level GitOps metadata overlay. |
+| `sealedSecrets.<name>.encryptedData` | `encryptedData.password: Ag...` | `n/a` | Encrypted key-values for SealedSecret payload. |
+
+### RBAC, Storage, and Observability
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `serviceAccountGeneral` | `serviceAccountGeneral.labels.team: platform` | `{}` | Shared defaults for all service accounts and generated bindings. |
+| `serviceAccountGeneral.imagePullSecrets` | `includePlatformDefault: true` | `{includePlatformDefault: false, additional: []}` | Shared imagePullSecrets defaults for generated ServiceAccounts. |
+| `serviceAccount` | `serviceAccount.deployer.role.name: deployer-role` | `{}` | Service accounts keyed by suffix, with optional Role/ClusterRole settings. |
+| `serviceAccount.<name>.disabled` | `disabled: true` | `false` | Disables rendering of a service account entry. |
+| `serviceAccount.<name>.labels` / `annotations` | `labels.app: worker` | `{}` | Extra metadata for ServiceAccount resource. |
+| `serviceAccount.<name>.gitops` | `gitops.argo.syncWave: "1"` | `{}` | Resource-level GitOps metadata overlay. |
+| `serviceAccount.<name>.imagePullSecrets` | `additional: [{name: regcred}]` | `n/a` | Per-ServiceAccount imagePullSecrets override; supports config object or direct list shorthand. |
+| `serviceAccount.<name>.role` | `role.rules: [{apiGroups:[""], resources:["pods"], verbs:["get"]}]` | `n/a` | Namespaced role configuration. |
+| `serviceAccount.<name>.clusterRole` | `clusterRole.name: view` | `n/a` | Cluster-level role configuration. |
+| `pvs` | `pvs.shared.spec.capacity.storage: 10Gi` | `{}` | PersistentVolume resources keyed by suffix. |
+| `pvs.<name>.disabled` | `disabled: true` | `false` | Disables rendering of a PV entry. |
+| `pvs.<name>.labels` / `annotations` | `labels.storage: fast` | `{}` | Extra metadata for PV resource. |
+| `pvs.<name>.gitops` | `gitops.flux.enabled: true` | `{}` | Resource-level GitOps metadata overlay. |
+| `pvs.<name>.spec` | `spec.storageClassName: standard` | `n/a` | Full PV spec override. |
+| `pvs.<name>.size` | `size: 10Gi` | `"1Gi"` | Storage size when full `spec` is not provided. |
+| `pvs.<name>.accessModes` | `accessModes: ["ReadWriteOnce"]` | `n/a` | Access modes when full `spec` is not provided. |
+| `pvs.<name>.volumeMode` | `volumeMode: Filesystem` | `n/a` | Optional PV volume mode. |
+| `pvs.<name>.storageClassName` | `storageClassName: standard` | `n/a` | Storage class for PV. |
+| `pvs.<name>.persistentVolumeReclaimPolicy` | `persistentVolumeReclaimPolicy: Retain` | `n/a` | Reclaim policy for released volumes. |
+| `pvs.<name>.mountOptions` | `mountOptions: ["nfsvers=4.1"]` | `n/a` | Mount options list. |
+| `pvs.<name>.claimRef` | `claimRef.name: data-pvc` | `n/a` | Optional claim reference for pre-binding. |
+| `pvs.<name>.nodeAffinity` | `nodeAffinity.required.nodeSelectorTerms: [...]` | `n/a` | Node affinity constraints for local/static volumes. |
+| `pvs.<name>.hostPath` / `local` / `nfs` / `csi` | `nfs.server: 10.0.0.10` | `n/a` | Storage backend blocks used when `spec` is not passed as full object. |
+| `pvcs` | `pvcs.data.size: 20Gi` | `{}` | PVC resources keyed by suffix. |
+| `pvcs.<name>.disabled` | `disabled: true` | `false` | Disables rendering of a PVC entry. |
+| `pvcs.<name>.labels` / `annotations` | `labels.storage: app` | `{}` | Extra metadata for PVC resource. |
+| `pvcs.<name>.gitops` | `gitops.commonLabels.team: platform` | `{}` | Resource-level GitOps metadata overlay. |
+| `pvcs.<name>.accessModes` | `accessModes: ["ReadWriteOnce"]` | `required` | PVC access modes list. |
+| `pvcs.<name>.volumeMode` | `volumeMode: Filesystem` | `n/a` | Optional PVC volume mode. |
+| `pvcs.<name>.size` | `size: 20Gi` | `"1Gi"` | Requested storage size. |
+| `pvcs.<name>.volumeName` | `volumeName: my-pv` | `n/a` | Optional pre-bound PV name. |
+| `pvcs.<name>.storageClassName` | `storageClassName: standard` | `n/a` | Optional storage class override. |
+| `pvcs.<name>.selector` | `selector.matchLabels.tier: fast` | `n/a` | Label selector for binding to matching PVs. |
+| `pdbs` | `pdbs.api.minAvailable: 1` | `{}` | PDB resources keyed by suffix. |
+| `pdbs.<name>.disabled` | `disabled: true` | `false` | Disables rendering of a PDB entry. |
+| `pdbs.<name>.labels` / `annotations` | `labels.app: api` | `{}` | Extra metadata for PDB resource. |
+| `pdbs.<name>.gitops` | `gitops.argo.compareOptions: ["IgnoreExtraneous"]` | `{}` | Resource-level GitOps metadata overlay. |
+| `pdbs.<name>.minAvailable` / `maxUnavailable` | `minAvailable: 1` | `n/a` | Availability policy for disruptions. |
+| `pdbs.<name>.extraSelectorLabels` | `extraSelectorLabels.component: api` | `{}` | Additional selector labels for PDB target pods. |
+| `hpas` | `hpas.api.scaleTargetRef.name: api` | `{}` | HPA resources keyed by suffix. |
+| `hpas.<name>.disabled` | `disabled: true` | `false` | Disables rendering of an HPA entry. |
+| `hpas.<name>.apiVersion` | `apiVersion: autoscaling/v2` | `"autoscaling/v2"` | API version used for HPA resource. |
+| `hpas.<name>.labels` / `annotations` | `labels.autoscaling: enabled` | `{}` | Extra metadata for HPA resource. |
+| `hpas.<name>.gitops` | `gitops.flux.enabled: true` | `{}` | Resource-level GitOps metadata overlay. |
+| `hpas.<name>.scaleTargetRef` | `scaleTargetRef: {name: api, kind: Deployment}` | `required` | Target object for scaling. |
+| `hpas.<name>.minReplicas` / `maxReplicas` | `minReplicas: 2`, `maxReplicas: 6` | `2` / `3` | Replica bounds for autoscaling. |
+| `hpas.<name>.targetCPU` / `targetMemory` | `targetCPU: 70` | `n/a` | Convenience CPU/memory utilization targets. |
+| `hpas.<name>.metrics` | `metrics: [{type: Pods, ...}]` | `n/a` | Custom metrics list; can be used with or without shortcuts. |
+
+### Dependency Toggle Fields
+
+| Field | Example | Default | Description |
+|---|---|---|---|
+| `common.enabled` | `common.enabled: false` | `false` | Compatibility toggle retained for legacy umbrella behavior. |
+| `traefik.enabled` | `traefik.enabled: true` | `false` | Enables `traefik` subchart resources. |
+| `cert-manager.enabled` | `cert-manager.enabled: true` | `false` | Enables `cert-manager` subchart resources. |
+| `istio.enabled` | `istio.enabled: true` | `false` | Enables `istio` subchart resources. |
+| `knative.enabled` | `knative.enabled: true` | `false` | Enables `knative` subchart resources. |
+| `kserve.enabled` | `kserve.enabled: true` | `false` | Enables `kserve` subchart resources. |
+| `kube-prometheus-stack.enabled` | `kube-prometheus-stack.enabled: true` | `false` | Enables monitoring subchart resources. |
+| `native-gateway.enabled` | `native-gateway.enabled: true` | `false` | Enables native Gateway API subchart resources. |
+| `victoria-metrics.enabled` | `victoria-metrics.enabled: true` | `false` | Enables Victoria Metrics subchart resources. |
+| `vault-secret-operator.enabled` | `vault-secret-operator.enabled: true` | `false` | Enables Vault secret operator subchart resources. |
+| `argocd.enabled` | `argocd.enabled: true` | `false` | Enables Argo CD subchart resources. |
+| `fluxcd.enabled` | `fluxcd.enabled: true` | `false` | Enables Flux CD subchart resources. |
+| `keda.enabled` | `keda.enabled: true` | `false` | Enables KEDA subchart resources. |
+| `cloudnativepg.enabled` | `cloudnativepg.enabled: true` | `false` | Enables CloudNativePG subchart resources. |
+| `mysql-percona-operator.enabled` | `mysql-percona-operator.enabled: true` | `false` | Enables Percona MySQL subchart resources. |
+| `rabbitmq.enabled` | `rabbitmq.enabled: true` | `false` | Enables RabbitMQ subchart resources. |
+| `clickhouse.enabled` | `clickhouse.enabled: true` | `false` | Enables ClickHouse subchart resources. |
+| `elk.enabled` | `elk.enabled: true` | `false` | Enables ECK/ELK subchart resources. |
+| `external-secrets.enabled` | `external-secrets.enabled: true` | `false` | Enables External Secrets subchart resources. |
+| `mongodb-percona-operator.enabled` | `mongodb-percona-operator.enabled: true` | `false` | Enables Percona MongoDB subchart resources. |
+| `global.envoy-gateway.enabled` | `global.envoy-gateway.enabled: true` | `false` | Enables Envoy Gateway subchart resources. |
+| `valkey.enabled` | `valkey.enabled: true` | `false` | Enables Valkey subchart resources. |
+
+### Reusable Schema Contracts (Exact Definitions)
+
+These reusable definitions are referenced across multiple value blocks and match `values.schema.json` field-for-field.
+
+| Definition | Used By | Fields |
+|---|---|---|
+| `resourceGitopsConfig` | `gitops` in most resources (`services`, `ingresses`, workload entries, storage, RBAC, observability) | `commonLabels`, `commonAnnotations`, `argo.enabled`, `argo.syncWave`, `argo.syncOptions`, `argo.compareOptions`, `flux.enabled`, `flux.labels`, `flux.annotations` |
+| `baseWorkload` | `deployments.<name>`, `daemonSets.<name>`, `pods.<name>`, `statefulSets.<name>`, `jobs.<name>`, `cronJobs.<name>`, `hooks.<name>` | `disabled`, `labels`, `annotations`, `podLabels`, `podAnnotations`, `extraSelectorLabels`, `gitops`, `serviceAccountName`, `automountServiceAccountToken`, `hostAliases`, `affinity`, `topologySpreadConstraints`, `priorityClassName`, `dnsPolicy`, `restartPolicy`, `nodeSelector`, `tolerations`, `securityContext`, `imagePullSecrets`, `extraImagePullSecrets`, `terminationGracePeriodSeconds`, `resources`, `initContainers`, `containers`, `volumes`, `extraVolumes`, `usePredefinedAffinity` |
+| `baseWorkloadGeneral` | `deploymentsGeneral`, `daemonSetsGeneral`, `podsGeneral`, `statefulSetsGeneral`, `jobsGeneral`, `cronJobsGeneral`, `hooksGeneral` | Same fields as `baseWorkload`, plus default container environment fields `env`, `envFrom`, `envConfigmaps`, `envSecrets`, `envsFromConfigmap`, and `envsFromSecret`. The `resources` field on a `*General` object sets the default container resources for all workloads in that family, overriding `generic.resources` but overridden by container-level `resources`. |
+| `workloadContainer` | each item in `containers` and `initContainers` | `name`, `image`, `imageTag`, `imagePullPolicy`, `command`, `args`, `env`, `envFrom`, `envConfigmaps`, `envSecrets`, `envsFromConfigmap`, `envsFromSecret`, `ports`, `lifecycle`, `startupProbe`, `livenessProbe`, `readinessProbe`, `resources`, `securityContext`, `volumeMounts`, `extraVolumeMounts`, `stdin`, `tty` |
+| `workloadContainerListOrMap` | `containers`, `initContainers` | `array` of `workloadContainer` or `map` of `<containerKey> -> workloadContainer`. |
+| `typedVolume` / `typedVolumeList` | `*.volumes`, `generic.volumes` | `name`, `type`, `originalName`, `defaultMode`, `items`, `sources`, `sizeLimit`, `medium`; list is `array` of these objects. |
+
+## Included Values Files
+
+- [values.yaml](values.yaml): minimal defaults that render no resources.
+- [values.yaml.example](values.yaml.example): representative example covering every supported template family.
+- [tests/e2e/values/install.values.yaml](tests/e2e/values/install.values.yaml): cluster-safe installation fixture used by the local e2e runner.
+
+## Testing
+
+The repository uses four verification layers:
+
+- `make lint`
+- `make test-unit`
+- `make test-compat`
+- `make test-smoke` / `make test-smoke-fast`
+- `make test-e2e`
+
+Representative commands:
+
+```bash
+make deps
+helm lint . -f values.yaml.example
+make deps
+helm unittest --with-subchart=false -f 'tests/units/*_test.yaml' .
+sh tests/units/backward_compatibility_test.sh
+python3 tests/smokes/run/smoke.py --scenario example-render
+make test-e2e
+```
+
+Detailed test documentation is available in [docs/TESTS.MD](docs/TESTS.MD).
+
+Local dependency setup instructions are available in [docs/DEPENDENCY.md](docs/DEPENDENCY.md).
+
+## Repository Layout
+
+| Path | Purpose |
+|------|---------|
+| [Chart.yaml](Chart.yaml) | Chart metadata. |
+| [Chart.lock](Chart.lock) | Locked dependency metadata refreshed by `make deps` / `scripts/helm-deps.sh`. |
+| [values.yaml](values.yaml) | Minimal default values and `helm-docs` source comments. |
+| [values.yaml.example](values.yaml.example) | Representative example covering all template families. |
+| [values.schema.json](values.schema.json) | JSON schema for chart values. |
+| [templates/](templates) | Application resource templates that consume shared helpers from the `common` dependency. |
+| [tests/units/](tests/units) | Helm unit suites and compatibility checks. |
+| [tests/smokes/](tests/smokes) | Smoke scenarios for linting, rendering, and schema validation. |
+| [tests/e2e/](tests/e2e) | kind-based end-to-end installation checks. |
+| [docs/README.md.gotmpl](docs/README.md.gotmpl) | Template used by `helm-docs` to build this README. |
+| [scripts/helm-docs.sh](scripts/helm-docs.sh) | Local wrapper around `helm-docs`. |
+
+## Notes
+
+- `SealedSecret` is a CRD-backed resource. Smoke `kubeconform` skips it by default, and e2e uses a CRD-free fixture so the local cluster flow stays lightweight.
+- Shared helper behavior comes from the `common` library dependency; run `make deps` before direct `helm lint`, `helm template`, or `helm install` commands.
+- Generated `ConfigMap` and `Secret` resources keep Helm hook annotations by default for backward compatibility; set `generic.hookAnnotations: null` to disable them cleanly.
+- Previous umbrella-chart toggles such as `common.enabled` remain in the values contract for compatibility.
+- `diagnosticMode.enbled` is still accepted for backward compatibility, but `diagnosticMode.enabled` is the supported field.
 
 ## Roadmap
 
 Following features are already in backlog for our development team and will be done soon:
 
-* Test operability on newer versions of Kubernetes/OpenShift.
-* Support for more Pod scheduling options: PodTopologySpread.
-* Support for attaching PV and assigning PVC to it.
-* Disabling predefined blocks, which are enabled by default.
-* Support for popular CRDs, e.g. cert-manager.
-* Helm unit-testing.
+* Add a catalog of ready-to-use examples: `Deployment`, `StatefulSet`, `CronJob`, `Job`, `Ingress`, `PVC`, `HPA`, `PDB`, and `extraDeploy`.
+* Expand dependency-subchart examples as new `*` integrations are added.
+* Introduce a compatibility matrix and CI validation for Kubernetes, OpenShift, and Helm across multiple supported versions.
+* Extend e2e and smoke scenarios with dedicated profiles for CRD-based resources and dependency subcharts.
+* Tighten `values.schema.json`: add more resource-specific validation, reduce implicit contracts, and define explicit deprecation paths.
+* Prepare a migration guide for legacy values and aliases: list-based contract, old umbrella toggles, and deprecated fields.
+* Add a set of production recommendations: naming, selectors, probes, `securityContext`, affinity, `PDB`, `HPA`, and rollout-safe defaults.
+* Improve the documentation for `generic.*` with practical scenarios for shared variables, `tpl`, labels/annotations, volumes, and capability overrides.
+* Add release automation: automatic validation of README, schema, lint, unit/smoke/e2e checks, and chart publishing to the registry.
+
+## Feedback
+
+For support and feedback please contact me:
+
+* telegram: @Peter_Rukin
+
+For news and discussions subscribe the channels:
+- telegram community (news): [@nxs_universal_chart](https://t.me/nxs_universal_chart)
+- telegram community (chat): [@nxs_universal_chart_chat](https://t.me/nxs_universal_chart_chat)
 
 ## License
 
-Appchart is released under the [Apache License 2.0](LICENSE).
+appchart is released under the [Apache License 2.0](LICENSE).

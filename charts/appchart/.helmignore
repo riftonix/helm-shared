@@ -1,36 +1,24 @@
-# Patterns to ignore when building packages.
-# This supports shell glob matching, relative path matching, and
-# negation (prefixed with !). Only one pattern per line.
-.DS_Store
-# Common VCS dirs
-.git/
-.gitignore
-.bzr/
-.bzrignore
-.hg/
-.hgignore
-.svn/
-# Common backup files
-*.swp
-*.bak
-*.tmp
-*~
-# Various IDEs
-.project
 .idea/
-*.tmproj
-.vscode/
-# img folder
-img/
-# Changelog
-CHANGELOG.md
-# Others
-example/
-examples/
+.git*
+.pre-commit-config.yaml
+/\.pre-commit-config.yaml
+Makefile
+/Makefile
+tmp
+/*.tgz
+/*.tar
+/*.tar.gz
+/*.tar.xz
+/*.tar.bz2
 docs/
-.github/
-gcloud_auth_key.json
-create.sh
-README.md
+scripts/
+samples/
+tests/
+__snapshot__/
+values.yaml.example
+/values.yaml.example
+.gitignore
 .gitlab-ci.yml
-*.tgz
+.codex
+AGENTS.md
+.github/

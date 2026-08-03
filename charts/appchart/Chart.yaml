@@ -1,21 +1,105 @@
+---
 apiVersion: v2
-description: Universal Helm chart for deploy your apps to Kubernetes
 name: appchart
-version: 2.9.5
-# maintainers:
-# - name: Roman Andreev
-#   email: r.andreev@nixys.io
-# - name: Anton Zhideev
-#   email: a.zhideev@nixys.io
-# - name: Evgenii Tereshkov
-#   email: evg.krsk@gmail.com
-# - name: Sergey Lavrinenko
-#   email: s@lavr.me
-# - name: Viktor Sokhan
-#   email: v.sokhan@nixys.io
-# - name: Ruslan Gainanov
-#   email: gromrx1@gmail.com
-# - name: Artem Danielyan
-#   email: a.danielyan@nixys.io
-# - name: Roman Emelyanov
-#   email: r.emelyanov@nixys.io
+description: Helm chart for rendering reusable Kubernetes application resources
+type: application
+version: 3.0.0-rc1
+appVersion: "v1"
+home: https://github.com/riftonix/helm-shared
+
+dependencies:
+  - name: common
+    version: 1.0.5
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+  - name: traefik
+    version: 1.0.5
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: traefik.enabled
+  - name: cert-manager
+    version: 1.0.4
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: certificates.enabled
+  - name: istio
+    version: 1.0.5
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: istio.enabled
+  - name: fluxcd
+    version: 1.0.4
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: fluxcd.enabled
+  - name: argocd
+    version: 1.0.4
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: argocd.enabled
+  - name: knative
+    version: 1.0.5
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: knative.enabled
+  - name: kserve
+    version: 1.0.4
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: kserve.enabled
+  - name: kube-prometheus-stack
+    version: 1.0.5
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: kube-prometheus-stack.enabled
+  - name: native-gateway
+    version: 1.0.6
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: native-gateway.enabled
+  - name: victoria-metrics
+    version: 1.0.4
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: victoria-metrics.enabled
+  - name: vault-secret-operator
+    version: 1.0.5
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: vault-secret-operator.enabled
+  - name: keda
+    version: 1.0.4
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: keda.enabled
+  - name: cloudnativepg
+    version: 1.0.0
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: cloudnativepg.enabled
+  - name: mysql-percona-operator
+    version: 1.0.0
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: mysql-percona-operator.enabled
+  - name: rabbitmq
+    version: 1.0.1
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: rabbitmq.enabled
+  - name: clickhouse
+    version: 1.0.1
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: clickhouse.enabled
+  - name: elk
+    version: 1.0.0
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: elk.enabled
+  - name: external-secrets
+    version: 1.1.0
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: external-secrets.enabled
+  - name: mongodb-percona-operator
+    version: 1.0.0
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: mongodb-percona-operator.enabled
+  - name: envoy-gateway
+    version: 1.0.1
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: global.envoy-gateway.enabled
+  - name: valkey
+    version: 1.0.0
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: valkey.enabled
+  - name: keycloak-operator
+    version: 1.0.1
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: keycloak-operator.enabled
+  - name: strimzi-kafka-operator
+    version: 1.0.0
+    repository: oci://ghcr.io/riftonix/helm-shared/libs
+    condition: strimzi-kafka-operator.enabled
