@@ -12,7 +12,7 @@ mysql-percona-operator:
         secretsName: app-mysql-secrets
         pxc:
           size: 3
-          image: percona/percona-xtradb-cluster:8.0.36
+          image: percona/percona-xtradb-cluster:8.4.10
           volumeSpec:
             persistentVolumeClaim:
               resources:
