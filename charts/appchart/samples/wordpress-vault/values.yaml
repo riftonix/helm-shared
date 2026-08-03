@@ -91,7 +91,7 @@ mysql-percona-operator:
         secretsName: mysql-auth
         pxc:
           size: 1
-          image: percona/percona-xtradb-cluster:8.0.36
+          image: percona/percona-xtradb-cluster:8.4.10
           volumeSpec:
             persistentVolumeClaim:
               resources:
