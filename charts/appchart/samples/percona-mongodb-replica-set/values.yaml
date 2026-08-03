@@ -4,7 +4,7 @@ mongodb-percona-operator:
     app-mongo:
       spec:
         crVersion: 1.17.0
-        image: percona/percona-server-mongodb:7.0.12-7
+        image: percona/percona-server-mongodb:8.0.19-7
         replsets:
           - name: rs0
             size: 3
