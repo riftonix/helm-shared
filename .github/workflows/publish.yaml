@@ -16,9 +16,9 @@ env:
   # renovate: datasource=repology depName=manjaro_stable/dagger
   DAGGER_VERSION: 0.21.7
   # renovate: datasource=git-tags depName=riftonix/daggerverse
-  GIT_MODULE: github.com/riftonix/daggerverse/modules/git@modules/git/v1.0.1
+  GIT_MODULE: github.com/riftonix/daggerverse/modules/git@modules/git/v1.0.2
   # renovate: datasource=git-tags depName=riftonix/daggerverse
-  HELM_CI_SCENARIO: github.com/riftonix/daggerverse/scenarios/helm-ci@scenarios/helm-ci/v1.2.1
+  HELM_CI_SCENARIO: github.com/riftonix/daggerverse/scenarios/helm-ci@scenarios/helm-ci/v1.3.0
 
 jobs:
   prepare-targets:
@@ -81,13 +81,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          chart_root="${{ matrix.chart }}"
+          chart_root="${chart_root%%/*}"
+
           dagger -m "${HELM_CI_SCENARIO}" \
             call \
             --source=. \
             publish-chart \
             --chart-source='${{ matrix.chart }}' \
             --git-tag-prefix='${{ matrix.chart }}' \
-            --oci-base-url='ghcr.io/${{ github.repository_owner }}' \
-            --username='${{ github.actor }}' \
-            --password=env://GITHUB_TOKEN \
+            --oci-url="ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}/${chart_root}" \
+            --registry-address=ghcr.io \
+            --registry-login='${{ github.actor }}' \
+            --registry-password=env://GITHUB_TOKEN \
             --git-token=env://GITHUB_TOKEN

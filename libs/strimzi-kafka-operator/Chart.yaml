@@ -1,4 +1,6 @@
 apiVersion: v2
+annotations:
+  org.opencontainers.image.source: https://github.com/riftonix/helm-shared
 appVersion: 1.0.0
 description: Helm chart for rendering Strimzi Kafka Operator custom resources
 keywords:

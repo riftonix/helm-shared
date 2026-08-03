@@ -1,4 +1,6 @@
 apiVersion: v2
+annotations:
+  org.opencontainers.image.source: https://github.com/riftonix/helm-shared
 appVersion: 1.16.0
 description: Helm chart for Vault Secret Operator resources
 keywords:
