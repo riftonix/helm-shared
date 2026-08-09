@@ -114,7 +114,7 @@ valkeyclusters:
         # -- Enable the metrics exporter sidecar.
         enabled: true
         # -- Metrics exporter image override.
-        image: oliver006/redis_exporter:v1.88.0
+        image: oliver006/redis_exporter:v1.89.0
         # -- Resource requirements for the metrics exporter sidecar.
         resources:
           # -- Metrics exporter resource requests.
@@ -294,7 +294,7 @@ valkeynodes:
         # -- Enable the metrics exporter sidecar.
         enabled: true
         # -- Metrics exporter image override.
-        image: oliver006/redis_exporter:v1.88.0
+        image: oliver006/redis_exporter:v1.89.0
         # -- Resource requirements for the metrics exporter sidecar.
         resources:
           # -- Metrics exporter resource requests.
@@ -312,7 +312,7 @@ valkeynodes:
         - # -- Container name to add or patch.
           name: metrics-exporter
           # -- Container image override for the named container.
-          image: oliver006/redis_exporter:v1.88.0
+          image: oliver006/redis_exporter:v1.89.0
       # -- TLS configuration for the node.
       tls:
         # -- Certificate Secret reference.
