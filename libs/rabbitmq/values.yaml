@@ -71,7 +71,7 @@ rabbitmqclusters:
       # -- Number of RabbitMQ replicas. Odd numbers are recommended.
       replicas: 1
       # -- Container image used for the managed RabbitMQ server Pods.
-      image: rabbitmq:4.3.4-management
+      image: rabbitmq:4.3.5-management
       # -- Persistence settings for RabbitMQ data volumes.
       persistence:
         # -- Requested persistent volume size. Use `0` to disable persistence in ephemeral environments.
