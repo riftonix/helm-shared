@@ -209,7 +209,7 @@ keycloaks:
         # -- Port of the management interface.
         port: 5432
       # -- Custom Keycloak image to be used.
-      image: quay.io/keycloak/keycloak:26.7.1
+      image: quay.io/keycloak/keycloak:26.7.2
       # -- Secret(s) that might be used when pulling an image from a private container image registry or repository.
       # @default -- []
       imagePullSecrets:
@@ -1620,7 +1620,7 @@ keycloaks:
                       # -- Value for `optional`.
                       optional: false
                 # -- Value for `image`.
-                image: quay.io/keycloak/keycloak:26.7.1
+                image: quay.io/keycloak/keycloak:26.7.2
                 # -- Value for `imagePullPolicy`.
                 imagePullPolicy: documentation-placeholder
                 # -- Value for `lifecycle`.
@@ -2132,7 +2132,7 @@ keycloaks:
                       # -- Value for `optional`.
                       optional: false
                 # -- Value for `image`.
-                image: quay.io/keycloak/keycloak:26.7.1
+                image: quay.io/keycloak/keycloak:26.7.2
                 # -- Value for `imagePullPolicy`.
                 imagePullPolicy: documentation-placeholder
                 # -- Value for `lifecycle`.
@@ -2650,7 +2650,7 @@ keycloaks:
                       # -- Value for `optional`.
                       optional: false
                 # -- Value for `image`.
-                image: quay.io/keycloak/keycloak:26.7.1
+                image: quay.io/keycloak/keycloak:26.7.2
                 # -- Value for `imagePullPolicy`.
                 imagePullPolicy: documentation-placeholder
                 # -- Value for `lifecycle`.
@@ -3801,7 +3801,7 @@ keycloaks:
                   # -- Value for `fsType`.
                   fsType: documentation-placeholder
                   # -- Value for `image`.
-                  image: quay.io/keycloak/keycloak:26.7.1
+                  image: quay.io/keycloak/keycloak:26.7.2
                   # -- Value for `keyring`.
                   keyring: documentation-placeholder
                   # -- Value for `monitors`.
