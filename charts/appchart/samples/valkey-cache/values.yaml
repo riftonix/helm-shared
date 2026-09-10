@@ -3,7 +3,7 @@ valkey:
   valkeyclusters:
     cache:
       spec:
-        image: valkey/valkey:8.1
+        image: valkey/valkey:9.1
         shards: 3
         replicas: 1
         workloadType: StatefulSet
