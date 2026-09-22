@@ -9,7 +9,7 @@ clickhouse:
               spec:
                 containers:
                   - name: clickhouse
-                    image: clickhouse/clickhouse-server:26.8
+                    image: clickhouse/clickhouse-server:26.9
   clickhousekeeperinstallations:
     keeper:
       spec:
