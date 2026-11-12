@@ -1,0 +1,20 @@
+#!/usr/bin/env -S python3 -I
+"""Test-only Helm executable. Uses sibling packages/, never a network registry."""
+import json
+from pathlib import Path
+import shutil
+import sys
+
+packages = Path(__file__).resolve().parent.parent / "packages"
+args = sys.argv[1:]
+with (packages / "calls.log").open("a") as stream:
+    stream.write(json.dumps(args) + "\n")
+if args[0] == "pull":
+    name = args[1].rsplit("/", 1)[-1]
+    version = args[args.index("--version") + 1]
+    package = packages / name / version
+    destination = Path(args[args.index("--destination") + 1])
+    shutil.copytree(package / "chart", destination / name)
+    print("Digest: " + (package / "digest").read_text().strip(), file=sys.stderr)
+else:
+    raise SystemExit("unexpected fixture command: " + repr(args))

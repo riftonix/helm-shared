@@ -1,0 +1,62 @@
+# Each document is an independent pipeline, branch and PR. No ordering is encoded.
+{{- range $name, $component := .components }}
+{{- $path := get $component "path" | default (printf "libs/%s" $name) }}
+---
+name: Update {{ $name }} from upstream OCI
+pipelineid: upstream-{{ $name }}
+
+{{- if $.github.enabled }}
+scms:
+  fork:
+    kind: github
+    spec:
+      owner: {{ $.github.owner | quote }}
+      repository: {{ $.github.repository | quote }}
+      branch: {{ $.github.branch | quote }}
+      token: {{ requiredEnv "UPDATECLI_GITHUB_TOKEN" | quote }}
+      workingbranch: true
+      workingbranchprefix: updatecli
+      force: false
+      submodules: false
+{{- end }}
+
+sources:
+  version:
+    kind: helmchart
+    spec:
+      url: {{ $.upstream.registry | quote }}
+      name: {{ get $component "upstream" | default (printf "nuc-%s" $name) | quote }}
+      versionfilter:
+        kind: semver
+        pattern: {{ get $component "versionfilter" | default $.upstream.versionfilter | quote }}
+
+targets:
+  component:
+    name: Merge only {{ $path }} and its source pin
+    kind: shell
+    sourceid: version
+{{- if $.github.enabled }}
+    scmid: fork
+{{- end }}
+    spec:
+      # With scmid, the default working directory is the SCM checkout, not this manifest.
+      command: python3 -I updatecli/sync_chart.py --component {{ $name | quote }} --version
+      environments:
+        - name: PATH
+        - name: HOME
+
+{{- if $.github.enabled }}
+actions:
+  pullrequest:
+    kind: github/pullrequest
+    scmid: fork
+    title: {{ printf "chore(deps): update %s to {{ source \"version\" }}" $name | quote }}
+    spec:
+      merge:
+        strategy: manual
+      description: |
+        Updates only `{{ $path }}` and `updatecli/pins/{{ $name }}.json`.
+        Components are independent. Merge and publish missing dependencies first,
+        then rerun this pipeline. Updatecli does not order or merge dependency PRs.
+{{- end }}
+{{- end }}

@@ -29,7 +29,7 @@ helm registry login registry.nixys.ru
 make deps
 ```
 
-`Chart.lock` should stay in sync with `Chart.yaml`, and shared helper changes must be synchronized with the upstream source in `/home/ruk/nixys/common`.
+`Chart.lock` is not committed; `make deps` generates it locally. Dependency versions in `Chart.yaml` are exact. Shared helper changes must be synchronized with the upstream source in `/home/ruk/nixys/common`.
 
 ## Dependency Matrix
 

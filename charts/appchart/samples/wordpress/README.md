@@ -45,7 +45,7 @@ Set the same password as the value of `secrets.db.data.password` in `values.yaml
 
 ## Notes
 
-- **MySQL endpoint.** WordPress connects to `mysql-haproxy` — the HAProxy service created by the Percona operator for the `mysql` cluster.
+- **MySQL endpoint.** WordPress connects to `mysql-haproxy` - the HAProxy service created by the Percona operator for the `mysql` cluster.
 - **Object cache.** Valkey is deployed as a single-shard instance. To enable object caching in WordPress, install the [Redis Object Cache](https://wordpress.org/plugins/redis-cache/) plugin and point it at the `cache` Valkey service.
 - **Storage class.** Adjust `storageClassName: standard` in `pvcs` and `pxc.volumeSpec` to match your cluster's storage provisioner.
 - **Domain.** Replace `wordpress.example.local` with your actual domain in both the `ingresses` and `cert-manager` sections.
