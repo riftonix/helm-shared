@@ -36,7 +36,7 @@ jobs:
       - uses: updatecli/updatecli-action@v3.10.0
         with:
           version: ${{ env.UPDATECLI_VERSION }}
-      - uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v5
         with:
           version: ${{ env.HELM_VERSION }}
       - name: Test Updatecli adapter and manifests
