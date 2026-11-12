@@ -5,3 +5,4 @@
 dagger.json
 test.sh
 *.tgz
+Chart.lock

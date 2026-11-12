@@ -370,65 +370,58 @@ false
 {{ toYaml $entries }}
 {{- end -}}
 
-{{- define "helpers.configmaps.includeEnvConfigmap" -}}
-{{- $ctx := .context -}}
-{{- range $sName := (.value | default list) }}
-{{- if and (kindIs "string" $sName) $sName }}
-{{- $resolvedName := include "helpers.tplvalues.render" (dict "value" $sName "context" $ctx) -}}
-{{- if $resolvedName }}
-- configMapRef:
-    name: {{ include "helpers.app.fullname" (dict "name" $resolvedName "context" $ctx) }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{/*
+Coerce a value to its string representation.
+Numeric values coming from YAML are float64 in templates, so plain rendering
+would turn tags like `20250811` into `2.0250811e+07`.
+*/}}
+{{- define "helpers.tostring" -}}
+{{- $value := .value -}}
+{{- if kindIs "float64" $value -}}
+  {{- if eq $value (floor $value) -}}
+{{- printf "%.0f" $value -}}
+  {{- else -}}
+{{- printf "%v" $value -}}
+  {{- end -}}
+{{- else -}}
+{{- printf "%v" $value -}}
+{{- end -}}
 {{- end -}}
 
-{{- define "helpers.secrets.includeEnvSecret" -}}
-{{- $ctx := .context -}}
-{{- range $sName := (.value | default list) }}
-{{- if and (kindIs "string" $sName) $sName }}
-{{- $resolvedName := include "helpers.tplvalues.render" (dict "value" $sName "context" $ctx) -}}
-{{- if $resolvedName }}
-- secretRef:
-    name: {{ include "helpers.app.fullname" (dict "name" $resolvedName "context" $ctx) }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- end -}}
-
-{{- define "helpers.workloads.envsFrom" -}}
-{{- $ctx := .context -}}
-{{- $general := .general | default dict -}}
-{{- $v := .value | default dict -}}
-{{- $envFrom := "" -}}
-{{- with $general.envConfigmaps }}
-{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.configmaps.includeEnvConfigmap" (dict "value" . "context" $ctx)) -}}
-{{- end }}
-{{- with $v.envConfigmaps }}
-{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.configmaps.includeEnvConfigmap" (dict "value" . "context" $ctx)) -}}
-{{- end }}
-{{- with $general.envSecrets }}
-{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.secrets.includeEnvSecret" (dict "value" . "context" $ctx)) -}}
-{{- end }}
-{{- with $v.envSecrets }}
-{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.secrets.includeEnvSecret" (dict "value" . "context" $ctx)) -}}
-{{- end }}
-{{- with $general.envFrom }}
-{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.tplvalues.render" (dict "value" . "context" $ctx)) -}}
-{{- end }}
-{{- with $v.envFrom }}
-{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.tplvalues.render" (dict "value" . "context" $ctx)) -}}
-{{- end }}
-{{- $envFrom = trim $envFrom -}}
-{{- if $envFrom }}
-envFrom:
-{{ $envFrom | nindent 2 }}
-{{- end -}}
+{{/*
+Resolve container image reference: `<image>:<tag>` with both parts coerced to string.
+*/}}
+{{- define "helpers.workloads.containerImage" -}}
+{{- $context := .context -}}
+{{- $container := .container | default dict -}}
+{{- $image := $context.Values.defaultImage -}}
+{{- with (get $container "image") }}{{- $image = include "helpers.tplvalues.render" (dict "value" . "context" $context) -}}{{- end -}}
+{{- $imageTag := $context.Values.defaultImageTag -}}
+{{- with (get $container "imageTag") }}{{- $imageTag = include "helpers.tplvalues.render" (dict "value" . "context" $context) -}}{{- end -}}
+{{- printf "%s:%s" (include "helpers.tostring" (dict "value" $image)) (include "helpers.tostring" (dict "value" $imageTag)) -}}
 {{- end -}}
 
 {{- define "helpers.resources.isEnabled" -}}
 {{- $value := .value | default dict -}}
 {{- if and $value (not ($value.disabled | default false)) -}}true{{- else -}}false{{- end -}}
+{{- end -}}
+
+{{/*
+Returns "true" when an enabled entry in .Values.hpas targets the given workload
+(scaleTargetRef.kind defaults to Deployment, matching templates/observability/hpa.yaml).
+*/}}
+{{- define "helpers.workloads.hpaManaged" -}}
+{{- $managed := false -}}
+{{- range $hpa := (.context.Values.hpas | default dict) -}}
+{{- if eq "true" (include "helpers.resources.isEnabled" (dict "value" $hpa)) -}}
+{{- with $hpa.scaleTargetRef -}}
+{{- if and (eq (toString .name) (toString $.name)) (eq (.kind | default "Deployment") $.kind) -}}
+{{- $managed = true -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- $managed -}}
 {{- end -}}
 
 {{- define "helpers.statefulsets.governingServiceName" -}}
@@ -896,6 +889,11 @@ dnsPolicy: {{ .dnsPolicy }}
 {{- else if $.Values.generic.dnsPolicy }}
 dnsPolicy: {{ $.Values.generic.dnsPolicy }}
 {{- end }}
+{{- if .dnsConfig }}
+dnsConfig: {{- include "helpers.tplvalues.render" (dict "value" .dnsConfig "context" $) | nindent 2 }}
+{{- else if $.Values.generic.dnsConfig }}
+dnsConfig: {{- include "helpers.tplvalues.render" (dict "value" $.Values.generic.dnsConfig "context" $) | nindent 2 }}
+{{- end }}
 {{- with .restartPolicy }}
 restartPolicy: {{ . }}
 {{- end }}
@@ -937,11 +935,7 @@ initContainers:
   {{- else }}
 - name: {{ printf "%s-init-%d" $name $index }}
   {{- end }}
-  {{- $image := $.Values.defaultImage -}}
-  {{- with (get $container "image") }}{{- $image = include "helpers.tplvalues.render" (dict "value" . "context" $) -}}{{- end }}
-  {{- $imageTag := $.Values.defaultImageTag -}}
-  {{- with (get $container "imageTag") }}{{- $imageTag = include "helpers.tplvalues.render" (dict "value" . "context" $) -}}{{- end }}
-  image: {{ $image }}:{{ $imageTag }}
+  image: {{ include "helpers.workloads.containerImage" (dict "container" $container "context" $) }}
   imagePullPolicy: {{ get $container "imagePullPolicy" | default $.Values.defaultImagePullPolicy }}
   {{- if get $container "stdin" }}
   stdin: {{ get $container "stdin" }}
@@ -1002,11 +996,7 @@ containers:
   {{- else }}
 - name: {{ printf "%s-%d" $name $index }}
   {{- end }}
-  {{- $image := $.Values.defaultImage -}}
-  {{- with (get $container "image") }}{{- $image = include "helpers.tplvalues.render" (dict "value" . "context" $) -}}{{- end }}
-  {{- $imageTag := $.Values.defaultImageTag -}}
-  {{- with (get $container "imageTag") }}{{- $imageTag = include "helpers.tplvalues.render" (dict "value" . "context" $) -}}{{- end }}
-  image: {{ $image }}:{{ $imageTag }}
+  image: {{ include "helpers.workloads.containerImage" (dict "container" $container "context" $) }}
   imagePullPolicy: {{ get $container "imagePullPolicy" | default $.Values.defaultImagePullPolicy }}
   {{- if get $container "stdin" }}
   stdin: {{ get $container "stdin" }}
@@ -1059,4 +1049,60 @@ containers:
 {{- end }}
 volumes: {{- include "helpers.volumes.renderVolume" (dict "value" . "general" $general "context" $) | nindent 2 }}
 {{- end }}
+{{- end -}}
+
+{{- define "helpers.configmaps.includeEnvConfigmap" -}}
+{{- $ctx := .context -}}
+{{- range $sName := (.value | default list) }}
+{{- if and (kindIs "string" $sName) $sName }}
+{{- $resolvedName := include "helpers.tplvalues.render" (dict "value" $sName "context" $ctx) -}}
+{{- if $resolvedName }}
+- configMapRef:
+    name: {{ include "helpers.app.fullname" (dict "name" $resolvedName "context" $ctx) }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "helpers.secrets.includeEnvSecret" -}}
+{{- $ctx := .context -}}
+{{- range $sName := (.value | default list) }}
+{{- if and (kindIs "string" $sName) $sName }}
+{{- $resolvedName := include "helpers.tplvalues.render" (dict "value" $sName "context" $ctx) -}}
+{{- if $resolvedName }}
+- secretRef:
+    name: {{ include "helpers.app.fullname" (dict "name" $resolvedName "context" $ctx) }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "helpers.workloads.envsFrom" -}}
+{{- $ctx := .context -}}
+{{- $general := .general | default dict -}}
+{{- $v := .value | default dict -}}
+{{- $envFrom := "" -}}
+{{- with $general.envConfigmaps }}
+{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.configmaps.includeEnvConfigmap" (dict "value" . "context" $ctx)) -}}
+{{- end }}
+{{- with $v.envConfigmaps }}
+{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.configmaps.includeEnvConfigmap" (dict "value" . "context" $ctx)) -}}
+{{- end }}
+{{- with $general.envSecrets }}
+{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.secrets.includeEnvSecret" (dict "value" . "context" $ctx)) -}}
+{{- end }}
+{{- with $v.envSecrets }}
+{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.secrets.includeEnvSecret" (dict "value" . "context" $ctx)) -}}
+{{- end }}
+{{- with $general.envFrom }}
+{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.tplvalues.render" (dict "value" . "context" $ctx)) -}}
+{{- end }}
+{{- with $v.envFrom }}
+{{- $envFrom = printf "%s\n%s" $envFrom (include "helpers.tplvalues.render" (dict "value" . "context" $ctx)) -}}
+{{- end }}
+{{- $envFrom = trim $envFrom -}}
+{{- if $envFrom }}
+envFrom:
+{{ $envFrom | nindent 2 }}
+{{- end -}}
 {{- end -}}

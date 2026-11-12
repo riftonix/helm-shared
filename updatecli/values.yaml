@@ -1,0 +1,77 @@
+# Equal, independently updated components. Merge and dependency order is manual.
+# Component defaults: path libs/<id>, upstream nuc-<id>, upstream.versionfilter.
+upstream:
+  registry: oci://registry.nixys.ru/nuc
+  versionfilter: '>=1.0.0 <2.0.0'
+  exclude:
+  - .github/
+  - docs/AGENTS.md
+  - CHANGELOG.md
+  - charts/
+  - Chart.lock
+  - LICENSE
+home: https://github.com/riftonix/helm-shared
+# Shared rewrite rules for imported upstream files. The adapter applies, in order:
+# https://github.com/nixys/<upstream> -> <home>/tree/master/<path>, these rules,
+# <upstream> -> <id> for every component, then the component's own rules.
+# A rule replaces literal `from`, or `regex` (Python re) when set; `file` limits
+# it to one chart-relative path.
+rewrite:
+- from: oci://registry.nixys.ru/nuc/nxs-universal-chart
+  to: oci://ghcr.io/riftonix/helm-shared/charts/appchart
+- from: oci://registry.nixys.ru/nuc
+  to: oci://ghcr.io/riftonix/helm-shared/libs
+- from: nuc-*
+  to: '*'
+- from: "\u2014"
+  to: '-'
+- from: "\u2013"
+  to: '-'
+- file: Chart.yaml
+  # Foreign metadata; the fork's own home/annotations survive as local edits.
+  regex: '(?m)^(?:icon|home):.*\n?|^(?:maintainers|annotations):.*\n(?:(?:[ \t]|-[ \t]).*\n?|\n)*'
+  to: ''
+github:
+  enabled: true
+  owner: riftonix
+  repository: helm-shared
+  branch: master
+components:
+  appchart:
+    path: charts/appchart
+    upstream: nxs-universal-chart
+    versionfilter: '>=3.0.0 <4.0.0'
+    rewrite:
+    - from: appchart is a Helm chart
+      to: Appchart is a Helm chart
+    - file: README.md
+      regex: '(?m)^!\[Nxs Universal Chart Logo\].*\n|^\[!\[Artifact Hub\].*\n'
+      to: ''
+    - file: README.md
+      regex: '\A# NXS Universal Chart\s*'
+      to: "# Appchart\n\nThis is the fork of [nxs-universal-chart](https://github.com/nixys/nxs-universal-chart/).\n\n"
+  argocd: {}
+  cert-manager:
+    upstream: nuc-certificates
+  clickhouse: {}
+  cloudnativepg: {}
+  common: {}
+  elk: {}
+  envoy-gateway: {}
+  external-secrets: {}
+  fluxcd: {}
+  istio: {}
+  keda: {}
+  keycloak-operator: {}
+  knative: {}
+  kserve: {}
+  kube-prometheus-stack: {}
+  mongodb-percona-operator: {}
+  mysql-percona-operator: {}
+  native-gateway: {}
+  rabbitmq: {}
+  strimzi-kafka-operator: {}
+  traefik: {}
+  valkey: {}
+  vault-secret-operator: {}
+  victoria-metrics: {}

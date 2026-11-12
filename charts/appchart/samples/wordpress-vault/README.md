@@ -18,7 +18,7 @@ Differs from the [`wordpress`](../wordpress) sample in that the plain Kubernetes
 - Valkey (Redis-compatible) object cache
 - cert-manager Certificate and ClusterIssuer
 - HashiCorp Vault KV v2
-- Vault Secret Operator — VaultConnection, VaultAuth, VaultStaticSecret
+- Vault Secret Operator - VaultConnection, VaultAuth, VaultStaticSecret
 
 ## How secret delivery works
 
@@ -83,7 +83,7 @@ kubectl exec -it mysql-pxc-0 -- \
 
 ## Notes
 
-- **MySQL endpoint.** WordPress connects to `mysql-haproxy` — the HAProxy service created by the Percona operator for the `mysql` cluster.
+- **MySQL endpoint.** WordPress connects to `mysql-haproxy` - the HAProxy service created by the Percona operator for the `mysql` cluster.
 - **Object cache.** Valkey is deployed as a single-shard instance. To enable object caching in WordPress, install the [Redis Object Cache](https://wordpress.org/plugins/redis-cache/) plugin and point it at the `cache` Valkey service.
 - **Storage class.** Adjust `storageClassName: standard` in `pvcs` and `pxc.volumeSpec` to match your cluster's storage provisioner.
 - **Domain.** Replace `wordpress.example.local` with your actual domain in both the `ingresses` and `cert-manager` sections.

@@ -161,6 +161,9 @@
         "dnsPolicy": {
           "$ref": "#/definitions/stringValue"
         },
+        "dnsConfig": {
+          "$ref": "#/definitions/freeFormObject"
+        },
         "serviceAccountName": {
           "$ref": "#/definitions/stringValue"
         },
@@ -306,7 +309,7 @@
       "$ref": "#/definitions/stringValue"
     },
     "defaultImageTag": {
-      "$ref": "#/definitions/stringValue"
+      "$ref": "#/definitions/stringOrNumberValue"
     },
     "defaultImagePullPolicy": {
       "$ref": "#/definitions/stringValue"
@@ -403,6 +406,9 @@
     },
     "stringValue": {
       "type": "string"
+    },
+    "stringOrNumberValue": {
+      "type": ["string", "number", "boolean"]
     },
     "enabledToggle": {
       "type": "object",
@@ -520,7 +526,7 @@
           "$ref": "#/definitions/stringValue"
         },
         "imageTag": {
-          "$ref": "#/definitions/stringValue"
+          "$ref": "#/definitions/stringOrNumberValue"
         },
         "imagePullPolicy": {
           "$ref": "#/definitions/stringValue"
@@ -1278,6 +1284,9 @@
         "targetMemory": {},
         "metrics": {
           "$ref": "#/definitions/freeFormArray"
+        },
+        "behavior": {
+          "$ref": "#/definitions/freeFormObject"
         }
       }
     },
@@ -1367,6 +1376,9 @@
         },
         "dnsPolicy": {
           "$ref": "#/definitions/stringValue"
+        },
+        "dnsConfig": {
+          "$ref": "#/definitions/freeFormObject"
         },
         "restartPolicy": {
           "$ref": "#/definitions/stringValue"
@@ -1771,6 +1783,12 @@
             },
             "failedJobsHistoryLimit": {
               "type": "integer"
+            },
+            "jobLabels": {
+              "$ref": "#/definitions/stringMap"
+            },
+            "jobAnnotations": {
+              "$ref": "#/definitions/stringMap"
             }
           }
         }
@@ -1802,6 +1820,12 @@
             },
             "failedJobsHistoryLimit": {
               "type": "integer"
+            },
+            "jobLabels": {
+              "$ref": "#/definitions/stringMap"
+            },
+            "jobAnnotations": {
+              "$ref": "#/definitions/stringMap"
             }
           }
         }
