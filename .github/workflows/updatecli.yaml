@@ -1,61 +1,74 @@
 name: Update charts
 
 on:
+  schedule:
+    - cron: '0 6 * * 1'
   workflow_dispatch:
     inputs:
       component:
-        description: Component ID (for example common); empty runs all independent pipelines
+        description: Component ID (for example common); empty runs all components
         required: false
         type: string
 
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 concurrency:
   group: updatecli-charts
   cancel-in-progress: false
 
 env:
-  # renovate: datasource=github-releases depName=updatecli/updatecli
-  UPDATECLI_VERSION: v0.123.0
-  # renovate: datasource=github-releases depName=helm/helm
-  HELM_VERSION: v4.3.2
+  # renovate: datasource=repology depName=manjaro_stable/dagger
+  DAGGER_VERSION: 0.21.10
+  # renovate: datasource=github-tags depName=riftonix/daggerverse versioning=semver extractVersion=^scenarios/helm-ci/v(?<version>.*)$
+  HELM_CI_SCENARIO: github.com/riftonix/daggerverse/scenarios/helm-ci@scenarios/helm-ci/v1.4.0
 
 jobs:
   update:
+    name: Update charts
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
+
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - name: Checkout repository
+        uses: actions/checkout@v7
         with:
-          python-version: '3.15'
-      - name: Install adapter dependencies
-        run: python3 -m pip install -r updatecli/requirements.txt
-      - uses: updatecli/updatecli-action@v3.10.0
+          persist-credentials: false
+
+      - name: Set up Dagger
+        uses: dagger/dagger-for-github@v8.4.1
         with:
-          version: ${{ env.UPDATECLI_VERSION }}
-      - uses: azure/setup-helm@v5
-        with:
-          version: ${{ env.HELM_VERSION }}
-      - name: Test Updatecli adapter and manifests
-        run: UPDATECLI_BIN="$(command -v updatecli)" python3 -I -m unittest discover -s updatecli/tests -v
-      - name: Validate component selection
-        env:
-          COMPONENT: ${{ inputs.component }}
-        run: |
-          python3 -I -c 'import os,yaml; c=os.environ["COMPONENT"]; assert not c or c in yaml.safe_load(open("updatecli/values.yaml"))["components"], "Unknown component: " + c'
+          version: ${{ env.DAGGER_VERSION }}
+
       - name: Update independent component PRs
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           COMPONENT: ${{ inputs.component }}
-          # Use a PAT or GitHub App token so PR events trigger CI.
-          UPDATECLI_GITHUB_TOKEN: ${{ secrets.UPDATECLI_GITHUB_TOKEN }}
         run: |
-          test -n "$UPDATECLI_GITHUB_TOKEN" || { printf '%s\n' 'Configure UPDATECLI_GITHUB_TOKEN first'; exit 1; }
           args=()
           if [[ -n "$COMPONENT" ]]; then
-            args+=(--pipeline-ids "upstream-$COMPONENT")
+            args+=(--components="$COMPONENT")
           fi
-          updatecli pipeline apply --config updatecli/manifest.yaml --values updatecli/values.yaml \
-            --disable-udash-report --disable-version-check --disable-changelog --unique-tmp-dir "${args[@]}"
+          dagger -m "${HELM_CI_SCENARIO}" \
+            call \
+            --source=. \
+            sync-charts-update \
+            --github-token=env:GITHUB_TOKEN \
+            --repository="${GITHUB_REPOSITORY}" \
+            --branch=master \
+            "${args[@]}"
+
+      # PRs created with the built-in token do not trigger pull_request workflows.
+      - name: Run CI on update branches
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh pr list --state open --base master --limit 100 --json headRefName \
+            --jq '.[].headRefName | select(startswith("updatecli_master_upstream-"))' |
+            while read -r ref; do
+              gh workflow run ci.yaml --ref "$ref"
+            done

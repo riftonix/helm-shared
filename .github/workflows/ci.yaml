@@ -4,13 +4,15 @@ on:
   pull_request:
     branches:
       - master
+  # Dispatched by the Update charts workflow for its update branches.
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 env:
   # renovate: datasource=repology depName=manjaro_stable/dagger
-  DAGGER_VERSION: 0.21.9
+  DAGGER_VERSION: 0.21.10
   # renovate: datasource=github-tags depName=riftonix/daggerverse versioning=semver extractVersion=^modules/git/v(?<version>.*)$
   GIT_MODULE: github.com/riftonix/daggerverse/modules/git@modules/git/v1.0.2
   # renovate: datasource=github-tags depName=riftonix/daggerverse versioning=semver extractVersion=^scenarios/helm-ci/v(?<version>.*)$
@@ -29,7 +31,19 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Resolve compared revisions
+        id: revisions
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [[ -z "$BASE_SHA" ]]; then
+            BASE_SHA="$(git merge-base origin/master "$HEAD_SHA")"
+          fi
+          echo "base=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "head=$HEAD_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Set up Dagger
         uses: dagger/dagger-for-github@v8.4.1
@@ -45,8 +59,8 @@ jobs:
               call --silent --json \
               --source=. \
               get-changed-components \
-              --base-ref="${{ github.event.pull_request.base.sha }}" \
-              --head-ref="${{ github.event.pull_request.head.sha }}" \
+              --base-ref="${{ steps.revisions.outputs.base }}" \
+              --head-ref="${{ steps.revisions.outputs.head }}" \
               --component-roots='charts/*' \
               --component-roots='libs/*' \
               --shared-paths='.github' \
@@ -68,7 +82,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Dagger
         uses: dagger/dagger-for-github@v8.4.1
