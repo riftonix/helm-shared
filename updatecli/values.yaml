@@ -11,7 +11,7 @@ upstream:
   - Chart.lock
   - LICENSE
 home: https://github.com/riftonix/helm-shared
-# Shared rewrite rules for imported upstream files. The adapter applies, in order:
+# Shared rewrite rules for imported upstream files. Chart sync applies, in order:
 # https://github.com/nixys/<upstream> -> <home>/tree/master/<path>, these rules,
 # <upstream> -> <id> for every component, then the component's own rules.
 # A rule replaces literal `from`, or `regex` (Python re) when set; `file` limits
@@ -31,11 +31,6 @@ rewrite:
   # Foreign metadata; the fork's own home/annotations survive as local edits.
   regex: '(?m)^(?:icon|home):.*\n?|^(?:maintainers|annotations):.*\n(?:(?:[ \t]|-[ \t]).*\n?|\n)*'
   to: ''
-github:
-  enabled: true
-  owner: riftonix
-  repository: helm-shared
-  branch: master
 components:
   appchart:
     path: charts/appchart
