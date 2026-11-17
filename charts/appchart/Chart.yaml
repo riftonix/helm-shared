@@ -71,7 +71,7 @@ dependencies:
 - condition: elk.enabled
   name: elk
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.0
+  version: 1.0.1
 - condition: external-secrets.enabled
   name: external-secrets
   repository: oci://ghcr.io/riftonix/helm-shared/libs
