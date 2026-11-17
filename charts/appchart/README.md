@@ -82,29 +82,29 @@ The chart also declares reusable dependency subcharts. `common` is always loaded
 | Subchart | Version | Enabled by | Source chart | Includes |
 |----------|---------|------------|--------------|----------|
 | `common` | `1.0.5` | always | [common](https://github.com/riftonix/helm-shared/tree/master/libs/common) | Shared Helm library helpers for capability detection, pod/workload rendering, labels, templating, configmaps, secrets, ingress, volumes, and deprecation notices. |
-| `traefik` | `1.0.5` | `traefik.enabled` | [traefik](https://github.com/riftonix/helm-shared/tree/master/libs/traefik) | Traefik CRDs: `IngressRoute`, `IngressRouteTCP`, `IngressRouteUDP`, `Middleware`, `MiddlewareTCP`, `TLSOption`, `TLSStore`, `ServersTransport`, `ServersTransportTCP`, and `TraefikService`. |
-| `cert-manager` | `1.0.4` | `cert-manager.enabled` | [cert-manager](https://github.com/riftonix/helm-shared/tree/master/libs/cert-manager) | cert-manager resources: `Certificate`, `CertificateRequest`, `Issuer`, `ClusterIssuer`, `Challenge`, and `Order`. |
-| `istio` | `1.0.5` | `istio.enabled` | [istio](https://github.com/riftonix/helm-shared/tree/master/libs/istio) | Istio traffic-management resources: `Gateway`, `VirtualService`, and `DestinationRule`. |
-| `fluxcd` | `1.0.4` | `fluxcd.enabled` | [fluxcd](https://github.com/riftonix/helm-shared/tree/master/libs/fluxcd) | Flux CD resources: `GitRepository`, `Kustomization`, `HelmRepository`, `HelmRelease`, `OCIRepository`, image automation, and notification resources. |
-| `knative` | `1.0.5` | `knative.enabled` | [knative](https://github.com/riftonix/helm-shared/tree/master/libs/knative) | Knative Serving resources including `Service`, `Route`, `Configuration`, `Revision`, `Ingress`, `PodAutoscaler`, `ServerlessService`, `DomainMapping`, and related serving objects. |
-| `kserve` | `1.0.4` | `kserve.enabled` | [kserve](https://github.com/riftonix/helm-shared/tree/master/libs/kserve) | KServe resources such as `InferenceService`, `InferenceGraph`, `ServingRuntime`, `ClusterServingRuntime`, `TrainedModel`, and model cache/storage CRDs. |
-| `kube-prometheus-stack` | `1.0.5` | `kube-prometheus-stack.enabled` | [kube-prometheus-stack](https://github.com/riftonix/helm-shared/tree/master/libs/kube-prometheus-stack) | Prometheus Operator monitoring resources: `PodMonitor`, `Probe`, `PrometheusRule`, `ScrapeConfig`, and `ServiceMonitor`. |
-| `native-gateway` | `1.0.6` | `native-gateway.enabled` | [native-gateway](https://github.com/riftonix/helm-shared/tree/master/libs/native-gateway) | Gateway API resources: `GatewayClass`, `Gateway`, `HTTPRoute`, `GRPCRoute`, `TLSRoute`, `ReferenceGrant`, `BackendTLSPolicy`, and `ListenerSet`. |
-| `envoy-gateway` | `1.0.1` | `global.envoy-gateway.enabled` | [envoy-gateway](https://github.com/riftonix/helm-shared/tree/master/libs/envoy-gateway) | Envoy Gateway extension resources: `Backend`, `BackendTrafficPolicy`, `ClientTrafficPolicy`, `EnvoyExtensionPolicy`, `EnvoyPatchPolicy`, `EnvoyProxy`, `HTTPRouteFilter`, and `SecurityPolicy`. |
-| `victoria-metrics` | `1.0.4` | `victoria-metrics.enabled` | [victoria-metrics](https://github.com/riftonix/helm-shared/tree/master/libs/victoria-metrics) | VictoriaMetrics Operator resources: `VMAlert`, `VMRule`, `VMProbe`, `VMScrapeConfig`, `VMServiceScrape`, and `VMStaticScrape`. |
-| `vault-secret-operator` | `1.0.5` | `vault-secret-operator.enabled` | [vault-secret-operator](https://github.com/riftonix/helm-shared/tree/master/libs/vault-secret-operator) | Vault Secret Operator resources: `VaultAuth` and `VaultStaticSecret`. |
-| `argocd` | `1.0.4` | `argocd.enabled` | [argocd](https://github.com/riftonix/helm-shared/tree/master/libs/argocd) | Argo CD resources: `Application`, `ApplicationSet`, and `AppProject`. |
-| `keda` | `1.0.4` | `keda.enabled` | [keda](https://github.com/riftonix/helm-shared/tree/master/libs/keda) | KEDA autoscaling resources: `ScaledObject`, `ScaledJob`, `TriggerAuthentication`, and `ClusterTriggerAuthentication`. |
-| `cloudnativepg` | `1.0.0` | `cloudnativepg.enabled` | [cloudnativepg](https://github.com/riftonix/helm-shared/tree/master/libs/cloudnativepg) | CloudNativePG resources: `Backup`, `ClusterImageCatalog`, `Cluster`, `Database`, `FailoverQuorum`, `ImageCatalog`, `Pooler`, `Publication`, `ScheduledBackup`, and `Subscription`. |
-| `mysql-percona-operator` | `1.0.0` | `mysql-percona-operator.enabled` | [mysql-percona-operator](https://github.com/riftonix/helm-shared/tree/master/libs/mysql-percona-operator) | Percona XtraDB Cluster Operator resources: `PerconaXtraDBCluster`, `PerconaXtraDBClusterBackup`, and `PerconaXtraDBClusterRestore`. |
-| `rabbitmq` | `1.0.1` | `rabbitmq.enabled` | [rabbitmq](https://github.com/riftonix/helm-shared/tree/master/libs/rabbitmq) | RabbitMQ Cluster Operator and Messaging Topology Operator resources: `RabbitmqCluster`, `Queue`, `Policy`, `Exchange`, `Binding`, `User`, `Permission`, `Vhost`, `Federation`, and `Shovel`. |
-| `clickhouse` | `1.0.1` | `clickhouse.enabled` | [clickhouse](https://github.com/riftonix/helm-shared/tree/master/libs/clickhouse) | Altinity ClickHouse Operator resources: `ClickHouseInstallation`, `ClickHouseInstallationTemplate`, `ClickHouseOperatorConfiguration`, and `ClickHouseKeeperInstallation`. |
-| `elk` | `1.0.0` | `elk.enabled` | [elk](https://github.com/riftonix/helm-shared/tree/master/libs/elk) | Elastic Cloud on Kubernetes resources: `Elasticsearch`, `Kibana`, `ApmServer`, `Beat`, `Agent`, `EnterpriseSearch`, `ElasticMapsServer`, and `Logstash`. |
-| `external-secrets` | `1.1.0` | `external-secrets.enabled` | [external-secrets](https://github.com/riftonix/helm-shared/tree/master/libs/external-secrets) | External Secrets Operator resources: `ExternalSecret`, `SecretStore`, `ClusterSecretStore`, push secrets, and generator resources. |
-| `mongodb-percona-operator` | `1.0.0` | `mongodb-percona-operator.enabled` | [mongodb-percona-operator](https://github.com/riftonix/helm-shared/tree/master/libs/mongodb-percona-operator) | Percona Server for MongoDB Operator resources: `PerconaServerMongoDB`, `PerconaServerMongoDBBackup`, and `PerconaServerMongoDBRestore`. |
-| `valkey` | `1.0.0` | `valkey.enabled` | [valkey](https://github.com/riftonix/helm-shared/tree/master/libs/valkey) | Valkey Operator resources: `ValkeyCluster` and `ValkeyNode`. |
-| `keycloak-operator` | `1.0.1` | `keycloak-operator.enabled` | [keycloak-operator](https://github.com/riftonix/helm-shared/tree/master/libs/keycloak-operator) | Keycloak Operator resources: `Keycloak` and `KeycloakRealmImport`. |
-| `strimzi-kafka-operator` | `1.0.0` | `strimzi-kafka-operator.enabled` | [strimzi-kafka-operator](https://github.com/riftonix/helm-shared/tree/master/libs/strimzi-kafka-operator) | Strimzi Kafka Operator resources: `Kafka`, `KafkaTopic`, `KafkaUser`, `KafkaConnect`, `KafkaBridge`, `KafkaMirrorMaker2`, and `KafkaRebalance`. |
+| `traefik` | `1.0.6` | `traefik.enabled` | [traefik](https://github.com/riftonix/helm-shared/tree/master/libs/traefik) | Traefik CRDs: `IngressRoute`, `IngressRouteTCP`, `IngressRouteUDP`, `Middleware`, `MiddlewareTCP`, `TLSOption`, `TLSStore`, `ServersTransport`, `ServersTransportTCP`, and `TraefikService`. |
+| `cert-manager` | `1.0.5` | `cert-manager.enabled` | [cert-manager](https://github.com/riftonix/helm-shared/tree/master/libs/cert-manager) | cert-manager resources: `Certificate`, `CertificateRequest`, `Issuer`, `ClusterIssuer`, `Challenge`, and `Order`. |
+| `istio` | `1.0.6` | `istio.enabled` | [istio](https://github.com/riftonix/helm-shared/tree/master/libs/istio) | Istio traffic-management resources: `Gateway`, `VirtualService`, and `DestinationRule`. |
+| `fluxcd` | `1.0.5` | `fluxcd.enabled` | [fluxcd](https://github.com/riftonix/helm-shared/tree/master/libs/fluxcd) | Flux CD resources: `GitRepository`, `Kustomization`, `HelmRepository`, `HelmRelease`, `OCIRepository`, image automation, and notification resources. |
+| `knative` | `1.0.6` | `knative.enabled` | [knative](https://github.com/riftonix/helm-shared/tree/master/libs/knative) | Knative Serving resources including `Service`, `Route`, `Configuration`, `Revision`, `Ingress`, `PodAutoscaler`, `ServerlessService`, `DomainMapping`, and related serving objects. |
+| `kserve` | `1.0.5` | `kserve.enabled` | [kserve](https://github.com/riftonix/helm-shared/tree/master/libs/kserve) | KServe resources such as `InferenceService`, `InferenceGraph`, `ServingRuntime`, `ClusterServingRuntime`, `TrainedModel`, and model cache/storage CRDs. |
+| `kube-prometheus-stack` | `1.0.6` | `kube-prometheus-stack.enabled` | [kube-prometheus-stack](https://github.com/riftonix/helm-shared/tree/master/libs/kube-prometheus-stack) | Prometheus Operator monitoring resources: `PodMonitor`, `Probe`, `PrometheusRule`, `ScrapeConfig`, and `ServiceMonitor`. |
+| `native-gateway` | `1.0.7` | `native-gateway.enabled` | [native-gateway](https://github.com/riftonix/helm-shared/tree/master/libs/native-gateway) | Gateway API resources: `GatewayClass`, `Gateway`, `HTTPRoute`, `GRPCRoute`, `TLSRoute`, `ReferenceGrant`, `BackendTLSPolicy`, and `ListenerSet`. |
+| `envoy-gateway` | `1.0.2` | `global.envoy-gateway.enabled` | [envoy-gateway](https://github.com/riftonix/helm-shared/tree/master/libs/envoy-gateway) | Envoy Gateway extension resources: `Backend`, `BackendTrafficPolicy`, `ClientTrafficPolicy`, `EnvoyExtensionPolicy`, `EnvoyPatchPolicy`, `EnvoyProxy`, `HTTPRouteFilter`, and `SecurityPolicy`. |
+| `victoria-metrics` | `1.0.5` | `victoria-metrics.enabled` | [victoria-metrics](https://github.com/riftonix/helm-shared/tree/master/libs/victoria-metrics) | VictoriaMetrics Operator resources: `VMAlert`, `VMRule`, `VMProbe`, `VMScrapeConfig`, `VMServiceScrape`, and `VMStaticScrape`. |
+| `vault-secret-operator` | `1.0.6` | `vault-secret-operator.enabled` | [vault-secret-operator](https://github.com/riftonix/helm-shared/tree/master/libs/vault-secret-operator) | Vault Secret Operator resources: `VaultAuth` and `VaultStaticSecret`. |
+| `argocd` | `1.0.5` | `argocd.enabled` | [argocd](https://github.com/riftonix/helm-shared/tree/master/libs/argocd) | Argo CD resources: `Application`, `ApplicationSet`, and `AppProject`. |
+| `keda` | `1.0.5` | `keda.enabled` | [keda](https://github.com/riftonix/helm-shared/tree/master/libs/keda) | KEDA autoscaling resources: `ScaledObject`, `ScaledJob`, `TriggerAuthentication`, and `ClusterTriggerAuthentication`. |
+| `cloudnativepg` | `1.0.1` | `cloudnativepg.enabled` | [cloudnativepg](https://github.com/riftonix/helm-shared/tree/master/libs/cloudnativepg) | CloudNativePG resources: `Backup`, `ClusterImageCatalog`, `Cluster`, `Database`, `FailoverQuorum`, `ImageCatalog`, `Pooler`, `Publication`, `ScheduledBackup`, and `Subscription`. |
+| `mysql-percona-operator` | `1.0.1` | `mysql-percona-operator.enabled` | [mysql-percona-operator](https://github.com/riftonix/helm-shared/tree/master/libs/mysql-percona-operator) | Percona XtraDB Cluster Operator resources: `PerconaXtraDBCluster`, `PerconaXtraDBClusterBackup`, and `PerconaXtraDBClusterRestore`. |
+| `rabbitmq` | `1.0.2` | `rabbitmq.enabled` | [rabbitmq](https://github.com/riftonix/helm-shared/tree/master/libs/rabbitmq) | RabbitMQ Cluster Operator and Messaging Topology Operator resources: `RabbitmqCluster`, `Queue`, `Policy`, `Exchange`, `Binding`, `User`, `Permission`, `Vhost`, `Federation`, and `Shovel`. |
+| `clickhouse` | `1.0.2` | `clickhouse.enabled` | [clickhouse](https://github.com/riftonix/helm-shared/tree/master/libs/clickhouse) | Altinity ClickHouse Operator resources: `ClickHouseInstallation`, `ClickHouseInstallationTemplate`, `ClickHouseOperatorConfiguration`, and `ClickHouseKeeperInstallation`. |
+| `elk` | `1.0.1` | `elk.enabled` | [elk](https://github.com/riftonix/helm-shared/tree/master/libs/elk) | Elastic Cloud on Kubernetes resources: `Elasticsearch`, `Kibana`, `ApmServer`, `Beat`, `Agent`, `EnterpriseSearch`, `ElasticMapsServer`, and `Logstash`. |
+| `external-secrets` | `1.1.1` | `external-secrets.enabled` | [external-secrets](https://github.com/riftonix/helm-shared/tree/master/libs/external-secrets) | External Secrets Operator resources: `ExternalSecret`, `SecretStore`, `ClusterSecretStore`, push secrets, and generator resources. |
+| `mongodb-percona-operator` | `1.0.1` | `mongodb-percona-operator.enabled` | [mongodb-percona-operator](https://github.com/riftonix/helm-shared/tree/master/libs/mongodb-percona-operator) | Percona Server for MongoDB Operator resources: `PerconaServerMongoDB`, `PerconaServerMongoDBBackup`, and `PerconaServerMongoDBRestore`. |
+| `valkey` | `1.0.1` | `valkey.enabled` | [valkey](https://github.com/riftonix/helm-shared/tree/master/libs/valkey) | Valkey Operator resources: `ValkeyCluster` and `ValkeyNode`. |
+| `keycloak-operator` | `1.0.3` | `keycloak-operator.enabled` | [keycloak-operator](https://github.com/riftonix/helm-shared/tree/master/libs/keycloak-operator) | Keycloak Operator resources: `Keycloak` and `KeycloakRealmImport`. |
+| `strimzi-kafka-operator` | `1.0.1` | `strimzi-kafka-operator.enabled` | [strimzi-kafka-operator](https://github.com/riftonix/helm-shared/tree/master/libs/strimzi-kafka-operator) | Strimzi Kafka Operator resources: `Kafka`, `KafkaTopic`, `KafkaUser`, `KafkaConnect`, `KafkaBridge`, `KafkaMirrorMaker2`, and `KafkaRebalance`. |
 
 ## Values Model
 
@@ -190,6 +190,7 @@ Schema matching note:
 | `generic.nameSuffix` | `generic.nameSuffix: "blue"` | `""` | Suffix appended to deterministic base name. |
 | `generic.deterministicNames` | `generic.deterministicNames: true` | `true` | Enables deterministic fallback names for unnamed containers/initContainers. |
 | `generic.autoRolloutChecksums` | `generic.autoRolloutChecksums: true` | `true` | Adds checksum pod annotations for ConfigMaps/Secrets referenced by each workload. |
+| `generic.useDefaultSelectorLabels` | `generic.useDefaultSelectorLabels: false` | `true` | Includes `app.kubernetes.io/name` and `app.kubernetes.io/instance` in selectors. Set to `false` to select only by `extraSelectorLabels`; pods keep the standard labels. `extraSelectorLabels` keys override standard label values. Rendering fails if a selector, including a pod affinity preset selector, is empty. Selectors without `instance` can overlap with other releases in the namespace. Changing selectors of existing workloads requires recreating them. |
 | `generic.extraSelectorLabels` | `generic.extraSelectorLabels.tenant: "shared"` | `{}` | Extra labels merged into selectors and pod labels. |
 | `generic.podLabels` | `generic.podLabels.tier: "backend"` | `{}` | Labels applied to all workload pod templates. |
 | `generic.podAnnotations` | `generic.podAnnotations.rendered-from: "values"` | `{}` | Annotations applied to all workload pod templates. |
@@ -243,13 +244,13 @@ Schema matching note:
 
 | Field | Example | Default | Description |
 |---|---|---|---|
-| `deploymentsGeneral` | `deploymentsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all Deployment entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `strategy`, `progressDeadlineSeconds`. |
+| `deploymentsGeneral` | `deploymentsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all Deployment entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `strategy`, `progressDeadlineSeconds`, `revisionHistoryLimit`. |
 | `deployments` | `deployments.api.replicas: 2` | `{}` | Deployment resources keyed by suffix. |
 | `daemonSetsGeneral` | `daemonSetsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all DaemonSet entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `strategy`, `minReadySeconds`, `revisionHistoryLimit`. |
 | `daemonSets` | `daemonSets.node-agent.containers.agent.image: busybox` | `{}` | DaemonSet resources keyed by suffix. |
 | `podsGeneral` | `podsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all Pod entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields). |
 | `pods` | `pods.toolbox.containers.toolbox.image: busybox` | `{}` | Pod resources keyed by suffix. |
-| `statefulSetsGeneral` | `statefulSetsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all StatefulSet entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `strategy`, `minReadySeconds`, `volumeClaimTemplates`. |
+| `statefulSetsGeneral` | `statefulSetsGeneral.resources.requests.cpu: 100m` | `{}` | Shared defaults applied to all StatefulSet entries. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `strategy`, `minReadySeconds`, `volumeClaimTemplates`, `revisionHistoryLimit`. |
 | `statefulSets` | `statefulSets.worker.serviceName: headless` | `{}` | StatefulSet resources keyed by suffix. |
 | `jobsGeneral` | `jobsGeneral.backoffLimit: 1` | `{}` | Shared defaults applied to one-shot Jobs. Supports all [Common Workload Entry Fields](#common-workload-entry-fields) plus `parallelism`, `completions`, `activeDeadlineSeconds`, `backoffLimit`, `ttlSecondsAfterFinished`, `restartPolicy`, `commandDurationAlert`, `commandDurationAlertNamespace`. |
 | `jobs` | `jobs.migrate.containers.migrate.image: busybox` | `{}` | One-shot batch jobs keyed by suffix, or one raw templated YAML string. |
@@ -324,6 +325,7 @@ These tables list only fields that are unique to a workload family. Shared knobs
 | `deployments.<name>.replicas` | `replicas: 3` | Kubernetes default (`1`) | Number of desired deployment replicas. The field is omitted when unset, and also when an enabled `hpas.<name>` entry targets this Deployment (`scaleTargetRef.kind: Deployment`), so the HPA keeps ownership of the replica count across Helm upgrades. |
 | `deployments.<name>.strategy` | `strategy.rollingUpdate.maxUnavailable: 1` | `n/a` | Deployment strategy block. |
 | `deployments.<name>.progressDeadlineSeconds` | `progressDeadlineSeconds: 600` | `600` | Rollout progress deadline in seconds. |
+| `deployments.<name>.revisionHistoryLimit` | `revisionHistoryLimit: 3` | `n/a` | Number of old ReplicaSets retained for rollback. Defaults to the Kubernetes default (10) when unset; falls back to `deploymentsGeneral.revisionHistoryLimit`. |
 
 #### DaemonSets
 
@@ -348,6 +350,7 @@ These tables list only fields that are unique to a workload family. Shared knobs
 | `statefulSets.<name>.serviceName` | `serviceName: headless` | `<resource key>` | Governing service name used by StatefulSet. |
 | `statefulSets.<name>.minReadySeconds` | `minReadySeconds: 10` | `n/a` | Minimum ready time per pod. |
 | `statefulSets.<name>.volumeClaimTemplates` | `volumeClaimTemplates: [{...}]` | `n/a` | PVC templates for StatefulSet pods. |
+| `statefulSets.<name>.revisionHistoryLimit` | `revisionHistoryLimit: 3` | `n/a` | Number of old ControllerRevisions retained for rollback. Defaults to the Kubernetes default (10) when unset; falls back to `statefulSetsGeneral.revisionHistoryLimit`. |
 
 #### Jobs
 
@@ -399,6 +402,7 @@ All [Common Workload Entry Fields](#common-workload-entry-fields) plus:
 |---|---|---|---|
 | `deploymentsGeneral.strategy` | `strategy.type: RollingUpdate` | `n/a` | Default deployment strategy for all Deployments. |
 | `deploymentsGeneral.progressDeadlineSeconds` | `progressDeadlineSeconds: 600` | `n/a` | Default rollout progress deadline in seconds. |
+| `deploymentsGeneral.revisionHistoryLimit` | `revisionHistoryLimit: 3` | `n/a` | Default number of old ReplicaSets retained for all Deployments. |
 
 Example - set default environment sources for every Deployment container:
 
@@ -433,6 +437,7 @@ All [Common Workload Entry Fields](#common-workload-entry-fields) plus:
 | `statefulSetsGeneral.strategy` | `strategy.type: RollingUpdate` | `n/a` | Default update strategy for all StatefulSets. |
 | `statefulSetsGeneral.minReadySeconds` | `minReadySeconds: 10` | `n/a` | Default minimum ready seconds per pod. |
 | `statefulSetsGeneral.volumeClaimTemplates` | `volumeClaimTemplates: [{...}]` | `n/a` | Default PVC templates applied to all StatefulSets. |
+| `statefulSetsGeneral.revisionHistoryLimit` | `revisionHistoryLimit: 3` | `n/a` | Default number of old ControllerRevisions retained for all StatefulSets. |
 
 #### jobsGeneral
 
@@ -618,6 +623,7 @@ All [Common Workload Entry Fields](#common-workload-entry-fields) and all [jobsG
 | `pdbs.<name>.labels` / `annotations` | `labels.app: api` | `{}` | Extra metadata for PDB resource. |
 | `pdbs.<name>.gitops` | `gitops.argo.compareOptions: ["IgnoreExtraneous"]` | `{}` | Resource-level GitOps metadata overlay. |
 | `pdbs.<name>.minAvailable` / `maxUnavailable` | `minAvailable: 1` | `n/a` | Availability policy for disruptions. |
+| `pdbs.<name>.unhealthyPodEvictionPolicy` | `unhealthyPodEvictionPolicy: AlwaysAllow` | `n/a` | Optional PDB `spec.unhealthyPodEvictionPolicy` (`IfHealthyBudget` or `AlwaysAllow`). Requires `policy/v1`. Omitted when unset. |
 | `pdbs.<name>.extraSelectorLabels` | `extraSelectorLabels.component: api` | `{}` | Additional selector labels for PDB target pods. |
 | `hpas` | `hpas.api.scaleTargetRef.name: api` | `{}` | HPA resources keyed by suffix. |
 | `hpas.<name>.disabled` | `disabled: true` | `false` | Disables rendering of an HPA entry. |
