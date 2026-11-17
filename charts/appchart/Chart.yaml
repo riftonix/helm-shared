@@ -55,7 +55,7 @@ dependencies:
 - condition: cloudnativepg.enabled
   name: cloudnativepg
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.0
+  version: 1.0.1
 - condition: mysql-percona-operator.enabled
   name: mysql-percona-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
