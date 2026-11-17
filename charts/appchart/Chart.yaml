@@ -11,7 +11,7 @@ dependencies:
 - condition: cert-manager.enabled
   name: cert-manager
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.4
+  version: 1.0.5
 - condition: istio.enabled
   name: istio
   repository: oci://ghcr.io/riftonix/helm-shared/libs
@@ -23,7 +23,7 @@ dependencies:
 - condition: argocd.enabled
   name: argocd
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.4
+  version: 1.0.5
 - condition: knative.enabled
   name: knative
   repository: oci://ghcr.io/riftonix/helm-shared/libs
@@ -67,7 +67,7 @@ dependencies:
 - condition: clickhouse.enabled
   name: clickhouse
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.1
+  version: 1.0.2
 - condition: elk.enabled
   name: elk
   repository: oci://ghcr.io/riftonix/helm-shared/libs
