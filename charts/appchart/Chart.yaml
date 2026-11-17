@@ -1,103 +1,103 @@
 apiVersion: v2
-name: appchart
-description: Helm chart for rendering reusable Kubernetes application resources
-type: application
-version: 3.2.2
 appVersion: v1
-home: https://github.com/riftonix/helm-shared
 dependencies:
 - name: common
-  version: 1.0.5
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-- name: traefik
+  version: 1.0.5
+- condition: traefik.enabled
+  name: traefik
+  repository: oci://ghcr.io/riftonix/helm-shared/libs
   version: 1.0.6
+- condition: cert-manager.enabled
+  name: cert-manager
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: traefik.enabled
-- name: cert-manager
   version: 1.0.4
+- condition: istio.enabled
+  name: istio
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: cert-manager.enabled
-- name: istio
   version: 1.0.5
+- condition: fluxcd.enabled
+  name: fluxcd
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: istio.enabled
-- name: fluxcd
   version: 1.0.4
+- condition: argocd.enabled
+  name: argocd
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: fluxcd.enabled
-- name: argocd
   version: 1.0.4
+- condition: knative.enabled
+  name: knative
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: argocd.enabled
-- name: knative
   version: 1.0.5
+- condition: kserve.enabled
+  name: kserve
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: knative.enabled
-- name: kserve
   version: 1.0.4
+- condition: kube-prometheus-stack.enabled
+  name: kube-prometheus-stack
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: kserve.enabled
-- name: kube-prometheus-stack
   version: 1.0.5
+- condition: native-gateway.enabled
+  name: native-gateway
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: kube-prometheus-stack.enabled
-- name: native-gateway
   version: 1.0.6
+- condition: victoria-metrics.enabled
+  name: victoria-metrics
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: native-gateway.enabled
-- name: victoria-metrics
   version: 1.0.4
+- condition: vault-secret-operator.enabled
+  name: vault-secret-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: victoria-metrics.enabled
-- name: vault-secret-operator
   version: 1.0.5
+- condition: keda.enabled
+  name: keda
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: vault-secret-operator.enabled
-- name: keda
   version: 1.0.4
+- condition: cloudnativepg.enabled
+  name: cloudnativepg
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: keda.enabled
-- name: cloudnativepg
   version: 1.0.0
+- condition: mysql-percona-operator.enabled
+  name: mysql-percona-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: cloudnativepg.enabled
-- name: mysql-percona-operator
   version: 1.0.0
+- condition: rabbitmq.enabled
+  name: rabbitmq
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: mysql-percona-operator.enabled
-- name: rabbitmq
   version: 1.0.1
+- condition: clickhouse.enabled
+  name: clickhouse
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: rabbitmq.enabled
-- name: clickhouse
   version: 1.0.1
+- condition: elk.enabled
+  name: elk
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: clickhouse.enabled
-- name: elk
   version: 1.0.0
+- condition: external-secrets.enabled
+  name: external-secrets
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: elk.enabled
-- name: external-secrets
   version: 1.1.0
+- condition: mongodb-percona-operator.enabled
+  name: mongodb-percona-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: external-secrets.enabled
-- name: mongodb-percona-operator
   version: 1.0.0
+- condition: global.envoy-gateway.enabled
+  name: envoy-gateway
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: mongodb-percona-operator.enabled
-- name: envoy-gateway
   version: 1.0.1
+- condition: valkey.enabled
+  name: valkey
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: global.envoy-gateway.enabled
-- name: valkey
   version: 1.0.0
+- condition: keycloak-operator.enabled
+  name: keycloak-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: valkey.enabled
-- name: keycloak-operator
   version: 1.0.1
+- condition: strimzi-kafka-operator.enabled
+  name: strimzi-kafka-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: keycloak-operator.enabled
-- name: strimzi-kafka-operator
   version: 1.0.0
-  repository: oci://ghcr.io/riftonix/helm-shared/libs
-  condition: strimzi-kafka-operator.enabled
+description: Helm chart for rendering reusable Kubernetes application resources
+home: https://github.com/riftonix/helm-shared
+name: appchart
+type: application
+version: 3.2.2
