@@ -51,7 +51,7 @@ dependencies:
 - condition: keda.enabled
   name: keda
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.4
+  version: 1.0.5
 - condition: cloudnativepg.enabled
   name: cloudnativepg
   repository: oci://ghcr.io/riftonix/helm-shared/libs
