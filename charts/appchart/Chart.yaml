@@ -19,7 +19,7 @@ dependencies:
 - condition: fluxcd.enabled
   name: fluxcd
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.4
+  version: 1.0.5
 - condition: argocd.enabled
   name: argocd
   repository: oci://ghcr.io/riftonix/helm-shared/libs
