@@ -43,7 +43,7 @@ dependencies:
 - condition: victoria-metrics.enabled
   name: victoria-metrics
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.4
+  version: 1.0.5
 - condition: vault-secret-operator.enabled
   name: vault-secret-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
