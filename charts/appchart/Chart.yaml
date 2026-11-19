@@ -15,11 +15,11 @@ dependencies:
 - condition: istio.enabled
   name: istio
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.5
+  version: 1.0.6
 - condition: fluxcd.enabled
   name: fluxcd
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.4
+  version: 1.0.5
 - condition: argocd.enabled
   name: argocd
   repository: oci://ghcr.io/riftonix/helm-shared/libs
@@ -51,7 +51,7 @@ dependencies:
 - condition: keda.enabled
   name: keda
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.4
+  version: 1.0.5
 - condition: cloudnativepg.enabled
   name: cloudnativepg
   repository: oci://ghcr.io/riftonix/helm-shared/libs
@@ -91,7 +91,7 @@ dependencies:
 - condition: keycloak-operator.enabled
   name: keycloak-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.1
+  version: 1.0.3
 - condition: strimzi-kafka-operator.enabled
   name: strimzi-kafka-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
