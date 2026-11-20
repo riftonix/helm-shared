@@ -31,7 +31,7 @@ dependencies:
 - condition: kserve.enabled
   name: kserve
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.4
+  version: 1.0.5
 - condition: kube-prometheus-stack.enabled
   name: kube-prometheus-stack
   repository: oci://ghcr.io/riftonix/helm-shared/libs
