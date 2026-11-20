@@ -79,7 +79,7 @@ dependencies:
 - condition: mongodb-percona-operator.enabled
   name: mongodb-percona-operator
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.0
+  version: 1.0.1
 - condition: global.envoy-gateway.enabled
   name: envoy-gateway
   repository: oci://ghcr.io/riftonix/helm-shared/libs
