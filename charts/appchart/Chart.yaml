@@ -35,7 +35,7 @@ dependencies:
 - condition: kube-prometheus-stack.enabled
   name: kube-prometheus-stack
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.5
+  version: 1.0.6
 - condition: native-gateway.enabled
   name: native-gateway
   repository: oci://ghcr.io/riftonix/helm-shared/libs
