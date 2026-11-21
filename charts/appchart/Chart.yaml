@@ -39,7 +39,7 @@ dependencies:
 - condition: native-gateway.enabled
   name: native-gateway
   repository: oci://ghcr.io/riftonix/helm-shared/libs
-  version: 1.0.6
+  version: 1.0.7
 - condition: victoria-metrics.enabled
   name: victoria-metrics
   repository: oci://ghcr.io/riftonix/helm-shared/libs
