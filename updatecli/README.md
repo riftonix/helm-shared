@@ -80,7 +80,7 @@ Other components are still updated, and the workflow run fails and names the fai
 
 ## Local preview
 
-Prerequisites: Dagger `0.21.10` or later. Package downloads expect an anonymously readable registry; no credentials are needed.
+Prerequisites: Dagger `0.21.11` or later. Package downloads expect an anonymously readable registry; no credentials are needed.
 
 Preview one component without writing the checkout:
 
