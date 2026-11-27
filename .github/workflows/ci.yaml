@@ -14,7 +14,7 @@ env:
   # renovate: datasource=repology depName=manjaro_stable/dagger
   DAGGER_VERSION: 0.21.11
   # renovate: datasource=github-tags depName=riftonix/daggerverse versioning=semver extractVersion=^modules/git/v(?<version>.*)$
-  GIT_MODULE: github.com/riftonix/daggerverse/modules/git@modules/git/v1.0.2
+  GIT_MODULE: github.com/riftonix/daggerverse/modules/git@modules/git/v1.0.4
   # renovate: datasource=github-tags depName=riftonix/daggerverse versioning=semver extractVersion=^scenarios/helm-ci/v(?<version>.*)$
   HELM_CI_SCENARIO: github.com/riftonix/daggerverse/scenarios/helm-ci@scenarios/helm-ci/v1.4.0
 
