@@ -100,4 +100,4 @@ description: Helm chart for rendering reusable Kubernetes application resources
 home: https://github.com/riftonix/helm-shared
 name: appchart
 type: application
-version: 3.2.4
+version: 3.2.5
